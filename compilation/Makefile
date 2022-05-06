@@ -1,10 +1,10 @@
 
 TARGET = PSP_TARGET
-OBJS = ../src/callbacks.o ../main.o
+OBJS = ../src/callbacks.o ../src/ui.o ../main.o
 
-LIBS = ../compilation/pspp.a
+LIBS = ../compilation/cyoa.a ../compilation/pspp.a
 
-INCDIR = ../include/pspp/ ../include/
+INCDIR = ../include/cyoa/ ../include/pspp/ ../include/
 CFLAGS = -G0 -O2 -Wall
 CXXFLAGS = $(CFLAGS) -fno-rtti -fexceptions
 ASFLAGS = $(CFLAGS)
