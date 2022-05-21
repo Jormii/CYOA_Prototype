@@ -127,14 +127,16 @@ def main():
         makefile.objs.append(_src)
 
     # Libs
+    cyoa_lib = File("../compilation/cyoa.a")
     pspp_lib = File("../compilation/pspp.a")
-    for _lib in [pspp_lib]:
+    for _lib in [cyoa_lib, pspp_lib]:
         makefile.libs.append(_lib)
 
     # Includes
+    cyoa_include = Dir("../include/cyoa/")
     pspp_include = Dir("../include/pspp/")
     include = Dir("../include/")
-    for _inc in [pspp_include, include]:
+    for _inc in [cyoa_include, pspp_include, include]:
         makefile.include_dirs.append(_inc)
 
     makefile.create("./")
