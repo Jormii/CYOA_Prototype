@@ -61,6 +61,7 @@ int main()
 
 void initialize()
 {
+    log_fd = -1;    // TODO: Somewhere else
     found_error = FALSE;
 
     // System and interface
@@ -121,6 +122,11 @@ void initialize()
 
 void game_loop()
 {
+    if (combat_engine.in_combat)
+    {
+        ce_combat_loop();
+    }
+
     ui_update();
     sb_swap_buffers();
     sceDisplayWaitVblankStart();

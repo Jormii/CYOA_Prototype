@@ -13,7 +13,6 @@ void ce_on_event(CombatEventSource *source)
     switch (event)
     {
     case EVENT_START_OF_TURN:
-        tb_clear(&(print_window.buffer), NULL);
         tb_print(&(print_window.buffer), RGB(255, 255, 255), L"\nEVENT :: Start of turn\n");
         print_combat_state();
         break;

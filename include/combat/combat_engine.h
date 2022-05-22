@@ -21,6 +21,7 @@ struct
 
 void ce_init();
 void ce_start_combat();
+void ce_combat_loop();
 void ce_push_active_command(const ActiveSkillCommand *command);
 void ce_broadcast_event(CombatEventSource *source);
 void ce_broadcast_event_to_team(CombatEventSource *source, Team *team);

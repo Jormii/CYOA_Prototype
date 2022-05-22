@@ -6,7 +6,6 @@
 void ce_init_team(Team *team, bool_t is_players_team);
 void ce_starting_units(Team *team);
 
-void ce_combat_loop();
 void ce_team_loop(Team *team);
 void ce_sort_command_queue();
 void ce_execute_command_queue();
@@ -40,7 +39,23 @@ void ce_start_combat()
     combat_engine.in_combat = TRUE;
     ce_starting_units(&(combat_engine.players_team));
     ce_starting_units(&(combat_engine.enemy_team));
-    ce_combat_loop();
+}
+
+void ce_combat_loop()
+{
+    ce_engine_broadcast(EVENT_START_OF_TURN);
+
+    ce_team_loop(&(combat_engine.players_team));
+    ce_team_loop(&(combat_engine.enemy_team));
+
+    ce_sort_command_queue();
+    ce_execute_command_queue();
+    ce_update_combat_state();
+
+    ce_engine_broadcast(EVENT_END_OF_TURN);
+
+    // TODO: Remove
+    ce_engine_broadcast(EVENT_START_OF_TURN);
 }
 
 void ce_push_active_command(const ActiveSkillCommand *command)
@@ -115,23 +130,6 @@ void ce_starting_units(Team *team)
         {
             ce_replace_unit(team, slot);
         }
-    }
-}
-
-void ce_combat_loop()
-{
-    while (combat_engine.in_combat)
-    {
-        ce_engine_broadcast(EVENT_START_OF_TURN);
-
-        ce_team_loop(&(combat_engine.players_team));
-        ce_team_loop(&(combat_engine.enemy_team));
-
-        ce_sort_command_queue();
-        ce_execute_command_queue();
-        ce_update_combat_state();
-
-        ce_engine_broadcast(EVENT_END_OF_TURN);
     }
 }
 
