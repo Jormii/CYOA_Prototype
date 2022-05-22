@@ -3,6 +3,7 @@
 #include <pspiofilemgr.h>
 
 #include "ui.h"
+#include "input.h"
 #include "virtual_machine.h"
 
 void call_cb(uint32_t hash)
@@ -15,9 +16,24 @@ void print_cb(const wchar_t *string)
     tb_printf(&(print_window.buffer), RGB(255, 255, 255), L"%ls\n", string);
 }
 
+uint16_t chosen = 0;
 void print_option_cb(uint16_t index, const wchar_t *string)
 {
-    tb_printf(&(commands_window.buffer), RGB(255, 255, 255), L"%u: %ls\n", index, string);
+    if (input_button_pressed(BUTTON_UP) && chosen > 0)
+    {
+        chosen -= 1;
+    }
+    else if (input_button_pressed(BUTTON_DOWN) && (chosen + 1) < vm.header.options_count)
+    {
+        chosen += 1;
+    }
+
+    rgb_t color = 0xFFFFFFFF;
+    if (chosen == index)
+    {
+        color = RGB(255, 255, 0);
+    }
+    tb_printf(&(commands_window.buffer), color, L"%u: %ls\n", index, string);
 }
 
 void *read_file_cb(const char *path, size_t *out_size)

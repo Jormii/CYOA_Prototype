@@ -3,6 +3,7 @@
 
 #include "ui.h"
 #include "log.h"
+#include "input.h"
 #include "types.h"
 #include "callbacks.h"
 #include "vm_manager.h"
@@ -61,12 +62,13 @@ int main()
 
 void initialize()
 {
-    log_fd = -1;    // TODO: Somewhere else
+    log_fd = -1; // TODO: Somewhere else
     found_error = FALSE;
 
     // System and interface
     setup_callbacks();
 
+    input_init();
     sb_initialize();
     ui_initialize();
 
@@ -110,10 +112,9 @@ void initialize()
     // End
     if (!found_error)
     {
-#if 0
+#if 1
         vm_manager_load_program("Escena.bin");
         vm_execute();
-        vm_display_options();
 #else
         ce_start_combat();
 #endif
@@ -122,10 +123,14 @@ void initialize()
 
 void game_loop()
 {
+    input_update();
     if (combat_engine.in_combat)
     {
         ce_combat_loop();
     }
+
+    tb_clear(&(commands_window.buffer), NULL);
+    vm_display_options();
 
     ui_update();
     sb_swap_buffers();
