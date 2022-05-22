@@ -56,21 +56,39 @@ class IWhere:
         return self.where()
 
 
-class Dir(IWhere):
+class SourceDir(IWhere):
 
     def __init__(self, path):
         self.path = path
         self.files = IWhereList()
 
-    def where(self):
-        if len(self.files.elements) == 0:
-            return self.path
+        for filename in os.listdir(self.path):
+            file_path = os.path.join(self.path, filename)
+            if not os.path.isfile(file_path):
+                continue
 
+            head, tail = os.path.splitext(filename)
+            if tail != ".c":
+                continue
+
+            obj_filename = f"{head}.o"
+            self.files.append(File(obj_filename))
+
+    def where(self):
         where_stringify = []
         for f in self.files.elements:
             where_stringify.append(os.path.join(self.path, f.where()))
 
-        return " ".join(where_stringify)
+        return where_stringify
+
+
+class IncludeDir(IWhere):
+
+    def __init__(self, path):
+        self.path = path
+
+    def where(self):
+        return self.path
 
 
 class File(IWhere):
@@ -93,23 +111,13 @@ class IWhereList(IWhere):
     def where(self):
         where_stringify = []
         for e in self.elements:
-            where_stringify.append(e.where())
+            e_stringify = e.where()
+            if isinstance(e_stringify, list):
+                where_stringify.extend(e_stringify)
+            else:
+                where_stringify.append(e.where())
 
         return " ".join(where_stringify)
-
-
-def add_all_object_files_in_dir(dir):
-    for filename in os.listdir(dir.path):
-        path = os.path.join(dir.path, filename)
-        if not os.path.isfile(path):
-            continue
-
-        head, tail = os.path.splitext(filename)
-        if tail != ".c":
-            continue
-
-        obj_filename = head + ".o"
-        dir.files.append(File(obj_filename))
 
 
 def main():
@@ -117,26 +125,35 @@ def main():
 
     # Titles and flags
     makefile.eboot_title = "Prototype"
-    makefile.c_flags = ["-G0", "-O2", "-Wall"]
+    makefile.c_flags = ["-G0", "-O2", "-Wall", "-Wno-unknown-pragmas"]
 
     # Objs
-    src = Dir("../src")
-    main = File("../main.o")
-    add_all_object_files_in_dir(src)
-    for _src in [src, main]:
+    source = [
+        SourceDir("../src/data_structures"),
+        SourceDir("../src/combat"),
+        SourceDir("../src"),
+        File("../main.o")
+    ]
+    for _src in source:
         makefile.objs.append(_src)
 
     # Libs
-    cyoa_lib = File("../compilation/cyoa.a")
-    pspp_lib = File("../compilation/pspp.a")
-    for _lib in [cyoa_lib, pspp_lib]:
+    libs = [
+        File("../compilation/cyoa.a"),
+        File("../compilation/pspp.a")
+    ]
+    for _lib in libs:
         makefile.libs.append(_lib)
 
     # Includes
-    cyoa_include = Dir("../include/cyoa/")
-    pspp_include = Dir("../include/pspp/")
-    include = Dir("../include/")
-    for _inc in [cyoa_include, pspp_include, include]:
+    includes = [
+        IncludeDir("../include/cyoa/"),
+        IncludeDir("../include/pspp/"),
+        IncludeDir("../include/data_structures"),
+        IncludeDir("../include/combat"),
+        IncludeDir("../include/")
+    ]
+    for _inc in includes:
         makefile.include_dirs.append(_inc)
 
     makefile.create("./")
