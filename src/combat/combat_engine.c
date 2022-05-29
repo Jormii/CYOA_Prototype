@@ -7,12 +7,7 @@ void ce_init_team(Team *team, bool_t is_players_team);
 void ce_starting_units(Team *team);
 
 void ce_team_loop(Team *team);
-void ce_sort_command_queue();
-void ce_execute_command_queue();
-void ce_update_combat_state();
-
 void ce_replace_unit(Team *team, slot_t slot);
-void ce_engine_broadcast(CombatEvent event);
 void ce_broadcast_to_passives(CombatEventSource *source, Unit *unit, Team *team, slot_t slot);
 void ce_broadcast_to_special_conditions(CombatEventSource *source, Unit *unit, Team *team, slot_t slot);
 
@@ -53,9 +48,6 @@ void ce_combat_loop()
     ce_update_combat_state();
 
     ce_engine_broadcast(EVENT_END_OF_TURN);
-
-    // TODO: Remove
-    ce_engine_broadcast(EVENT_START_OF_TURN);
 }
 
 void ce_push_active_command(const ActiveSkillCommand *command)
@@ -211,9 +203,6 @@ void ce_execute_command_queue()
 
 void ce_update_combat_state()
 {
-    // TODO: Remove
-    combat_engine.in_combat = FALSE;
-    // END TODO
 }
 
 void ce_replace_unit(Team *team, slot_t slot)

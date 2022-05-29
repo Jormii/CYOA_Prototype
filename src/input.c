@@ -15,5 +15,5 @@ void input_update()
 
 bool_t input_button_pressed(InputButton button)
 {
-    return latch.uiMake & button;
+    return (latch.uiMake & button) != 0;
 }

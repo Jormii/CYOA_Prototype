@@ -10,10 +10,12 @@ INCDIR = {include_dirs}
 CFLAGS = {c_flags}
 CXXFLAGS = $(CFLAGS) -fno-rtti -fexceptions
 ASFLAGS = $(CFLAGS)
+DCMAKE_BUILD_TYPE = Debug
 
 LIBDIR =
 LDFLAGS =
 
+BUILD_PRX = 1
 EXTRA_TARGETS = EBOOT.PBP
 PSP_EBOOT_TITLE = {eboot_title}
 
@@ -125,7 +127,7 @@ def main():
 
     # Titles and flags
     makefile.eboot_title = "Prototype"
-    makefile.c_flags = ["-G0", "-O2", "-Wall", "-Wno-unknown-pragmas"]
+    makefile.c_flags = ["-g", "-G0", "-O2", "-Wall", "-Wno-unknown-pragmas"]
 
     # Objs
     source = [

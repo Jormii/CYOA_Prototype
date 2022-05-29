@@ -6,5 +6,6 @@
 *.PBP
 *.elf
 *.SFO
+*.prx
 /compilation/log.txt
 /compilation/Makefile

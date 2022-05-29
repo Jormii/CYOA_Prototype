@@ -12,8 +12,12 @@
 #include "vm_callbacks.h"
 #include "combat_engine.h"
 #include "screen_buffer.h"
+#include "gs_combat_engine.h"
 #include "damage_calculator.h"
 #include "special_condition.h"
+
+// TODO: Remove
+#define DISPLAY_VM 0
 
 #define LOG_ERROR(format, ...)                                                        \
     {                                                                                 \
@@ -112,11 +116,11 @@ void initialize()
     // End
     if (!found_error)
     {
-#if 1
+#if DISPLAY_VM
         vm_manager_load_program("Escena.bin");
         vm_execute();
 #else
-        ce_start_combat();
+        gs_combat_engine_start();
 #endif
     }
 }
@@ -124,13 +128,15 @@ void initialize()
 void game_loop()
 {
     input_update();
-    if (combat_engine.in_combat)
-    {
-        ce_combat_loop();
-    }
-
+#if DISPLAY_VM_MACHINE
     tb_clear(&(commands_window.buffer), NULL);
     vm_display_options();
+#else
+    if (combat_engine.in_combat)
+    {
+        gs_state_cb();
+    }
+#endif
 
     ui_update();
     sb_swap_buffers();
