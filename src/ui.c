@@ -34,6 +34,10 @@ void ui_update()
     display_window(&print_window);
     display_window(&commands_window);
     display_scrollbar(&print_scrollbar, RGB(255, 255, 255));
+
+    // TODO: Remove
+    display_margin(&(print_window.margin), 0x00444444);
+    display_margin(&(commands_window.margin), 0x00444444);
 }
 
 void init_window(Window *w, size_t buffer_length)

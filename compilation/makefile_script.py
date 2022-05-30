@@ -10,7 +10,6 @@ INCDIR = {include_dirs}
 CFLAGS = {c_flags}
 CXXFLAGS = $(CFLAGS) -fno-rtti -fexceptions
 ASFLAGS = $(CFLAGS)
-DCMAKE_BUILD_TYPE = Debug
 
 LIBDIR =
 LDFLAGS =
