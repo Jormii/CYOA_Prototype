@@ -129,7 +129,12 @@ def main():
     makefile.c_flags = ["-g", "-G0", "-O2", "-Wall", "-Wno-unknown-pragmas"]
 
     # Objs
+    pspp_dir = "../../PSPPrettyPrint"
+    cyoa_dir = "../../NarrativeLanguage"
     source = [
+        SourceDir(os.path.join(pspp_dir, "src/")),
+        SourceDir(os.path.join(cyoa_dir, "C/src/")),
+
         SourceDir("../src/data_structures"),
         SourceDir("../src/combat"),
         SourceDir("../src/species"),
@@ -141,10 +146,7 @@ def main():
         makefile.objs.append(_src)
 
     # Libs
-    libs = [
-        File("../compilation/cyoa.a"),
-        File("../compilation/pspp.a")
-    ]
+    libs = []
     for _lib in libs:
         makefile.libs.append(_lib)
 

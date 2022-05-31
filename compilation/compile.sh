@@ -1,6 +1,11 @@
 python ./makefile_script.py
-make -B
+if [ $? -eq 0 ]; then
+    make -B
 
-# Delete .o files
-OBJ_FILES=$(find .. -name *.o)
-rm $OBJ_FILES
+    # Delete .o files
+    DIRS=".. ../../PSPPrettyPrint ../../NarrativeLanguage"
+    for DIR in $DIRS; do
+        OBJ_FILES=$(find $DIR -name *.o)
+        rm $OBJ_FILES
+    done
+fi
