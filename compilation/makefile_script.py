@@ -121,12 +121,18 @@ class IWhereList(IWhere):
         return " ".join(where_stringify)
 
 
+PPSSPP_COMPILATION = False
+
+
 def main():
     makefile = Makefile()
 
     # Titles and flags
     makefile.eboot_title = "Prototype"
     makefile.c_flags = ["-g", "-G0", "-O2", "-Wall", "-Wno-unknown-pragmas"]
+
+    if PPSSPP_COMPILATION:
+        makefile.c_flags.extend(["-D", "PPSSPP"])
 
     # Objs
     pspp_dir = "../../PSPPrettyPrint"

@@ -1,3 +1,8 @@
+rm ./EBOOT.PBP
+rm ./PARAM.SFO
+rm ./PSP_TARGET.elf
+rm ./PSP_TARGET.prx
+
 python ./makefile_script.py
 if [ $? -eq 0 ]; then
     make -B

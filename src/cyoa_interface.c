@@ -38,8 +38,15 @@ void cyoa_interface_initialize(uint32_t starting_scene, uint16_t max_options, ui
     VMInitialization vm_manager_init_values = {
         .max_options = max_options,
         .max_stack_size = max_stack_size,
+
+#ifndef PPSSPP
+        .binaries_dir = "ms0:/PSP/GAME/compilation/assets/binaries/",
+        .global_vars_path = "ms0:/PSP/GAME/compilation/assets/binaries/global.bin",
+#else
         .binaries_dir = "umd0:/assets/binaries/",
         .global_vars_path = "umd0:/assets/binaries/global.bin",
+
+#endif
 
         .call_cb = cyoa_interface_call,
         .print_cb = cyoa_interface_print,
