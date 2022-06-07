@@ -9,6 +9,7 @@
 struct
 {
     rgb_t color;
+    rgb_t previous_color;
     uint16_t option_cursor;
     bool_t execute_option;
     bool_t scene_switched;
