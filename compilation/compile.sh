@@ -5,7 +5,7 @@ rm ./PSP_TARGET.prx
 
 python ./makefile_script.py
 if [ $? -eq 0 ]; then
-    make -B
+    make -B 1>/dev/null
 
     # Delete .o files
     DIRS=".. ../../PSPPrettyPrint ../../NarrativeLanguage"

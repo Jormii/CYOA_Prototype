@@ -3,7 +3,7 @@
 
 Species bird_species = {
     .id = 0,
-    .name = "Yordana",
+    .name = L"Yordana",
     .base_stats = {2, 3, 3, 1, 2},
     .skillset_template = &bird_skillset_template};
 

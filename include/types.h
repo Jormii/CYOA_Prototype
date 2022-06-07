@@ -1,6 +1,7 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+#include <wchar.h>
 #include <stdlib.h>
 #include <stdint.h>
 

@@ -121,7 +121,7 @@ class IWhereList(IWhere):
         return " ".join(where_stringify)
 
 
-PPSSPP_COMPILATION = False
+PPSSPP_COMPILATION = True
 
 
 def main():
@@ -143,8 +143,6 @@ def main():
 
         SourceDir("../src/data_structures"),
         SourceDir("../src/combat"),
-        SourceDir("../src/species"),
-        SourceDir("../src/combat_ext"),
         SourceDir("../src"),
         File("../main.o")
     ]
@@ -162,7 +160,6 @@ def main():
         IncludeDir("../include/pspp/"),
         IncludeDir("../include/data_structures"),
         IncludeDir("../include/combat"),
-        IncludeDir("../include/species"),
         IncludeDir("../include/")
     ]
     for _inc in includes:

@@ -2,38 +2,39 @@
 #define COMBAT_ENGINE_H
 
 #include "team.h"
-#include "fixed_list.h"
-#include "active_skill.h"
-#include "combat_event.h"
-#include "dynamic_list.h"
+#include "unit.h"
+#include "types.h"
 
-#define COMMAND_QUEUE_LENGTH (2 * MAX_UNITS_IN_COMBAT)
-#define PASSIVE_COMMAND_QUEUE_LENGTH (2 * COMMAND_QUEUE_LENGTH)
+#define MAX_UNITS_IN_COMBAT 2
+
+typedef u8_t combat_slot_t;
+
+typedef struct CombatUnit_st
+{
+    Unit *unit;
+    bool_t slot_occupied;
+    // Skillset and special conditions
+} CombatUnit;
+
+typedef struct CombatTeam_st
+{
+    Team team;
+    bool_t is_players_team;
+    CombatUnit combat_units[MAX_UNITS_IN_COMBAT];
+} CombatTeam;
+
+CombatUnit *combat_team_get_combat_unit(CombatTeam *combat_team, combat_slot_t slot);
+bool_t combat_team_unit_is_in_combat(const CombatTeam *combat_team, size_t unit_id);
 
 struct
 {
     bool_t in_combat;
-    Team players_team;
-    Team enemy_team;
-    FixedList active_commands;
-    DynamicList passive_commands;
+    CombatTeam players_team;
+    CombatTeam enemy_team;
 } combat_engine;
 
-void ce_init();
-void ce_start_combat();
-void ce_combat_loop();
-void ce_push_active_command(const ActiveSkillCommand *command);
-void ce_sort_command_queue();
-void ce_execute_command_queue();
-void ce_update_combat_state();
-void ce_engine_broadcast(CombatEvent event);
-void ce_broadcast_event(CombatEventSource *source);
-void ce_broadcast_event_to_team(CombatEventSource *source, Team *team);
-void ce_broadcast_event_to_slot(CombatEventSource *source, Team *team, slot_t slot);
-
-
-extern void ce_on_event(CombatEventSource *source);
-extern ActiveSkill *ce_ask_for_skill(const Unit *unit);
-extern void ce_ask_for_skills_target(const ActiveSkill *skill, UnitSource *target_out);
+void ce_initialize();
+void ce_choose_unit(CombatTeam *combat_team, Unit *unit, combat_slot_t slot);
+void ce_remove_from_combat(CombatTeam *combat_team, combat_slot_t slot);
 
 #endif
