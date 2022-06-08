@@ -2,6 +2,7 @@
 #define UNIT_H
 
 #include "types.h"
+#include "species.h"
 #include "attribute.h"
 
 #define UNDEFINED_UNIT_ID 0
@@ -16,6 +17,7 @@ typedef struct Unit_st
     health_t hp;
     stamina_t stamina;
     attribute_t attributes[ATTR_COUNT];
+    const Species *species;
 } Unit;
 
 void unit_default_initialization(Unit *unit);

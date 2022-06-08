@@ -1,6 +1,7 @@
 #include "ui.h"
 #include "input.h"
 #include "macros.h"
+#include "all_species.h"
 #include "combat_engine.h"
 #include "combat_interface.h"
 
@@ -23,17 +24,21 @@ void init_unit(Unit *unit)
     {
         unit->attributes[i] = 1;
     }
+    unit->species = &bird_species;
 }
 
 // END TODO
 
 void combat_interface_initialize()
 {
+    // Initialize combat engine and species
+    ce_initialize();
+    all_species_initialize();
+
+    // Initialize interface
     combat_interface.state = COMBAT_STATE_START;
     combat_interface.state_cbs[COMBAT_STATE_START] = combat_state_start;
     combat_interface.state_cbs[COMBAT_STATE_TURN_START] = combat_state_turn_start;
-
-    ce_initialize();
 
     // TODO: Remove this
     for (combat_slot_t slot = 0; slot < MAX_UNITS_IN_TEAM; ++slot)
@@ -168,8 +173,9 @@ void display_combat_team(CombatTeam *combat_team)
         if (combat_unit != NULL)
         {
             const Unit *unit = combat_unit->unit;
-            tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%u :: %ls (%u)\n",
-                      slot, unit->name, unit->id);
+            tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%u :: %ls (%ls / %u) :: HP: %u || STA: %u\n",
+                      slot, unit->name, unit->species->name, unit->id,
+                      unit->hp, unit->stamina);
         }
     }
 }

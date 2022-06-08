@@ -143,6 +143,7 @@ def main():
 
         SourceDir("../src/data_structures"),
         SourceDir("../src/combat"),
+        SourceDir("../src/species"),
         SourceDir("../src"),
         File("../main.o")
     ]
@@ -160,6 +161,7 @@ def main():
         IncludeDir("../include/pspp/"),
         IncludeDir("../include/data_structures"),
         IncludeDir("../include/combat"),
+        IncludeDir("../include/species"),
         IncludeDir("../include/")
     ]
     for _inc in includes:
