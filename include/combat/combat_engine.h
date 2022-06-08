@@ -24,6 +24,7 @@ typedef struct CombatTeam_st
 } CombatTeam;
 
 CombatUnit *combat_team_get_combat_unit(CombatTeam *combat_team, combat_slot_t slot);
+combat_slot_t combat_team_count_available_units(const CombatTeam *combat_team);
 bool_t combat_team_unit_is_in_combat(const CombatTeam *combat_team, size_t unit_id);
 
 struct

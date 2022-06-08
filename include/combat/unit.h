@@ -19,6 +19,6 @@ typedef struct Unit_st
 } Unit;
 
 void unit_default_initialization(Unit *unit);
-bool_t unit_is_valid(Unit *unit);
+bool_t unit_is_valid(const Unit *unit);
 
 #endif

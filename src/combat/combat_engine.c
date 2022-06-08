@@ -15,6 +15,19 @@ CombatUnit *combat_team_get_combat_unit(CombatTeam *combat_team, combat_slot_t s
     }
 }
 
+combat_slot_t combat_team_count_available_units(const CombatTeam *combat_team)
+{
+    combat_slot_t count = 0;
+    for (combat_slot_t i = 0; i < MAX_UNITS_IN_TEAM; ++i)
+    {
+        const Unit *unit = combat_team->team.units + i;
+        bool_t available = unit_is_valid(unit) && unit->hp > 0 && !combat_team_unit_is_in_combat(combat_team, unit->id);
+        count += available;
+    }
+
+    return count;
+}
+
 bool_t combat_team_unit_is_in_combat(const CombatTeam *combat_team, size_t unit_id)
 {
     for (combat_slot_t slot = 0; slot < MAX_UNITS_IN_COMBAT; ++slot)

@@ -1,5 +1,6 @@
 #include "ui.h"
 #include "input.h"
+#include "macros.h"
 #include "combat_engine.h"
 #include "combat_interface.h"
 
@@ -8,13 +9,6 @@ void combat_state_turn_start();
 
 void display_combat_state();
 void display_combat_team(CombatTeam *combat_team);
-
-/**
- * TODOs
- * 
- *  - Choose enemy starting units
- *  - Handle when units in a team are less than the team size
- */
 
 // TODO: Delete this
 size_t id = 0;
@@ -57,6 +51,18 @@ void combat_interface_update()
 
 void combat_interface_start_combat()
 {
+    // Choose enemy units
+    CombatTeam *combat_team = &(combat_engine.enemy_team);
+    Team *team = &(combat_team->team);
+    combat_slot_t limit = MIN(MAX_UNITS_IN_COMBAT, combat_team_count_available_units(combat_team));
+
+    for (combat_slot_t slot = 0; slot < limit; ++slot)
+    {
+        ce_choose_unit(combat_team, team->units + slot, slot);
+    }
+
+    // Switch state
+    combat_engine.in_combat = TRUE;
     combat_interface.state = COMBAT_STATE_START;
 }
 
@@ -88,12 +94,9 @@ void combat_state_start()
             ce_choose_unit(&(combat_engine.players_team), unit_highlighted, combat_interface.units_chosen);
             combat_interface.units_chosen += 1;
 
-            if (combat_interface.units_chosen == MAX_UNITS_IN_COMBAT)
+            combat_slot_t available = combat_team_count_available_units(&(combat_engine.players_team));
+            if (available == 0 || combat_interface.units_chosen == MAX_UNITS_IN_COMBAT)
             {
-                // TODO
-#if 0
-                ce_start_combat();
-#endif
                 combat_interface.state = COMBAT_STATE_TURN_START;
                 return; // Force return. Else the following code will break
             }
