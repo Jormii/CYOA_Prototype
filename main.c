@@ -50,6 +50,8 @@ void initialize()
 
     // Initialize game state
     game_state_initialize();
+
+    game_state_switch_to(GAME_STATE_COMBAT); // TODO: Remove
 }
 
 void game_loop()
