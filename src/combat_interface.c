@@ -10,6 +10,8 @@ void combat_state_turn_start();
 
 void display_combat_state();
 void display_combat_team(CombatTeam *combat_team);
+void display_unit_skills(const CombatUnit *combat_unit);
+void display_skill(const SkillMetadata *metadata, size_t index);
 
 // TODO: Delete this
 size_t id = 0;
@@ -69,52 +71,15 @@ void combat_interface_start_combat()
     // Switch state
     combat_engine.in_combat = TRUE;
     combat_interface.state = COMBAT_STATE_START;
+    combat_interface.cursor = 0;
+    combat_interface.slot = 0;
 }
 
 void combat_state_start()
 {
+    // Update interface
     tb_clear(&(print_window.buffer), NULL);
     tb_print(&(print_window.buffer), 0x00FFFFFF, L"--- Choose your starting units ---\n");
-
-    // Handle input
-    if (input_button_pressed(BUTTON_UP))
-    {
-        if (combat_interface.cursor != 0)
-        {
-            combat_interface.cursor -= 1;
-        }
-    }
-    else if (input_button_pressed(BUTTON_DOWN))
-    {
-        if ((combat_interface.cursor + 1) != MAX_UNITS_IN_TEAM)
-        {
-            combat_interface.cursor += 1;
-        }
-    }
-    else if (input_button_pressed(BUTTON_CROSS))
-    {
-        Unit *unit_highlighted = team_get_unit(&(combat_engine.players_team.team), combat_interface.cursor);
-        if (unit_highlighted != NULL && !combat_team_unit_is_in_combat(&(combat_engine.players_team), unit_highlighted->id))
-        {
-            ce_choose_unit(&(combat_engine.players_team), unit_highlighted, combat_interface.units_chosen);
-            combat_interface.units_chosen += 1;
-
-            combat_slot_t available = combat_team_count_available_units(&(combat_engine.players_team));
-            if (available == 0 || combat_interface.units_chosen == MAX_UNITS_IN_COMBAT)
-            {
-                combat_interface.state = COMBAT_STATE_TURN_START;
-                return; // Force return. Else the following code will break
-            }
-        }
-    }
-    else if (input_button_pressed(BUTTON_CIRCLE))
-    {
-        if (combat_interface.units_chosen != 0)
-        {
-            combat_interface.units_chosen -= 1;
-            ce_remove_from_combat(&(combat_engine.players_team), combat_interface.units_chosen);
-        }
-    }
 
     // Print all player's units
     for (combat_slot_t slot = 0; slot < MAX_UNITS_IN_TEAM; ++slot)
@@ -146,14 +111,104 @@ void combat_state_start()
             tb_print(&(print_window.buffer), color, L"----------\n");
         }
     }
+
+    // Handle input
+    if (input_button_pressed(BUTTON_UP))
+    {
+        if (combat_interface.cursor != 0)
+        {
+            combat_interface.cursor -= 1;
+        }
+    }
+    else if (input_button_pressed(BUTTON_DOWN))
+    {
+        if ((combat_interface.cursor + 1) != MAX_UNITS_IN_TEAM)
+        {
+            combat_interface.cursor += 1;
+        }
+    }
+    else if (input_button_pressed(BUTTON_CROSS))
+    {
+        Unit *unit_highlighted = team_get_unit(&(combat_engine.players_team.team), combat_interface.cursor);
+        if (unit_highlighted != NULL && !combat_team_unit_is_in_combat(&(combat_engine.players_team), unit_highlighted->id))
+        {
+            ce_choose_unit(&(combat_engine.players_team), unit_highlighted, combat_interface.slot);
+            combat_interface.slot += 1;
+
+            combat_slot_t available = combat_team_count_available_units(&(combat_engine.players_team));
+            if (available == 0 || combat_interface.slot == MAX_UNITS_IN_COMBAT)
+            {
+                combat_interface.state = COMBAT_STATE_TURN_START;
+                combat_interface.cursor = 0;
+                combat_interface.slot = 0;
+            }
+        }
+    }
+    else if (input_button_pressed(BUTTON_CIRCLE))
+    {
+        if (combat_interface.slot != 0)
+        {
+            combat_interface.slot -= 1;
+            ce_remove_from_combat(&(combat_engine.players_team), combat_interface.slot);
+        }
+    }
 }
 
 void combat_state_turn_start()
 {
+    while (combat_interface.slot != MAX_UNITS_IN_COMBAT)
+    {
+        const CombatUnit *cu = combat_team_get_combat_unit(&(combat_engine.players_team), combat_interface.slot);
+        if (cu == NULL)
+        {
+            combat_interface.slot += 1;
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    if (combat_interface.slot >= MAX_UNITS_IN_COMBAT)
+    {
+        // Force swithing state
+        // TODO
+        combat_interface.cursor = 0;
+        combat_interface.slot = 0;
+        return;
+    }
+
+    const CombatUnit *combat_unit = combat_team_get_combat_unit(&(combat_engine.players_team), combat_interface.slot);
+
+    // Update interface
     tb_clear(&(print_window.buffer), NULL);
     tb_clear(&(commands_window.buffer), NULL);
 
     display_combat_state();
+    display_unit_skills(combat_unit);
+
+    // Handle input
+    if (input_button_pressed(BUTTON_UP))
+    {
+        if (combat_interface.cursor != 0)
+        {
+            combat_interface.cursor -= 1;
+        }
+    }
+    else if (input_button_pressed(BUTTON_DOWN))
+    {
+        const SkillSetTemplate *template = combat_unit->unit->species->skillset_template;
+        size_t bound = template->n_actives + template->n_passives;
+        if ((combat_interface.cursor + 1) != bound)
+        {
+            combat_interface.cursor += 1;
+        }
+    }
+    else if (input_button_pressed(BUTTON_CROSS))
+    {
+        combat_interface.slot += 1;
+        combat_interface.cursor = 0;
+    }
 }
 
 void display_combat_state()
@@ -172,10 +227,45 @@ void display_combat_team(CombatTeam *combat_team)
         const CombatUnit *combat_unit = combat_team_get_combat_unit(combat_team, slot);
         if (combat_unit != NULL)
         {
+            rgb_t color = 0x00FFFFFF;
+            if (combat_team->is_players_team && slot == combat_interface.slot)
+            {
+                color = 0x008888FF;
+            }
+
             const Unit *unit = combat_unit->unit;
-            tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%u :: %ls (%ls / %u) :: HP: %u || STA: %u\n",
+            tb_printf(&(print_window.buffer), color, L"%u :: %ls (%ls / %u) :: HP: %u || STA: %u\n",
                       slot, unit->name, unit->species->name, unit->id,
                       unit->hp, unit->stamina);
         }
     }
+}
+
+void display_unit_skills(const CombatUnit *combat_unit)
+{
+    const Unit *unit = combat_unit->unit;
+    const SkillSetTemplate *skillset_template = unit->species->skillset_template;
+
+    tb_print(&(commands_window.buffer), 0x00FFFFFF, L"-- Actives --\n");
+    for (size_t i = 0; i < skillset_template->n_actives; ++i)
+    {
+        display_skill(&(skillset_template->actives_metadata[i]->metadata), i);
+    }
+
+    tb_print(&(commands_window.buffer), 0x00FFFFFF, L"\n-- Passives --\n");
+    for (size_t i = 0; i < skillset_template->n_passives; ++i)
+    {
+        display_skill(&(skillset_template->passives_metadata[i]->metadata), skillset_template->n_actives + i);
+    }
+}
+
+void display_skill(const SkillMetadata *metadata, size_t index)
+{
+    rgb_t color = 0x00FFFFFF;
+    if (index == combat_interface.cursor)
+    {
+        color = 0x0000FFFF;
+    }
+    tb_printf(&(commands_window.buffer), color, L"%ls :: STA: %u\n",
+              metadata->name, metadata->cost);
 }

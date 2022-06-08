@@ -17,15 +17,13 @@ typedef void (*CombatStateFunc_fp)();
 
 struct
 {
-    // Global
+    // State related
     CombatState state;
     CombatStateFunc_fp state_cbs[COMBAT_STATE_COUNT];
 
     // General
     size_t cursor;
-
-    // Start state
-    combat_slot_t units_chosen;
+    combat_slot_t slot;
 } combat_interface;
 
 void combat_interface_initialize();

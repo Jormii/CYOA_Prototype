@@ -18,4 +18,7 @@ typedef uint8_t byte_t;
 typedef uint8_t u8_t;
 typedef uint32_t u32_t;
 
+// Custom types
+typedef u8_t stamina_t;
+
 #endif

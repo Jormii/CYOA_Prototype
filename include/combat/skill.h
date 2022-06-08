@@ -6,6 +6,7 @@
 typedef struct SkillMetadata_st
 {
     const wchar_t *name;
+    stamina_t cost;
 } SkillMetadata;
 
 #endif

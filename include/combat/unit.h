@@ -8,7 +8,6 @@
 #define UNDEFINED_UNIT_ID 0
 
 typedef u8_t health_t;
-typedef u8_t stamina_t;
 
 typedef struct Unit_st
 {
