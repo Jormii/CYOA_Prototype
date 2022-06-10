@@ -23,6 +23,7 @@ struct
 
     // General
     size_t cursor;
+    size_t chosen_skill;
     combat_slot_t slot;
 } combat_interface;
 

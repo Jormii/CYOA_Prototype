@@ -7,11 +7,16 @@
 
 void combat_state_start();
 void combat_state_turn_start();
+void combat_state_ask_for_skill();
+void combat_state_ask_for_skill_target();
+void combat_state_execute();
 
 void display_combat_state();
 void display_combat_team(CombatTeam *combat_team);
 void display_unit_skills(const CombatUnit *combat_unit);
 void display_skill(const SkillMetadata *metadata, size_t index);
+void display_skill_targets(const SkillMetadata *metadata);
+void display_skill_target(const CombatUnit *combat_unit, size_t global_slot); // TODO: Global slot is weird
 
 // TODO: Delete this
 size_t id = 0;
@@ -41,6 +46,9 @@ void combat_interface_initialize()
     combat_interface.state = COMBAT_STATE_START;
     combat_interface.state_cbs[COMBAT_STATE_START] = combat_state_start;
     combat_interface.state_cbs[COMBAT_STATE_TURN_START] = combat_state_turn_start;
+    combat_interface.state_cbs[COMBAT_STATE_ASK_SKILL] = combat_state_ask_for_skill;
+    combat_interface.state_cbs[COMBAT_STATE_ASK_SKILL_TARGET] = combat_state_ask_for_skill_target;
+    combat_interface.state_cbs[COMBAT_STATE_EXECUTE] = combat_state_execute;
 
     // TODO: Remove this
     for (combat_slot_t slot = 0; slot < MAX_UNITS_IN_TEAM; ++slot)
@@ -156,6 +164,13 @@ void combat_state_start()
 
 void combat_state_turn_start()
 {
+    combat_interface.cursor = 0;
+    combat_interface.slot = 0;
+    combat_interface.state = COMBAT_STATE_ASK_SKILL;
+}
+
+void combat_state_ask_for_skill()
+{
     while (combat_interface.slot != MAX_UNITS_IN_COMBAT)
     {
         const CombatUnit *cu = combat_team_get_combat_unit(&(combat_engine.players_team), combat_interface.slot);
@@ -171,10 +186,8 @@ void combat_state_turn_start()
 
     if (combat_interface.slot >= MAX_UNITS_IN_COMBAT)
     {
-        // Force swithing state
-        // TODO
-        combat_interface.cursor = 0;
-        combat_interface.slot = 0;
+        // Force switching state to execute
+        combat_interface.state = COMBAT_STATE_EXECUTE;
         return;
     }
 
@@ -206,8 +219,88 @@ void combat_state_turn_start()
     }
     else if (input_button_pressed(BUTTON_CROSS))
     {
+        const SkillSetTemplate *template = combat_unit->unit->species->skillset_template;
+        if (combat_interface.cursor < template->n_actives)
+        {
+            // Step only if an active was chosen
+            combat_interface.chosen_skill = combat_interface.cursor;
+            combat_interface.cursor = 0;
+            combat_interface.state = COMBAT_STATE_ASK_SKILL_TARGET;
+        }
+    }
+    else if (input_button_pressed(BUTTON_CIRCLE))
+    {
+        if (combat_interface.slot != 0)
+        {
+            // TODO: Once skill queue is implemented, remove skill from queue
+            combat_interface.slot -= 1;
+            combat_interface.cursor = 0;
+        }
+    }
+}
+
+void combat_state_ask_for_skill_target()
+{
+    // Update interface
+    tb_clear(&(print_window.buffer), NULL);
+    tb_clear(&(commands_window.buffer), NULL);
+
+    display_combat_state();
+
+    const CombatUnit *cu = combat_team_get_combat_unit(&(combat_engine.players_team), combat_interface.slot);
+    const Unit *unit = cu->unit;
+    const SkillSetTemplate *skillset = unit->species->skillset_template;
+    const ActiveSkillMetadata *chosen_skill = skillset->actives_metadata[combat_interface.chosen_skill];
+    display_skill(&(chosen_skill->metadata), -1); // TODO: -1 is weird
+
+    display_skill_targets(&(chosen_skill->metadata));
+
+    // Handle input
+    if (input_button_pressed(BUTTON_UP))
+    {
+        if (combat_interface.cursor != 0)
+        {
+            combat_interface.cursor -= 1;
+        }
+    }
+    else if (input_button_pressed(BUTTON_DOWN))
+    {
+        if ((combat_interface.cursor + 1) != (2 * MAX_UNITS_IN_COMBAT))
+        {
+            combat_interface.cursor += 1;
+        }
+    }
+    else if (input_button_pressed(BUTTON_CROSS))
+    {
+        // TODO: Check if target is valid
+        // TODO: Add skill to queue
         combat_interface.slot += 1;
         combat_interface.cursor = 0;
+        combat_interface.state = COMBAT_STATE_ASK_SKILL;
+    }
+    else if (input_button_pressed(BUTTON_CIRCLE))
+    {
+        combat_interface.cursor = combat_interface.chosen_skill;
+        combat_interface.state = COMBAT_STATE_ASK_SKILL;
+    }
+}
+
+void combat_state_execute()
+{
+    // TODO: Queue needs to be implemented
+
+    // Update interface
+    tb_clear(&(print_window.buffer), NULL);
+    tb_clear(&(commands_window.buffer), NULL);
+
+    // TODO: Remove
+    display_combat_state();
+    tb_print(&(commands_window.buffer), 0x00FFFFFF, L"Executing skills... Press X to return to main state\n");
+
+    // Handle input
+    if (input_button_pressed(BUTTON_CROSS))
+    {
+        combat_interface.state = COMBAT_STATE_TURN_START;
     }
 }
 
@@ -268,4 +361,41 @@ void display_skill(const SkillMetadata *metadata, size_t index)
     }
     tb_printf(&(commands_window.buffer), color, L"%ls :: STA: %u\n",
               metadata->name, metadata->cost);
+}
+
+void display_skill_targets(const SkillMetadata *metadata)
+{
+    for (combat_slot_t slot = 0; slot < MAX_UNITS_IN_COMBAT; ++slot)
+    {
+        const CombatUnit *cu = combat_team_get_combat_unit(&(combat_engine.players_team), slot);
+        display_skill_target(cu, slot);
+    }
+
+    tb_print(&(commands_window.buffer), 0x00FFFFFF, L"\n");
+
+    for (combat_slot_t slot = 0; slot < MAX_UNITS_IN_COMBAT; ++slot)
+    {
+        const CombatUnit *cu = combat_team_get_combat_unit(&(combat_engine.enemy_team), slot);
+        display_skill_target(cu, slot + MAX_UNITS_IN_COMBAT);
+    }
+}
+
+void display_skill_target(const CombatUnit *combat_unit, size_t global_slot)
+{
+    rgb_t color = 0x00FFFFFF;
+    if (combat_interface.cursor == global_slot)
+    {
+        color = 0x0000FFFF;
+    }
+
+    if (combat_unit == NULL)
+    {
+        tb_print(&(commands_window.buffer), color, L"- ----------\n");
+    }
+    else
+    {
+        const Unit *unit = combat_unit->unit;
+        tb_printf(&(commands_window.buffer), color, L"- %ls (%ls / %u)\n",
+                  unit->name, unit->species->name, unit->id);
+    }
 }
