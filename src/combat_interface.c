@@ -11,6 +11,8 @@ void combat_state_ask_for_skill();
 void combat_state_ask_for_skill_target();
 void combat_state_execute();
 
+void add_active_to_queue();
+
 void display_combat_state();
 void display_combat_team(CombatTeam *combat_team);
 void display_unit_skills(const CombatUnit *combat_unit);
@@ -273,7 +275,8 @@ void combat_state_ask_for_skill_target()
     else if (input_button_pressed(BUTTON_CROSS))
     {
         // TODO: Check if target is valid
-        // TODO: Add skill to queue
+        add_active_to_queue();
+
         combat_interface.slot += 1;
         combat_interface.cursor = 0;
         combat_interface.state = COMBAT_STATE_ASK_SKILL;
@@ -287,21 +290,53 @@ void combat_state_ask_for_skill_target()
 
 void combat_state_execute()
 {
-    // TODO: Queue needs to be implemented
-
-    // Update interface
-    tb_clear(&(print_window.buffer), NULL);
-    tb_clear(&(commands_window.buffer), NULL);
-
-    // TODO: Remove
-    display_combat_state();
-    tb_print(&(commands_window.buffer), 0x00FFFFFF, L"Executing skills... Press X to return to main state\n");
-
-    // Handle input
-    if (input_button_pressed(BUTTON_CROSS))
+    if (combat_engine.active_commands_queue.length != 0)
     {
-        combat_interface.state = COMBAT_STATE_TURN_START;
+        // Update interface
+        tb_clear(&(print_window.buffer), NULL);
+
+        // Execute queue
+        ce_execute_queue();
     }
+    else
+    {
+        // Update interface
+        tb_clear(&(commands_window.buffer), NULL);
+        tb_print(&(commands_window.buffer), 0x00FFFFFF, L"Executing skills... Press X to return to main state\n");
+
+        // Handle input
+        if (input_button_pressed(BUTTON_CROSS))
+        {
+            combat_interface.state = COMBAT_STATE_TURN_START;
+        }
+    }
+}
+
+void add_active_to_queue()
+{
+    // Caster and skill
+    CombatUnit *caster = combat_team_get_combat_unit(&(combat_engine.players_team), combat_interface.slot);
+    SkillSetTemplate *template = caster->unit->species->skillset_template;
+    ActiveSkillMetadata *skill = template->actives_metadata[combat_interface.chosen_skill];
+
+    // Target
+    CombatTeam *targets_team = &(combat_engine.enemy_team);
+    if (combat_interface.cursor < MAX_UNITS_IN_COMBAT)
+    {
+        // Means ally team
+        targets_team = &(combat_engine.players_team);
+    }
+
+    combat_slot_t targets_slot = combat_interface.cursor % MAX_UNITS_IN_COMBAT;
+    CombatUnit *target = combat_team_get_combat_unit(targets_team, targets_slot); // TODO: NULL?
+
+    // Full command
+    ActiveSkillCommand command = {.active = skill,
+                                  .caster = {.unit_id = caster->unit->id, .unit_slot = combat_interface.slot, .combat_team = &(combat_engine.players_team)},
+                                  .target = {.unit_id = target->unit->id, .unit_slot = targets_slot, .combat_team = targets_team}};
+
+    // Add to queue
+    ce_add_active_to_queue(&command);
 }
 
 void display_combat_state()

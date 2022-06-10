@@ -20,5 +20,6 @@ typedef uint32_t u32_t;
 
 // Custom types
 typedef u8_t stamina_t;
+typedef u8_t combat_slot_t;
 
 #endif

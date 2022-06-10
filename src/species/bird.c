@@ -1,12 +1,38 @@
 #include "all_species.h"
+#include "combat_engine.h"
+
+#include "ui.h" // TODO: Remove
 
 #pragma region Actives
 
+void say_hi(ActiveSkillCommand *command)
+{
+    CombatUnit *caster = combat_team_get_combat_unit(command->caster.combat_team, command->caster.unit_slot);
+    CombatUnit *target = combat_team_get_combat_unit(command->target.combat_team, command->target.unit_slot);
+
+    if (caster == NULL)
+    {
+        tb_print(&(print_window.buffer), 0x008888FF, L"(NULL) is trying to say hi\n");
+    }
+    else if (target == NULL)
+    {
+        tb_printf(&(print_window.buffer), 0x008888FF, L"%ls (%u) is trying to say hi to (NULL)\n",
+                  caster->unit->name, caster->unit->id);
+    }
+    else
+    {
+        tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%ls (%u) says hi to %ls (%u)\n",
+                  caster->unit->name, caster->unit->id, target->unit->name, target->unit->id);
+    }
+}
+
 ActiveSkillMetadata active1_example = {
-    .metadata = {.name = L"Active 1", .cost = 1}};
+    .metadata = {.name = L"Say hi (1)", .cost = 1},
+    .execute_cb = say_hi};
 
 ActiveSkillMetadata active2_example = {
-    .metadata = {.name = L"Active 2", .cost = 2}};
+    .metadata = {.name = L"Say hi (2)", .cost = 2},
+    .execute_cb = say_hi};
 
 #pragma endregion
 

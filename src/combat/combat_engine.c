@@ -1,3 +1,4 @@
+#include "utils.h"
 #include "combat_engine.h"
 
 void combat_team_initialize(CombatTeam *combat_team, bool_t is_players_team);
@@ -47,6 +48,8 @@ void ce_initialize()
     combat_engine.in_combat = FALSE;
     combat_team_initialize(&(combat_engine.players_team), TRUE);
     combat_team_initialize(&(combat_engine.enemy_team), FALSE);
+    fixed_list_init(
+        &(combat_engine.active_commands_queue), 2 * MAX_UNITS_IN_COMBAT, sizeof(ActiveSkillCommand));
 }
 
 void ce_choose_unit(CombatTeam *combat_team, Unit *unit, combat_slot_t slot)
@@ -61,6 +64,28 @@ void ce_remove_from_combat(CombatTeam *combat_team, combat_slot_t slot)
     CombatUnit *cu = combat_team->combat_units + slot;
     cu->unit = NULL;
     cu->slot_occupied = FALSE;
+}
+
+void ce_add_active_to_queue(const ActiveSkillCommand *command)
+{
+    fixed_list_append(&(combat_engine.active_commands_queue), (byte_t *)command);
+}
+
+void ce_execute_queue()
+{
+    // TODO: Sort queue
+
+    ActiveSkillCommand command;
+    FixedList *queue = &(combat_engine.active_commands_queue);
+    while (queue->length != 0)
+    {
+        // Pop
+        copy_buffer(fixed_list_get(queue, 0), (byte_t *)&command, sizeof(ActiveSkillCommand));
+        fixed_list_remove(queue, 0);
+
+        // Execute
+        command.active->execute_cb(&command);
+    }
 }
 
 void combat_team_initialize(CombatTeam *combat_team, bool_t is_players_team)

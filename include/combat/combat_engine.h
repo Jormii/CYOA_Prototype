@@ -4,10 +4,9 @@
 #include "team.h"
 #include "unit.h"
 #include "types.h"
+#include "fixed_list.h"
 
 #define MAX_UNITS_IN_COMBAT 2
-
-typedef u8_t combat_slot_t;
 
 typedef struct CombatUnit_st
 {
@@ -32,10 +31,15 @@ struct
     bool_t in_combat;
     CombatTeam players_team;
     CombatTeam enemy_team;
+    FixedList active_commands_queue;
 } combat_engine;
 
 void ce_initialize();
+
 void ce_choose_unit(CombatTeam *combat_team, Unit *unit, combat_slot_t slot);
 void ce_remove_from_combat(CombatTeam *combat_team, combat_slot_t slot);
+
+void ce_add_active_to_queue(const ActiveSkillCommand *command);
+void ce_execute_queue();
 
 #endif
