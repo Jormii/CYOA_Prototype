@@ -15,9 +15,13 @@ typedef struct SkillSetTemplate_st
 
 typedef struct SkillSet_st
 {
-    const SkillSetTemplate *template;
+    size_t n_actives;
+    size_t n_passives;
     ActiveSkill *actives;
     PassiveSkill *passives;
 } SkillSet;
+
+SkillSet *skillset_initialize(const SkillSetTemplate *template);
+void skillset_deinitialize(SkillSet *skillset);
 
 #endif

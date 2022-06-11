@@ -169,6 +169,8 @@ void combat_state_turn_start()
     combat_interface.cursor = 0;
     combat_interface.slot = 0;
     combat_interface.state = COMBAT_STATE_ASK_SKILL;
+
+    ce_broadcast_engine_event(COMBAT_EVENT_START_OF_TURN); // TODO: Remove
 }
 
 void combat_state_ask_for_skill()
@@ -308,6 +310,8 @@ void combat_state_execute()
         if (input_button_pressed(BUTTON_CROSS))
         {
             combat_interface.state = COMBAT_STATE_TURN_START;
+
+            ce_broadcast_engine_event(COMBAT_EVENT_END_OF_TURN); // TODO: Remove
         }
     }
 }
@@ -316,8 +320,8 @@ void add_active_to_queue()
 {
     // Caster and skill
     CombatUnit *caster = combat_team_get_combat_unit(&(combat_engine.players_team), combat_interface.slot);
-    SkillSetTemplate *template = caster->unit->species->skillset_template;
-    ActiveSkillMetadata *skill = template->actives_metadata[combat_interface.chosen_skill];
+    SkillSet *skillset = caster->unit->skillset;
+    ActiveSkill *skill = skillset->actives + combat_interface.chosen_skill;
 
     // Target
     CombatTeam *targets_team = &(combat_engine.enemy_team);

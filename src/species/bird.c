@@ -1,3 +1,5 @@
+#include <time.h>
+
 #include "all_species.h"
 #include "combat_engine.h"
 
@@ -14,16 +16,38 @@ void say_hi(ActiveSkillCommand *command)
               caster->unit->name, caster->unit->id, target->unit->name, target->unit->id);
 }
 
+typedef struct DealDamageBuffer_st
+{
+    size_t random;
+} DealDamageBuffer;
+
+void deal_damage_initialize(ActiveSkill *skill)
+{
+    size_t upper = 5;
+    size_t lower = 0;
+
+    skill->buffer = malloc(sizeof(DealDamageBuffer));
+    DealDamageBuffer *buffer = (DealDamageBuffer *)(skill->buffer);
+
+    buffer->random = (rand() % (upper - lower + 1)) + lower;
+}
+
 void deal_damage(ActiveSkillCommand *command)
 {
     CombatUnit *caster = combat_team_get_combat_unit(command->caster.combat_team, command->caster.unit_slot);
     CombatUnit *target = combat_team_get_combat_unit(command->target.combat_team, command->target.unit_slot);
 
-    ce_damage_declare_attack(&(command->caster), &(command->target));
-    ce_damage_perform();
+    DealDamageBuffer *buffer = (DealDamageBuffer *)(command->active->buffer);
+    for (size_t i = 0; i < buffer->random; ++i)
+    {
+        ce_damage_declare_attack(&(command->caster), &(command->target));
+        ce_damage_perform();
+    }
 
-    tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%ls (%u) attacks %ls (%u)\n",
-              caster->unit->name, caster->unit->id, target->unit->name, target->unit->id);
+    tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%ls (%u) attacks %ls (%u) for %u damage\n",
+              caster->unit->name, caster->unit->id,
+              target->unit->name, target->unit->id,
+              buffer->random);
 }
 
 ActiveSkillMetadata active1_example = {
@@ -31,7 +55,8 @@ ActiveSkillMetadata active1_example = {
     .execute_cb = say_hi};
 
 ActiveSkillMetadata active2_example = {
-    .metadata = {.name = L"Deal damage", .cost = 2},
+    .metadata = {.name = L"Deal damage equal to random number", .cost = 2},
+    .initialize_cb = deal_damage_initialize,
     .execute_cb = deal_damage};
 
 #pragma endregion
@@ -45,12 +70,12 @@ void take_damage(PassiveSkillCommand *command)
 }
 
 PassiveSkillMetadata passive1_example = {
-    .metadata = {.name = L"Take damage at turn start", .cost = 3},
+    .metadata = {.name = L"Take damage at start of turn", .cost = 3},
     .triggers = COMBAT_EVENT_START_OF_TURN,
     .execute_cb = take_damage};
 
 PassiveSkillMetadata passive2_example = {
-    .metadata = {.name = L"Take damage at turn end", .cost = 4},
+    .metadata = {.name = L"Take damage at start of turn", .cost = 4},
     .triggers = COMBAT_EVENT_END_OF_TURN,
     .execute_cb = take_damage};
 
@@ -71,6 +96,7 @@ PassiveSkillMetadata *passives_metadata[] = {
 
 void bird_init()
 {
+    srand(time(NULL)); // TODO: Remove
     bird_skillset_template.n_actives = 0;
     bird_skillset_template.n_passives = 0;
     bird_skillset_template.actives_metadata = actives_metadata;

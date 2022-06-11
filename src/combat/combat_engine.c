@@ -63,6 +63,8 @@ void ce_choose_unit(CombatTeam *combat_team, Unit *unit, combat_slot_t slot)
     CombatUnit *cu = combat_team->combat_units + slot;
     cu->unit = unit;
     cu->slot_occupied = TRUE;
+
+    unit->skillset = skillset_initialize(unit->species->skillset_template);
 }
 
 void ce_remove_from_combat(CombatTeam *combat_team, combat_slot_t slot)
@@ -70,6 +72,9 @@ void ce_remove_from_combat(CombatTeam *combat_team, combat_slot_t slot)
     CombatUnit *cu = combat_team->combat_units + slot;
     cu->unit = NULL;
     cu->slot_occupied = FALSE;
+
+    skillset_deinitialize(cu->unit->skillset);
+    cu->unit->skillset = NULL;
 }
 
 void ce_broadcast_engine_event(CombatEvent event)
@@ -101,7 +106,7 @@ void ce_broadcast_event(CombatEventSource *source)
         copy_buffer(fixed_list_get(queue, 0), (byte_t *)&command, queue->element_size);
         fixed_list_remove(queue, 0);
 
-        command.passive->execute_cb(&command);
+        command.passive->metadata->execute_cb(&command);
     }
 }
 
@@ -132,7 +137,7 @@ void ce_execute_queue()
         fixed_list_remove(queue, 0);
 
         // Execute
-        command.active->execute_cb(&command);
+        command.active->metadata->execute_cb(&command);
     }
 }
 
@@ -163,13 +168,14 @@ void ce_broadcast_event_to_unit(CombatEventSource *source, CombatTeam *combat_te
             .unit_slot = slot,
             .combat_team = combat_team},
         .source = source};
-    const SkillSetTemplate *template = caster->unit->species->skillset_template;
-    for (size_t i = 0; i < template->n_passives; ++i)
+
+    SkillSet *skillset = caster->unit->skillset;
+    for (size_t i = 0; i < skillset->n_passives; ++i)
     {
-        PassiveSkillMetadata *skill = template->passives_metadata[i];
-        command.passive = skill;
-        if (skill->triggers & source->event)
+        PassiveSkill *skill = skillset->passives + i;
+        if (skill->metadata->triggers & source->event)
         {
+            command.passive = skill;
             dynamic_list_append(&(combat_engine.passive_commands_queue), (byte_t *)&command);
         }
     }
