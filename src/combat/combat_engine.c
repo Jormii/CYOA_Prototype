@@ -3,6 +3,8 @@
 
 void combat_team_initialize(CombatTeam *combat_team, bool_t is_players_team);
 
+void ce_broadcast_event_to_unit(CombatEventSource *source, CombatTeam *combat_team, combat_slot_t slot);
+
 CombatUnit *combat_team_get_combat_unit(CombatTeam *combat_team, combat_slot_t slot)
 {
     CombatUnit *cu = combat_team->combat_units + slot;
@@ -50,6 +52,8 @@ void ce_initialize()
     combat_team_initialize(&(combat_engine.enemy_team), FALSE);
     fixed_list_init(
         &(combat_engine.active_commands_queue), 2 * MAX_UNITS_IN_COMBAT, sizeof(ActiveSkillCommand));
+    dynamic_list_init(
+        &(combat_engine.passive_commands_queue), 2 * 2 * MAX_UNITS_IN_COMBAT, 2, sizeof(PassiveSkillCommand));
 
     ce_damage_initialize();
 }
@@ -66,6 +70,39 @@ void ce_remove_from_combat(CombatTeam *combat_team, combat_slot_t slot)
     CombatUnit *cu = combat_team->combat_units + slot;
     cu->unit = NULL;
     cu->slot_occupied = FALSE;
+}
+
+void ce_broadcast_engine_event(CombatEvent event)
+{
+    CombatEventSource source = {
+        .caused_by_engine = TRUE,
+        .event = event};
+    ce_broadcast_event(&source);
+}
+
+void ce_broadcast_event(CombatEventSource *source)
+{
+    // Broadcast to units
+    for (combat_slot_t slot = 0; slot < MAX_UNITS_IN_COMBAT; ++slot)
+    {
+        ce_broadcast_event_to_unit(source, &(combat_engine.players_team), slot);
+    }
+    for (combat_slot_t slot = 0; slot < MAX_UNITS_IN_COMBAT; ++slot)
+    {
+        ce_broadcast_event_to_unit(source, &(combat_engine.enemy_team), slot);
+    }
+
+    // Execute passive commands
+    // TODO: Sort queue
+    PassiveSkillCommand command;
+    FixedList *queue = &(combat_engine.passive_commands_queue.fixed_list);
+    while (queue->length != 0)
+    {
+        copy_buffer(fixed_list_get(queue, 0), (byte_t *)&command, queue->element_size);
+        fixed_list_remove(queue, 0);
+
+        command.passive->execute_cb(&command);
+    }
 }
 
 void ce_add_active_to_queue(const ActiveSkillCommand *command)
@@ -91,7 +128,7 @@ void ce_execute_queue()
     while (queue->length != 0)
     {
         // Pop
-        copy_buffer(fixed_list_get(queue, 0), (byte_t *)&command, sizeof(ActiveSkillCommand));
+        copy_buffer(fixed_list_get(queue, 0), (byte_t *)&command, queue->element_size);
         fixed_list_remove(queue, 0);
 
         // Execute
@@ -109,5 +146,31 @@ void combat_team_initialize(CombatTeam *combat_team, bool_t is_players_team)
         CombatUnit *cu = combat_team->combat_units + slot;
         cu->unit = NULL;
         cu->slot_occupied = FALSE;
+    }
+}
+
+void ce_broadcast_event_to_unit(CombatEventSource *source, CombatTeam *combat_team, combat_slot_t slot)
+{
+    CombatUnit *caster = combat_team_get_combat_unit(combat_team, slot);
+    if (caster == NULL)
+    {
+        return;
+    }
+
+    PassiveSkillCommand command = {
+        .caster = {
+            .unit_id = caster->unit->id,
+            .unit_slot = slot,
+            .combat_team = combat_team},
+        .source = source};
+    const SkillSetTemplate *template = caster->unit->species->skillset_template;
+    for (size_t i = 0; i < template->n_passives; ++i)
+    {
+        PassiveSkillMetadata *skill = template->passives_metadata[i];
+        command.passive = skill;
+        if (skill->triggers & source->event)
+        {
+            dynamic_list_append(&(combat_engine.passive_commands_queue), (byte_t *)&command);
+        }
     }
 }

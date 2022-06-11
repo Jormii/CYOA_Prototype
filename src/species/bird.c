@@ -38,11 +38,21 @@ ActiveSkillMetadata active2_example = {
 
 #pragma region Passives
 
+void take_damage(PassiveSkillCommand *command)
+{
+    CombatUnit *cu = combat_team_get_combat_unit(command->caster.combat_team, command->caster.unit_slot);
+    cu->unit->hp -= 1;
+}
+
 PassiveSkillMetadata passive1_example = {
-    .metadata = {.name = L"Passive 1", .cost = 3}};
+    .metadata = {.name = L"Take damage at turn start", .cost = 3},
+    .triggers = COMBAT_EVENT_START_OF_TURN,
+    .execute_cb = take_damage};
 
 PassiveSkillMetadata passive2_example = {
-    .metadata = {.name = L"Passive 2", .cost = 4}};
+    .metadata = {.name = L"Take damage at turn end", .cost = 4},
+    .triggers = COMBAT_EVENT_END_OF_TURN,
+    .execute_cb = take_damage};
 
 #pragma endregion
 

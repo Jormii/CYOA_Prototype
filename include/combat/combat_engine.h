@@ -5,6 +5,7 @@
 #include "unit.h"
 #include "types.h"
 #include "fixed_list.h"
+#include "dynamic_list.h"
 #include "combat_damage.h"
 
 #define MAX_UNITS_IN_COMBAT 2
@@ -33,12 +34,16 @@ struct
     CombatTeam players_team;
     CombatTeam enemy_team;
     FixedList active_commands_queue;
+    DynamicList passive_commands_queue;
 } combat_engine;
 
 void ce_initialize();
 
 void ce_choose_unit(CombatTeam *combat_team, Unit *unit, combat_slot_t slot);
 void ce_remove_from_combat(CombatTeam *combat_team, combat_slot_t slot);
+
+void ce_broadcast_engine_event(CombatEvent event);
+void ce_broadcast_event(CombatEventSource *source);
 
 void ce_add_active_to_queue(const ActiveSkillCommand *command);
 void ce_remove_queue_tail();
