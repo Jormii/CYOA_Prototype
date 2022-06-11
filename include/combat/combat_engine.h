@@ -5,6 +5,7 @@
 #include "unit.h"
 #include "types.h"
 #include "fixed_list.h"
+#include "combat_damage.h"
 
 #define MAX_UNITS_IN_COMBAT 2
 

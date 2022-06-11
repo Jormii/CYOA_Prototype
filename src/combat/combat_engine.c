@@ -50,6 +50,8 @@ void ce_initialize()
     combat_team_initialize(&(combat_engine.enemy_team), FALSE);
     fixed_list_init(
         &(combat_engine.active_commands_queue), 2 * MAX_UNITS_IN_COMBAT, sizeof(ActiveSkillCommand));
+
+    ce_damage_initialize();
 }
 
 void ce_choose_unit(CombatTeam *combat_team, Unit *unit, combat_slot_t slot)
