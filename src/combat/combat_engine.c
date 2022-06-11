@@ -71,6 +71,15 @@ void ce_add_active_to_queue(const ActiveSkillCommand *command)
     fixed_list_append(&(combat_engine.active_commands_queue), (byte_t *)command);
 }
 
+void ce_remove_queue_tail()
+{
+    size_t l = combat_engine.active_commands_queue.length;
+    if (l != 0)
+    {
+        fixed_list_remove(&(combat_engine.active_commands_queue), l - 1);
+    }
+}
+
 void ce_execute_queue()
 {
     // TODO: Sort queue

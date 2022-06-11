@@ -234,7 +234,7 @@ void combat_state_ask_for_skill()
     {
         if (combat_interface.slot != 0)
         {
-            // TODO: Once skill queue is implemented, remove skill from queue
+            ce_remove_queue_tail();
             combat_interface.slot -= 1;
             combat_interface.cursor = 0;
         }
@@ -328,7 +328,7 @@ void add_active_to_queue()
     }
 
     combat_slot_t targets_slot = combat_interface.cursor % MAX_UNITS_IN_COMBAT;
-    CombatUnit *target = combat_team_get_combat_unit(targets_team, targets_slot); // TODO: NULL?
+    CombatUnit *target = combat_team_get_combat_unit(targets_team, targets_slot); // TODO: What if NULL?
 
     // Full command
     ActiveSkillCommand command = {.active = skill,
