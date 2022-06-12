@@ -16,7 +16,6 @@ typedef struct Unit_st
     health_t hp;
     stamina_t stamina;
     attribute_t attributes[ATTR_COUNT];
-    SkillSet *skillset;
     const Species *species;
 } Unit;
 

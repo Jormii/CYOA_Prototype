@@ -21,7 +21,7 @@ typedef struct SkillSet_st
     PassiveSkill *passives;
 } SkillSet;
 
-SkillSet *skillset_initialize(const SkillSetTemplate *template);
+void skillset_initialize(SkillSet *skillset, const SkillSetTemplate *template);
 void skillset_deinitialize(SkillSet *skillset);
 
 #endif

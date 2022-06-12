@@ -321,7 +321,7 @@ void add_active_to_queue()
 {
     // Caster and skill
     CombatUnit *caster = combat_team_get_combat_unit(&(combat_engine.players_team), combat_interface.slot);
-    SkillSet *skillset = caster->unit->skillset;
+    SkillSet *skillset = &(caster->skillset);
     ActiveSkill *skill = skillset->actives + combat_interface.chosen_skill;
 
     // Target

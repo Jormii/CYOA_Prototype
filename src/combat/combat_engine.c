@@ -68,8 +68,7 @@ void ce_choose_unit(CombatTeam *combat_team, Unit *unit, combat_slot_t slot)
     CombatUnit *cu = combat_team->combat_units + slot;
     cu->unit = unit;
     cu->slot_occupied = TRUE;
-
-    unit->skillset = skillset_initialize(unit->species->skillset_template);
+    skillset_initialize(&(cu->skillset), unit->species->skillset_template);
 }
 
 void ce_remove_from_combat(CombatTeam *combat_team, combat_slot_t slot)
@@ -77,9 +76,7 @@ void ce_remove_from_combat(CombatTeam *combat_team, combat_slot_t slot)
     CombatUnit *cu = combat_team->combat_units + slot;
     cu->unit = NULL;
     cu->slot_occupied = FALSE;
-
-    skillset_deinitialize(cu->unit->skillset);
-    cu->unit->skillset = NULL;
+    skillset_deinitialize(&(cu->skillset));
 }
 
 void ce_broadcast_engine_event(CombatEvent event)
@@ -176,7 +173,7 @@ void ce_broadcast_event_to_unit(CombatEventSource *source, CombatTeam *combat_te
             .combat_team = combat_team},
         .source = source};
 
-    SkillSet *skillset = caster->unit->skillset;
+    SkillSet *skillset = &(caster->skillset);
     for (size_t i = 0; i < skillset->n_passives; ++i)
     {
         PassiveSkill *skill = skillset->passives + i;

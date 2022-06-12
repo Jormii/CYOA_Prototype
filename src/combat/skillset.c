@@ -1,9 +1,7 @@
 #include "skillset.h"
 
-SkillSet *skillset_initialize(const SkillSetTemplate *template)
+void skillset_initialize(SkillSet *skillset, const SkillSetTemplate *template)
 {
-    SkillSet *skillset = malloc(sizeof(SkillSet));
-
     // Init actives
     skillset->n_actives = template->n_actives;
     skillset->actives = malloc(skillset->n_actives * sizeof(ActiveSkill));
@@ -19,8 +17,6 @@ SkillSet *skillset_initialize(const SkillSetTemplate *template)
     {
         passive_skill_initialize(skillset->passives + i, template->passives_metadata[i]);
     }
-
-    return skillset;
 }
 
 void skillset_deinitialize(SkillSet *skillset)
@@ -38,7 +34,4 @@ void skillset_deinitialize(SkillSet *skillset)
         passive_skill_deinitialize(skillset->passives + i);
     }
     free(skillset->passives);
-
-    // Deinit skillset
-    free(skillset);
 }

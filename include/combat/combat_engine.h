@@ -14,7 +14,8 @@ typedef struct CombatUnit_st
 {
     Unit *unit;
     bool_t slot_occupied;
-    // Skillset and special conditions
+    SkillSet skillset;
+    // TODO: Special conditions
 } CombatUnit;
 
 typedef struct CombatTeam_st
