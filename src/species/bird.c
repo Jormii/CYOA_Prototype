@@ -51,11 +51,11 @@ void deal_damage(ActiveSkillCommand *command)
 }
 
 ActiveSkillMetadata active1_example = {
-    .metadata = {.name = L"Say hi", .cost = 1},
+    .metadata = {.name = L"Say hi", .cost = 1, .priority = SKILL_PRIORITY_AVERAGE},
     .execute_cb = say_hi};
 
 ActiveSkillMetadata active2_example = {
-    .metadata = {.name = L"Deal damage equal to random number", .cost = 2},
+    .metadata = {.name = L"Deal damage equal to random number", .cost = 2, .priority = SKILL_PRIORITY_AVERAGE},
     .initialize_cb = deal_damage_initialize,
     .execute_cb = deal_damage};
 
@@ -70,12 +70,12 @@ void take_damage(PassiveSkillCommand *command)
 }
 
 PassiveSkillMetadata passive1_example = {
-    .metadata = {.name = L"Take damage at start of turn", .cost = 3},
+    .metadata = {.name = L"Take damage at start of turn", .cost = 3, .priority = SKILL_PRIORITY_AVERAGE},
     .triggers = COMBAT_EVENT_START_OF_TURN,
     .execute_cb = take_damage};
 
 PassiveSkillMetadata passive2_example = {
-    .metadata = {.name = L"Take damage at start of turn", .cost = 4},
+    .metadata = {.name = L"Take damage at start of turn", .cost = 4, .priority = SKILL_PRIORITY_AVERAGE},
     .triggers = COMBAT_EVENT_END_OF_TURN,
     .execute_cb = take_damage};
 

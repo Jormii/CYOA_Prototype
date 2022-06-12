@@ -33,6 +33,7 @@ void init_unit(Unit *unit)
     {
         unit->attributes[i] = 1;
     }
+    unit->attributes[ATTR_AGILITY] = unit->id + 1;
     unit->species = &bird_species;
 }
 

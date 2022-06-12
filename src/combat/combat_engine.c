@@ -5,6 +5,11 @@ void combat_team_initialize(CombatTeam *combat_team, bool_t is_players_team);
 
 void ce_broadcast_event_to_unit(CombatEventSource *source, CombatTeam *combat_team, combat_slot_t slot);
 
+bool_t active_queue_compare(const byte_t *first, const byte_t *second);
+bool_t passive_queue_compare(const byte_t *first, const byte_t *second);
+bool_t queue_compare(const SkillMetadata *first_metadata, const CombatDescriptor *first_caster,
+                     const SkillMetadata *second_metadata, const CombatDescriptor *second_caster);
+
 CombatUnit *combat_team_get_combat_unit(CombatTeam *combat_team, combat_slot_t slot)
 {
     CombatUnit *cu = combat_team->combat_units + slot;
@@ -98,9 +103,11 @@ void ce_broadcast_event(CombatEventSource *source)
     }
 
     // Execute passive commands
-    // TODO: Sort queue
-    PassiveSkillCommand command;
+    // TODO: Check if the queue is being executed?
     FixedList *queue = &(combat_engine.passive_commands_queue.fixed_list);
+    fixed_list_bubble_sort(queue, passive_queue_compare); // TODO: New passives might be added to the queue
+
+    PassiveSkillCommand command;
     while (queue->length != 0)
     {
         copy_buffer(fixed_list_get(queue, 0), (byte_t *)&command, queue->element_size);
@@ -126,10 +133,10 @@ void ce_remove_queue_tail()
 
 void ce_execute_queue()
 {
-    // TODO: Sort queue
+    FixedList *queue = &(combat_engine.active_commands_queue);
+    fixed_list_bubble_sort(queue, active_queue_compare);
 
     ActiveSkillCommand command;
-    FixedList *queue = &(combat_engine.active_commands_queue);
     while (queue->length != 0)
     {
         // Pop
@@ -179,4 +186,45 @@ void ce_broadcast_event_to_unit(CombatEventSource *source, CombatTeam *combat_te
             dynamic_list_append(&(combat_engine.passive_commands_queue), (byte_t *)&command);
         }
     }
+}
+
+bool_t active_queue_compare(const byte_t *first, const byte_t *second)
+{
+    ActiveSkillCommand *first_cmd = (ActiveSkillCommand *)first;
+    ActiveSkillCommand *second_cmd = (ActiveSkillCommand *)second;
+
+    return queue_compare(&(first_cmd->active->metadata->metadata), &(first_cmd->caster),
+                         &(second_cmd->active->metadata->metadata), &(second_cmd->caster));
+}
+
+bool_t passive_queue_compare(const byte_t *first, const byte_t *second)
+{
+    PassiveSkillCommand *first_cmd = (PassiveSkillCommand *)first;
+    PassiveSkillCommand *second_cmd = (PassiveSkillCommand *)second;
+
+    return queue_compare(&(first_cmd->passive->metadata->metadata), &(first_cmd->caster),
+                         &(second_cmd->passive->metadata->metadata), &(second_cmd->caster));
+}
+
+bool_t queue_compare(const SkillMetadata *first_metadata, const CombatDescriptor *first_caster,
+                     const SkillMetadata *second_metadata, const CombatDescriptor *second_caster)
+{
+    if (first_metadata->priority > second_metadata->priority)
+    {
+        return TRUE;
+    }
+    else if (first_metadata->priority < second_metadata->priority)
+    {
+        return FALSE;
+    }
+
+    const CombatUnit *first_unit = combat_team_get_combat_unit(first_caster->combat_team, first_caster->unit_slot);
+    const CombatUnit *second_unit = combat_team_get_combat_unit(second_caster->combat_team, second_caster->unit_slot);
+    if (first_unit == NULL || second_unit == NULL)
+    {
+        // It's irrelevant. Return TRUE to not swap them
+        return TRUE;
+    }
+
+    return unit_calculate_stat(first_unit->unit, STAT_SPEED) >= unit_calculate_stat(second_unit->unit, STAT_SPEED);
 }
