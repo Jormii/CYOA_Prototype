@@ -13,8 +13,9 @@
 void cyoa_input_update();
 void cyoa_options_move(int direction, int32_t limit);
 
-void cyoa_interface_print(const wchar_t *string);
-void cyoa_interface_print_option(uint16_t index, const wchar_t *string);
+void cyoa_interface_print(const wchar_t *string, uint8_t is_option);
+void cyoa_interface_end_of_string(uint8_t is_option);
+void cyoa_interface_option_start(uint16_t index);
 void *cyoa_interface_read(const char *path, size_t *out_size);
 void cyoa_interface_save(const char *path);
 void cyoa_interface_save_global_vars(const char *path);
@@ -31,6 +32,7 @@ void cyoa_interface_initialize(uint32_t starting_scene, uint16_t max_options, ui
     }
 
     cyoa_interface.color = 0x00FFFFFF;
+    cyoa_interface.previous_color = cyoa_interface.color;
     cyoa_interface.option_cursor = 0;
     cyoa_interface.execute_option = FALSE;
     cyoa_interface.scene_switched = TRUE;
@@ -50,7 +52,8 @@ void cyoa_interface_initialize(uint32_t starting_scene, uint16_t max_options, ui
 
         .call_cb = cyoa_interface_call,
         .print_cb = cyoa_interface_print,
-        .print_option_cb = cyoa_interface_print_option,
+        .end_of_string_cb = cyoa_interface_end_of_string,
+        .option_start_cb = cyoa_interface_option_start,
         .read_cb = cyoa_interface_read,
         .save_program_cb = cyoa_interface_save,
         .save_global_vars_cb = cyoa_interface_save_global_vars};
@@ -73,13 +76,13 @@ void cyoa_interface_update()
     cyoa_interface.execute_option = FALSE;
     cyoa_input_update();
 
-    tb_clear(&(commands_window.buffer), NULL);
     if (cyoa_interface.execute_option || cyoa_interface.scene_switched)
     {
         tb_clear(&(print_window.buffer), NULL);
         cyoa_interface.scene_switched = vm_execute();
     }
 
+    tb_clear(&(commands_window.buffer), NULL);
     if (!cyoa_interface.scene_switched)
     {
         vm_display_options();
@@ -123,22 +126,42 @@ void cyoa_options_move(int direction, int32_t limit)
     }
 }
 
-void cyoa_interface_print(const wchar_t *string)
+void cyoa_interface_print(const wchar_t *string, uint8_t is_option)
 {
-    tb_print(&(print_window.buffer), cyoa_interface.color, string);
-    tb_print(&(print_window.buffer), cyoa_interface.color, L"\n");
-}
-
-void cyoa_interface_print_option(uint16_t index, const wchar_t *string)
-{
-    rgb_t color = cyoa_interface.color;
-    if (index == cyoa_interface.option_cursor)
+    TextBuffer *dst = &(print_window.buffer);
+    if (is_option)
     {
-        color = 0x0000FFFF;
+        dst = &(commands_window.buffer);
     }
 
-    tb_print(&(commands_window.buffer), color, string);
-    tb_print(&(commands_window.buffer), color, L"\n");
+    tb_print(dst, cyoa_interface.color, string);
+}
+
+void cyoa_interface_end_of_string(uint8_t is_option)
+{
+    if (is_option)
+    {
+        tb_print(&(commands_window.buffer), cyoa_interface.color, L"\n");
+    }
+    else
+    {
+        tb_print(&(commands_window.buffer), cyoa_interface.color, L"\n\n");
+    }
+
+    cyoa_interface.color = 0x00FFFFFF;
+    cyoa_interface.previous_color = cyoa_interface.color;
+}
+
+void cyoa_interface_option_start(uint16_t index)
+{
+    if (index == cyoa_interface.option_cursor)
+    {
+        cyoa_interface.color = 0x0000FFFF;
+    }
+    else
+    {
+        cyoa_interface.color = 0x00FFFFFF;
+    }
 }
 
 void *cyoa_interface_read(const char *path, size_t *out_size)

@@ -2,15 +2,15 @@
 #define SKILLSET_H
 
 #include "types.h"
-#include "skill_active.h"
-#include "skill_passive.h"
+#include "active_skill.h"
+#include "passive_skill.h"
 
 typedef struct SkillSetTemplate_st
 {
     size_t n_actives;
     size_t n_passives;
-    ActiveSkillMetadata **actives_metadata;
-    PassiveSkillMetadata **passives_metadata;
+    ActiveSkillInfo **actives_info;
+    PassiveSkillInfo **passives_info;
 } SkillSetTemplate;
 
 typedef struct SkillSet_st
@@ -21,7 +21,7 @@ typedef struct SkillSet_st
     PassiveSkill *passives;
 } SkillSet;
 
-void skillset_initialize(SkillSet *skillset, const SkillSetTemplate *template);
-void skillset_deinitialize(SkillSet *skillset);
+SkillSet *skillset_init(const SkillSetTemplate *template);
+void skillset_deinit(SkillSet *skillset);
 
 #endif

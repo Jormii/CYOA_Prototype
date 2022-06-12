@@ -12,7 +12,7 @@ void ui_initialize()
     init_window(&print_window, 2048);
     init_window(&commands_window, 1024);
 
-    screen_t divider = 0.75f * SCREEN_HEIGHT;
+    screen_t divider = 0.66f * SCREEN_HEIGHT;
 
     print_window.margin.left = 1;
     print_window.margin.right = SCREEN_WIDTH - 10;

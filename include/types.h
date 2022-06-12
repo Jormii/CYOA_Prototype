@@ -1,6 +1,7 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+#include <wchar.h>
 #include <stdlib.h>
 #include <stdint.h>
 
@@ -16,5 +17,12 @@ typedef uint8_t byte_t;
 
 typedef uint8_t u8_t;
 typedef uint32_t u32_t;
+
+// Custom types
+typedef u8_t stamina_t;
+
+typedef u8_t combat_slot_t;
+
+typedef u32_t event_flags_t;
 
 #endif

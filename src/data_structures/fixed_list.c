@@ -64,6 +64,31 @@ bool_t fixed_list_remove(FixedList *list, size_t index)
     return TRUE;
 }
 
+void fixed_list_bubble_sort(FixedList *list, FixedListCompare_fp compare_cb)
+{
+    size_t n = list->length;
+    for (size_t i = 0; i < (n - 1); ++i)
+    {
+        bool_t swapped = FALSE;
+
+        for (size_t j = 0; j < (n - 1 - i); ++j)
+        {
+            byte_t *first = fixed_list_get(list, j);
+            byte_t *second = fixed_list_get(list, j + 1);
+            if (!compare_cb(first, second))
+            {
+                swap_buffer(first, second, list->element_size);
+                swapped = TRUE;
+            }
+        }
+
+        if (!swapped)
+        {
+            break;
+        }
+    }
+}
+
 byte_t *ptr_to_element(const FixedList *list, size_t index)
 {
     return list->buffer + index * list->element_size;

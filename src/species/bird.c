@@ -1,84 +1,113 @@
+#include <time.h>
+
 #include "all_species.h"
-#include "damage_calculator.h"
+#include "combat_engine.h"
 
-Species bird_species = {
-    .id = 0,
-    .name = "Yordana",
-    .base_stats = {2, 3, 3, 1, 2},
-    .skillset_template = &bird_skillset_template};
-
-SkillSetTemplate bird_skillset_template;
+#include "ui.h" // TODO: Remove
 
 #pragma region Actives
 
-ACTIVE_EXECUTE(peck_effect)
+void say_hi(ActiveSkillCommand *command)
 {
-    damage_calculator_declare(&(command->caster), &(command->target), TRUE);
-    damage_calculator_perform();
+    CombatUnit *caster = combat_team_get_combat_unit(command->caster.combat_team, command->caster.unit_slot);
+    CombatUnit *target = combat_team_get_combat_unit(command->target.combat_team, command->target.unit_slot);
 
-    return command->active_skill->active_info->skill_info.cost;
+    tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%ls (%u) says hi to %ls (%u)\n",
+              caster->unit->name, caster->unit->id, target->unit->name, target->unit->id);
 }
 
-ActiveSkillInfo peck_info = {
-    .skill_info = {
-        .id = 0,
-        .name = "Peck",
-        .cost = 1,
-        .priority = PRIORITY_NORMAL},
-    .target = ACTIVE_TARGET_SINGLE_NOT_SELF,
-    .init_cb = active_skill_init_do_nothing,
-    .deinit_cb = active_skill_deinit_do_nothing,
-    .can_be_used_cb = active_skill_can_be_used_always,
-    .execute_cb = peck_effect};
+typedef struct DealDamageBuffer_st
+{
+    size_t random;
+} DealDamageBuffer;
+
+void deal_damage_initialize(ActiveSkill *skill)
+{
+    size_t upper = 5;
+    size_t lower = 0;
+
+    skill->buffer = malloc(sizeof(DealDamageBuffer));
+    DealDamageBuffer *buffer = (DealDamageBuffer *)(skill->buffer);
+
+    buffer->random = (rand() % (upper - lower + 1)) + lower;
+}
+
+void deal_damage(ActiveSkillCommand *command)
+{
+    CombatUnit *caster = combat_team_get_combat_unit(command->caster.combat_team, command->caster.unit_slot);
+    CombatUnit *target = combat_team_get_combat_unit(command->target.combat_team, command->target.unit_slot);
+
+    DealDamageBuffer *buffer = (DealDamageBuffer *)(command->active->buffer);
+    for (size_t i = 0; i < buffer->random; ++i)
+    {
+        ce_damage_declare_attack(&(command->caster), &(command->target));
+        ce_damage_perform();
+    }
+
+    tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%ls (%u) attacks %ls (%u) for %u damage\n",
+              caster->unit->name, caster->unit->id,
+              target->unit->name, target->unit->id,
+              buffer->random);
+}
+
+ActiveSkillMetadata active1_example = {
+    .metadata = {.name = L"Say hi", .cost = 1, .priority = SKILL_PRIORITY_AVERAGE},
+    .execute_cb = say_hi};
+
+ActiveSkillMetadata active2_example = {
+    .metadata = {.name = L"Deal damage equal to random number", .cost = 2, .priority = SKILL_PRIORITY_AVERAGE},
+    .initialize_cb = deal_damage_initialize,
+    .execute_cb = deal_damage};
 
 #pragma endregion
 
 #pragma region Passives
 
-PASSIVE_EXECUTE(hunter_effect)
+void take_damage(PassiveSkillCommand *command)
 {
-    DmgCalcInstance *instance = damage_calculator_get();
-    if (!source_same_unit(&(command->caster), instance->attacker))
-    {
-        return 0;
-    }
-
-    Unit *caster = source_get_unit(&(command->caster));
-    Unit *target = source_get_unit(instance->defender);
-    float caster_hp_ratio = caster->hp / 100.0f;
-    float target_hp_ratio = target->hp / 100.0f;
-    if (caster_hp_ratio > target_hp_ratio)
-    {
-        instance->multiplier += 0.25f;
-    }
-
-    return command->passive_skill->passive_info->skill_info.cost;
+    CombatUnit *cu = combat_team_get_combat_unit(command->caster.combat_team, command->caster.unit_slot);
+    cu->unit->hp -= 1;
 }
 
-PassiveSkillInfo hunter_info = {
-    .skill_info = {
-        .id = 1,
-        .name = "Hunter (P)",
-        .cost = 0,
-        .priority = PRIORITY_NORMAL},
-    .triggers = EVENT_CALCULATE_OFFENSE,
-    .init_cb = passive_skill_init_do_nothing,
-    .deinit_cb = passive_skill_deinit_do_nothing,
-    .can_be_used_cb = passive_skill_can_be_used_always,
-    .execute_cb = hunter_effect};
+PassiveSkillMetadata passive1_example = {
+    .metadata = {.name = L"Take damage at start of turn", .cost = 3, .priority = SKILL_PRIORITY_AVERAGE},
+    .triggers = COMBAT_EVENT_START_OF_TURN,
+    .execute_cb = take_damage};
+
+PassiveSkillMetadata passive2_example = {
+    .metadata = {.name = L"Take damage at start of turn", .cost = 4, .priority = SKILL_PRIORITY_AVERAGE},
+    .triggers = COMBAT_EVENT_END_OF_TURN,
+    .execute_cb = take_damage};
 
 #pragma endregion
 
-ActiveSkillInfo *bird_actives_info[] = {
-    &peck_info};
-PassiveSkillInfo *bird_passives_info[] = {
-    &hunter_info};
+Species bird_species = {
+    .name = L"Yordana",
+    .base_stats = {2, 3, 3, 1, 2},
+    .skillset_template = &bird_skillset_template};
+
+SkillSetTemplate bird_skillset_template;
+ActiveSkillMetadata *actives_metadata[] = {
+    &active1_example,
+    &active2_example};
+PassiveSkillMetadata *passives_metadata[] = {
+    &passive1_example,
+    &passive2_example};
 
 void bird_init()
 {
-    bird_skillset_template.n_actives = sizeof(bird_actives_info) / sizeof(ActiveSkillInfo *);
-    bird_skillset_template.n_passives = sizeof(bird_passives_info) / sizeof(PassiveSkillInfo *);
+    srand(time(NULL)); // TODO: Remove
+    bird_skillset_template.n_actives = 0;
+    bird_skillset_template.n_passives = 0;
+    bird_skillset_template.actives_metadata = actives_metadata;
+    bird_skillset_template.passives_metadata = passives_metadata;
 
-    bird_skillset_template.actives_info = bird_actives_info;
-    bird_skillset_template.passives_info = bird_passives_info;
+    if (actives_metadata != NULL)
+    {
+        bird_skillset_template.n_actives = sizeof(actives_metadata) / sizeof(ActiveSkillMetadata *);
+    }
+    if (passives_metadata != NULL)
+    {
+        bird_skillset_template.n_passives = sizeof(passives_metadata) / sizeof(PassiveSkillMetadata *);
+    }
 }

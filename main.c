@@ -5,8 +5,10 @@
 #include "log.h"
 #include "input.h"
 #include "callbacks.h"
+#include "game_state.h"
 #include "screen_buffer.h"
 #include "cyoa_interface.h"
+#include "combat_interface.h"
 
 PSP_MODULE_INFO("Prototype", 0, 1, 0);
 PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER);
@@ -38,15 +40,24 @@ void initialize()
     sb_initialize(); // TODO: Should be part of the UI
     ui_initialize();
 
+    // Initialize CYOA engine
     uint16_t max_options = 3;
     uint8_t max_stack_size = 1;
     cyoa_interface_initialize(0, max_options, max_stack_size);
+
+    // Initialize combat engine
+    combat_interface_initialize();
+
+    // Initialize game state
+    game_state_initialize();
+
+    game_state_switch_to(GAME_STATE_COMBAT); // TODO: Remove
 }
 
 void game_loop()
 {
     input_update();
-    cyoa_interface_update();
+    game_state_update();
 
     ui_update();
     sb_swap_buffers();
