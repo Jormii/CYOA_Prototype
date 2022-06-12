@@ -1,6 +1,7 @@
 #ifndef COMBAT_INTERFACE_H
 #define COMBAT_INTERFACE_H
 
+#include "state.h"
 #include "combat_engine.h"
 
 typedef enum CombatState_en
@@ -28,7 +29,7 @@ struct
 } combat_interface;
 
 void combat_interface_initialize();
-void combat_interface_update();
+State *combat_interface_update();
 
 void combat_interface_start_combat();
 

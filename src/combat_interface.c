@@ -62,9 +62,11 @@ void combat_interface_initialize()
     // END TODO
 }
 
-void combat_interface_update()
+State *combat_interface_update()
 {
+    // TODO: CombatEngine itself has to be in charge of handling states
     combat_interface.state_cbs[combat_interface.state]();
+    return STATE_SAME_STATE;
 }
 
 void combat_interface_start_combat()
