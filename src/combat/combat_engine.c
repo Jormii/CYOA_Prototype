@@ -1,6 +1,17 @@
 #include "utils.h"
 #include "combat_engine.h"
 
+// TODO: Redo at some point
+typedef struct EventCommand_st
+{
+    bool_t is_skill;
+    union
+    {
+        PassiveSkillCommand skill_cmd;
+        SpecialConditionCommand condition_cmd;
+    };
+} EventCommand;
+
 void combat_team_initialize(CombatTeam *combat_team, bool_t is_players_team);
 
 void ce_broadcast_event_to_unit(CombatEventSource *source, CombatTeam *combat_team, combat_slot_t slot);
@@ -58,7 +69,7 @@ void ce_initialize()
     fixed_list_init(
         &(combat_engine.active_commands_queue), 2 * MAX_UNITS_IN_COMBAT, sizeof(ActiveSkillCommand));
     dynamic_list_init(
-        &(combat_engine.passive_commands_queue), 2 * 2 * MAX_UNITS_IN_COMBAT, 2, sizeof(PassiveSkillCommand));
+        &(combat_engine.event_commands_queue), 2 * 2 * MAX_UNITS_IN_COMBAT, 2, sizeof(EventCommand));
 
     ce_damage_initialize();
 }
@@ -77,6 +88,7 @@ void ce_remove_from_combat(CombatTeam *combat_team, combat_slot_t slot)
     cu->unit = NULL;
     cu->slot_occupied = FALSE;
     skillset_deinitialize(&(cu->skillset));
+    fixed_list_clear(&(cu->special_conditions.fixed_list));
 }
 
 void ce_broadcast_engine_event(CombatEvent event)
@@ -101,16 +113,23 @@ void ce_broadcast_event(CombatEventSource *source)
 
     // Execute passive commands
     // TODO: Check if the queue is being executed?
-    FixedList *queue = &(combat_engine.passive_commands_queue.fixed_list);
+    FixedList *queue = &(combat_engine.event_commands_queue.fixed_list);
     fixed_list_bubble_sort(queue, passive_queue_compare); // TODO: New passives might be added to the queue
 
-    PassiveSkillCommand command;
+    EventCommand command;
     while (queue->length != 0)
     {
         copy_buffer(fixed_list_get(queue, 0), (byte_t *)&command, queue->element_size);
         fixed_list_remove(queue, 0);
 
-        command.passive->metadata->execute_cb(&command);
+        if (command.is_skill)
+        {
+            command.skill_cmd.passive->metadata->execute_cb(&(command.skill_cmd));
+        }
+        else
+        {
+            command.condition_cmd.condition->metadata->execute_cb(&(command.condition_cmd));
+        }
     }
 }
 
@@ -145,6 +164,14 @@ void ce_execute_queue()
     }
 }
 
+void ce_apply_condition(size_t cause_id, CombatUnit *target, SpecialConditionMetadata *metadata)
+{
+    SpecialCondition condition = {
+        .cause_id = cause_id,
+        .metadata = metadata};
+    dynamic_list_append(&(target->special_conditions), (byte_t *)&condition);
+}
+
 void combat_team_initialize(CombatTeam *combat_team, bool_t is_players_team)
 {
     team_default_initialization(&(combat_team->team));
@@ -155,6 +182,7 @@ void combat_team_initialize(CombatTeam *combat_team, bool_t is_players_team)
         CombatUnit *cu = combat_team->combat_units + slot;
         cu->unit = NULL;
         cu->slot_occupied = FALSE;
+        dynamic_list_init(&(cu->special_conditions), 2, 1, sizeof(SpecialCondition));
     }
 }
 
@@ -166,12 +194,14 @@ void ce_broadcast_event_to_unit(CombatEventSource *source, CombatTeam *combat_te
         return;
     }
 
-    PassiveSkillCommand command = {
-        .caster = {
-            .unit_id = caster->unit->id,
-            .unit_slot = slot,
-            .combat_team = combat_team},
-        .source = source};
+    EventCommand event_cmd;
+
+    // Broadcast to passives
+    event_cmd.is_skill = TRUE;
+    event_cmd.skill_cmd.caster.unit_id = caster->unit->id;
+    event_cmd.skill_cmd.caster.unit_slot = slot;
+    event_cmd.skill_cmd.caster.combat_team = combat_team;
+    event_cmd.skill_cmd.source = source;
 
     SkillSet *skillset = &(caster->skillset);
     for (size_t i = 0; i < skillset->n_passives; ++i)
@@ -179,8 +209,26 @@ void ce_broadcast_event_to_unit(CombatEventSource *source, CombatTeam *combat_te
         PassiveSkill *skill = skillset->passives + i;
         if (skill->metadata->triggers & source->event)
         {
-            command.passive = skill;
-            dynamic_list_append(&(combat_engine.passive_commands_queue), (byte_t *)&command);
+            event_cmd.skill_cmd.passive = skill;
+            dynamic_list_append(&(combat_engine.event_commands_queue), (byte_t *)&event_cmd);
+        }
+    }
+
+    // Broadcast to conditions
+    event_cmd.is_skill = FALSE;
+    event_cmd.condition_cmd.affected.unit_id = caster->unit->id;
+    event_cmd.condition_cmd.affected.unit_slot = slot;
+    event_cmd.condition_cmd.affected.combat_team = combat_team;
+    event_cmd.condition_cmd.source = source;
+
+    FixedList *conditions = &(caster->special_conditions.fixed_list);
+    for (size_t i = 0; i < conditions->length; ++i)
+    {
+        SpecialCondition *condition = (SpecialCondition *)fixed_list_get(conditions, i);
+        if (condition->metadata->triggers & source->event)
+        {
+            event_cmd.condition_cmd.condition = condition;
+            dynamic_list_append(&(combat_engine.event_commands_queue), (byte_t *)&event_cmd);
         }
     }
 }
