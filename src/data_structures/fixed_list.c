@@ -64,6 +64,11 @@ bool_t fixed_list_remove(FixedList *list, size_t index)
     return TRUE;
 }
 
+void fixed_list_clear(FixedList *list)
+{
+    list->length = 0;
+}
+
 void fixed_list_bubble_sort(FixedList *list, FixedListCompare_fp compare_cb)
 {
     size_t n = list->length;

@@ -3,8 +3,32 @@
 #include "all_species.h"
 #include "combat_engine.h"
 #include "unsigned_math.h"
+#include "special_condition.h"
 
 #include "ui.h" // TODO: Remove
+
+#pragma region Conditions
+
+void deplete_stamina_condition(SpecialConditionCommand *command)
+{
+    CombatUnit *cu = combat_team_get_combat_unit(
+        command->affected.combat_team, command->affected.unit_slot);
+    cu->unit->stamina = 0;
+
+    tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%ls's STA has been set to 0\n",
+              cu->unit->name);
+}
+
+SpecialConditionMetadata deplete_stamina_condition_meta = {
+    .id = 0,
+    .metadata = {
+        .cost = 0,
+        .name = L"Deplete STA at round end",
+        .priority = SKILL_PRIORITY_AVERAGE},
+    .triggers = COMBAT_EVENT_END_OF_TURN,
+    .execute_cb = deplete_stamina_condition};
+
+#pragma endregion
 
 #pragma region Actives
 
@@ -51,6 +75,13 @@ void deal_damage(ActiveSkillCommand *command)
               buffer->random);
 }
 
+void deplete_stamina(ActiveSkillCommand *command)
+{
+    CombatUnit *target = combat_team_get_combat_unit(
+        command->target.combat_team, command->target.unit_slot);
+    ce_apply_condition(command->caster.unit_id, target, &deplete_stamina_condition_meta);
+}
+
 ActiveSkillMetadata active1_example = {
     .metadata = {.name = L"Say hi", .cost = 1, .priority = SKILL_PRIORITY_AVERAGE},
     .execute_cb = say_hi};
@@ -59,6 +90,10 @@ ActiveSkillMetadata active2_example = {
     .metadata = {.name = L"Deal damage equal to random number", .cost = 2, .priority = SKILL_PRIORITY_AVERAGE},
     .initialize_cb = deal_damage_initialize,
     .execute_cb = deal_damage};
+
+ActiveSkillMetadata active3_example = {
+    .metadata = {.name = L"Deplete target STA at round end", .cost = 0, .priority = SKILL_PRIORITY_AVERAGE},
+    .execute_cb = deplete_stamina};
 
 #pragma endregion
 
@@ -76,7 +111,7 @@ PassiveSkillMetadata passive1_example = {
     .execute_cb = take_damage};
 
 PassiveSkillMetadata passive2_example = {
-    .metadata = {.name = L"Take damage at end of turn", .cost = 4, .priority = SKILL_PRIORITY_AVERAGE},
+    .metadata = {.name = L"Reduce STA to 0 at", .cost = 4, .priority = SKILL_PRIORITY_AVERAGE},
     .triggers = COMBAT_EVENT_END_OF_TURN,
     .execute_cb = take_damage};
 
@@ -90,7 +125,8 @@ Species bird_species = {
 SkillSetTemplate bird_skillset_template;
 ActiveSkillMetadata *actives_metadata[] = {
     &active1_example,
-    &active2_example};
+    &active2_example,
+    &active3_example};
 PassiveSkillMetadata *passives_metadata[] = {
     &passive1_example,
     &passive2_example};
