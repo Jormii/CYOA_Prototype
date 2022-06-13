@@ -76,7 +76,7 @@ State *cyoa_interface_update()
     cyoa_interface.execute_option = FALSE;
     cyoa_input_update();
 
-    if (cyoa_interface.execute_option || cyoa_interface.scene_switched)
+    if (cyoa_interface.scene_switched)
     {
         tb_clear(&(print_window.buffer), NULL);
         cyoa_interface.scene_switched = vm_execute();
@@ -89,8 +89,14 @@ State *cyoa_interface_update()
 
         if (cyoa_interface.execute_option)
         {
-            tb_print(&(print_window.buffer), 0x00FFFFFF, L"\n--------------------\n");
+            tb_clear(&(print_window.buffer), NULL);
             cyoa_interface.scene_switched = vm_execute_option(cyoa_interface.option_cursor);
+            tb_print(&(print_window.buffer), 0x00FFFFFF, L"--------------------\n\n");
+
+            if (!cyoa_interface.scene_switched)
+            {
+                cyoa_interface.scene_switched = vm_execute();
+            }
         }
     }
 
@@ -147,7 +153,7 @@ void cyoa_interface_end_of_string(uint8_t is_option)
     }
     else
     {
-        tb_print(&(commands_window.buffer), cyoa_interface.color, L"\n\n");
+        tb_print(&(print_window.buffer), cyoa_interface.color, L"\n\n");
     }
 
     cyoa_interface.color = 0x00FFFFFF;
@@ -192,7 +198,7 @@ void cyoa_interface_save(const char *path)
 
     SceUID fd = sceIoOpen(path, PSP_O_WRONLY, 0777);
     sceIoLseek(fd, offset, PSP_SEEK_CUR);
-    sceIoWrite(fd, ints_ptr, vm.header.integers_count * sizeof(vm_int_t));
+    sceIoWrite(fd, ints_ptr, vm.header.store_integers_count * sizeof(vm_int_t));
     sceIoClose(fd);
 }
 

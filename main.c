@@ -41,8 +41,8 @@ void initialize()
     ui_initialize();
 
     // Initialize CYOA engine
-    uint16_t max_options = 3;
-    uint8_t max_stack_size = 1;
+    uint16_t max_options = 10; // TODO: Read somewhere
+    uint8_t max_stack_size = 10;
     cyoa_interface_initialize(0, max_options, max_stack_size);
 
     // Initialize combat engine
