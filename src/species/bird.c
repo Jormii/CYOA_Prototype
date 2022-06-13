@@ -2,6 +2,7 @@
 
 #include "all_species.h"
 #include "combat_engine.h"
+#include "unsigned_math.h"
 
 #include "ui.h" // TODO: Remove
 
@@ -66,7 +67,7 @@ ActiveSkillMetadata active2_example = {
 void take_damage(PassiveSkillCommand *command)
 {
     CombatUnit *cu = combat_team_get_combat_unit(command->caster.combat_team, command->caster.unit_slot);
-    cu->unit->hp -= 1;
+    cu->unit->hp = umath_substract(cu->unit->hp, 1);
 }
 
 PassiveSkillMetadata passive1_example = {

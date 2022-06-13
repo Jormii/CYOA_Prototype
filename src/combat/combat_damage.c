@@ -1,6 +1,7 @@
 #include "dynamic_list.h"
 #include "combat_damage.h"
 #include "combat_engine.h"
+#include "unsigned_math.h"
 
 #define DEFAULT_QUEUE_SIZE 2
 
@@ -42,7 +43,7 @@ void ce_damage_perform()
 
     health_t damage = 1;
     CombatUnit *defender = combat_team_get_combat_unit(instance->defender->combat_team, instance->defender->unit_slot);
-    defender->unit->hp -= damage;
+    defender->unit->hp = umath_substract(defender->unit->hp, damage);
 
     fixed_list_remove(&(dmg_instances_queue.fixed_list),
                       dmg_instances_queue.fixed_list.length - 1);
