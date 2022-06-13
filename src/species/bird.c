@@ -75,7 +75,7 @@ PassiveSkillMetadata passive1_example = {
     .execute_cb = take_damage};
 
 PassiveSkillMetadata passive2_example = {
-    .metadata = {.name = L"Take damage at start of turn", .cost = 4, .priority = SKILL_PRIORITY_AVERAGE},
+    .metadata = {.name = L"Take damage at end of turn", .cost = 4, .priority = SKILL_PRIORITY_AVERAGE},
     .triggers = COMBAT_EVENT_END_OF_TURN,
     .execute_cb = take_damage};
 

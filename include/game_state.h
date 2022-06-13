@@ -6,7 +6,7 @@
 extern State game_state_story;
 extern State game_state_combat;
 
-void game_state_initialize();
+void game_state_initialize(State *starting_state);
 void game_state_update();
 
 #endif

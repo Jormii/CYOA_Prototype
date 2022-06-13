@@ -4,28 +4,34 @@
 #include "state.h"
 #include "combat_engine.h"
 
-typedef enum CombatState_en
-{
-    COMBAT_STATE_START,
-    COMBAT_STATE_TURN_START,
-    COMBAT_STATE_ASK_SKILL,
-    COMBAT_STATE_ASK_SKILL_TARGET,
-    COMBAT_STATE_EXECUTE,
-    COMBAT_STATE_COUNT
-} CombatState;
+extern State combat_state_start_of_combat;
+extern State combat_state_start_of_round;
+extern State combat_state_ask_for_action;
+extern State combat_state_ask_for_action_target;
+extern State combat_state_check_units;
+extern State combat_state_choose_unit;
+extern State combat_state_execute;
+extern State combat_state_end_of_combat;
 
-typedef void (*CombatStateFunc_fp)();
+typedef enum CombatStateIdentifier_en
+{
+    COMBAT_STATE_START_OF_COMBAT,
+    COMBAT_STATE_START_OF_ROUND,
+    COMBAT_STATE_ASK_FOR_ACTION,
+    COMBAT_STATE_ASK_FOR_ACTION_TARGET,
+    COMBAT_STATE_CHECK_UNITS,
+    COMBAT_STATE_CHOOSE_UNIT,
+    COMBAT_STATE_EXECUTE,
+    COMBAT_STATE_END_OF_COMBAT
+} CombatStateIdentifier;
 
 struct
 {
-    // State related
-    CombatState state;
-    CombatStateFunc_fp state_cbs[COMBAT_STATE_COUNT];
+    StateManager combat_state;
 
-    // General
     size_t cursor;
-    size_t chosen_skill;
     combat_slot_t slot;
+    size_t chosen_skill;
 } combat_interface;
 
 void combat_interface_initialize();
