@@ -71,7 +71,7 @@ void cyoa_interface_initialize(uint32_t starting_scene, uint16_t max_options, ui
     }
 }
 
-void cyoa_interface_update()
+State *cyoa_interface_update()
 {
     cyoa_interface.execute_option = FALSE;
     cyoa_input_update();
@@ -93,6 +93,8 @@ void cyoa_interface_update()
             cyoa_interface.scene_switched = vm_execute_option(cyoa_interface.option_cursor);
         }
     }
+
+    return STATE_SAME_STATE;
 }
 
 void cyoa_input_update()

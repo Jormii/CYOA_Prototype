@@ -2,37 +2,39 @@
 #include "cyoa_interface.h"
 #include "combat_interface.h"
 
-GameStateIdentifier current_state;
-GameState states[GAME_STATE_COUNT];
-
-void game_state_none() {}
-
-void game_state_initialize()
+typedef enum GameStateIdentifier_en
 {
-    current_state = GAME_STATE_NONE;
+    GAME_STATE_STORY,
+    GAME_STATE_COMBAT
+} GameStateIdentifier;
 
-    states[GAME_STATE_NONE].update_cb = game_state_none;
-    states[GAME_STATE_NONE].on_enter_cb = game_state_none;
+StateManager game_state_manager;
+State game_state_story;
+State game_state_combat;
 
-    states[GAME_STATE_STORY].update_cb = cyoa_interface_update;
-    states[GAME_STATE_STORY].on_enter_cb = NULL;
+void game_state_combat_on_enter(state_id_t next_id);
 
-    states[GAME_STATE_COMBAT].update_cb = combat_interface_update;
-    states[GAME_STATE_COMBAT].on_enter_cb = combat_interface_start_combat;
+void game_state_initialize(State *starting_state)
+{
+    game_state_story.id = GAME_STATE_STORY;
+    game_state_story.func_cb = cyoa_interface_update;
+    game_state_story.on_enter_cb = STATE_CALLBACK_NONE;
+    game_state_story.on_exit_cb = STATE_CALLBACK_NONE;
+
+    game_state_combat.id = GAME_STATE_COMBAT;
+    game_state_combat.func_cb = combat_interface_update;
+    game_state_combat.on_enter_cb = game_state_combat_on_enter;
+    game_state_combat.on_exit_cb = STATE_CALLBACK_NONE;
+
+    state_manager_initialize(&game_state_manager, starting_state);
 }
 
 void game_state_update()
 {
-    states[current_state].update_cb();
+    state_manager_execute(&game_state_manager);
 }
 
-void game_state_switch_to(GameStateIdentifier state_id)
+void game_state_combat_on_enter(state_id_t next_id)
 {
-    current_state = state_id;
-
-    GameStateCb_fp on_enter = states[current_state].on_enter_cb;
-    if (on_enter != NULL)
-    {
-        on_enter();
-    }
+    combat_interface_start_combat();
 }

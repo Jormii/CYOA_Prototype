@@ -1,6 +1,7 @@
 #ifndef CYOA_INTERFACE_H
 #define CYOA_INTERFACE_H
 
+#include "state.h"
 #include "types.h"
 #include "pspp_types.h"
 #include "vm_manager.h"
@@ -16,6 +17,6 @@ struct
 } cyoa_interface;
 
 void cyoa_interface_initialize(uint32_t starting_scene, uint16_t max_options, uint8_t max_stack_size);
-void cyoa_interface_update();
+State *cyoa_interface_update();
 
 #endif

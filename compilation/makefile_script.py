@@ -1,5 +1,7 @@
 import os
 
+PPSSPP_COMPILATION = True
+
 MAKEFILE = """
 TARGET = {psp_target}
 OBJS = {objs}
@@ -121,9 +123,6 @@ class IWhereList(IWhere):
         return " ".join(where_stringify)
 
 
-PPSSPP_COMPILATION = True
-
-
 def main():
     makefile = Makefile()
 
@@ -143,6 +142,7 @@ def main():
 
         SourceDir("../src/data_structures"),
         SourceDir("../src/combat"),
+        SourceDir("../src/combat_states"),
         SourceDir("../src/species"),
         SourceDir("../src"),
         File("../main.o")

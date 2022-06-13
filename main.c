@@ -49,9 +49,7 @@ void initialize()
     combat_interface_initialize();
 
     // Initialize game state
-    game_state_initialize();
-
-    game_state_switch_to(GAME_STATE_COMBAT); // TODO: Remove
+    game_state_initialize(&game_state_combat);
 }
 
 void game_loop()
