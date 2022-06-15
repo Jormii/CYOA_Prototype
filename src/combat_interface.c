@@ -8,10 +8,10 @@
 // TODO: Delete this
 size_t id = 0;
 
-void init_unit(Unit *unit)
+void init_unit(Unit *unit, wchar_t *name, const Species *species)
 {
     unit->id = ++id;
-    unit->name = L"NAME";
+    unit->name = name;
     unit->hp = 20;
     unit->stamina = 10;
     for (size_t i = 0; i < ATTR_COUNT; ++i)
@@ -19,7 +19,7 @@ void init_unit(Unit *unit)
         unit->attributes[i] = 1;
     }
     unit->attributes[ATTR_AGILITY] = unit->id + 1;
-    unit->species = &bird_species;
+    unit->species = species;
 }
 
 // END TODO
@@ -30,12 +30,11 @@ void combat_interface_initialize()
     ce_initialize();
     all_species_initialize();
 
-    // TODO: Remove this
-    for (combat_slot_t slot = 0; slot < MAX_UNITS_IN_TEAM; ++slot)
-    {
-        init_unit(combat_engine.players_team.team.units + slot);
-        init_unit(combat_engine.enemy_team.team.units + slot);
-    }
+    init_unit(combat_engine.players_team.team.units, L"First", &bird_species);
+    init_unit(combat_engine.players_team.team.units + 1, L"Second", &goat_species);
+
+    init_unit(combat_engine.enemy_team.team.units, L"Enemy 1", &bird_species);
+    init_unit(combat_engine.enemy_team.team.units + 1, L"Enemy 2", &bird_species);
     // END TODO
 }
 

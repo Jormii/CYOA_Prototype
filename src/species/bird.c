@@ -123,11 +123,11 @@ Species bird_species = {
     .skillset_template = &bird_skillset_template};
 
 SkillSetTemplate bird_skillset_template;
-ActiveSkillMetadata *actives_metadata[] = {
+ActiveSkillMetadata *bird_actives_metadata[] = {
     &active1_example,
     &active2_example,
     &active3_example};
-PassiveSkillMetadata *passives_metadata[] = {
+PassiveSkillMetadata *bird_passives_metadata[] = {
     &passive1_example,
     &passive2_example};
 
@@ -136,15 +136,15 @@ void bird_init()
     srand(time(NULL)); // TODO: Remove
     bird_skillset_template.n_actives = 0;
     bird_skillset_template.n_passives = 0;
-    bird_skillset_template.actives_metadata = actives_metadata;
-    bird_skillset_template.passives_metadata = passives_metadata;
+    bird_skillset_template.actives_metadata = bird_actives_metadata;
+    bird_skillset_template.passives_metadata = bird_passives_metadata;
 
-    if (actives_metadata != NULL)
+    if (bird_actives_metadata != NULL)
     {
-        bird_skillset_template.n_actives = sizeof(actives_metadata) / sizeof(ActiveSkillMetadata *);
+        bird_skillset_template.n_actives = sizeof(bird_actives_metadata) / sizeof(ActiveSkillMetadata *);
     }
-    if (passives_metadata != NULL)
+    if (bird_passives_metadata != NULL)
     {
-        bird_skillset_template.n_passives = sizeof(passives_metadata) / sizeof(PassiveSkillMetadata *);
+        bird_skillset_template.n_passives = sizeof(bird_passives_metadata) / sizeof(PassiveSkillMetadata *);
     }
 }

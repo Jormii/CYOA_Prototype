@@ -3,4 +3,5 @@
 void all_species_initialize()
 {
     bird_init();
+    goat_init();
 }
