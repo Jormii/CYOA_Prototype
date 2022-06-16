@@ -72,6 +72,11 @@ void fixed_list_clear(FixedList *list)
 void fixed_list_bubble_sort(FixedList *list, FixedListCompare_fp compare_cb)
 {
     size_t n = list->length;
+    if (n <= 1)
+    {
+        return;
+    }
+
     for (size_t i = 0; i < (n - 1); ++i)
     {
         bool_t swapped = FALSE;

@@ -9,7 +9,7 @@ typedef struct Species_st
 {
     const wchar_t *name;
     stat_t base_stats[STAT_COUNT];
-    SkillSetTemplate *skillset_template;
+    SkillSetMetadata *skillset_template;
 } Species;
 
 #endif

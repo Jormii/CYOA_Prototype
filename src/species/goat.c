@@ -4,6 +4,8 @@
 
 #include "ui.h"
 
+#if 0
+
 #pragma region Actives
 
 void goat_kick_execute(ActiveSkillCommand *command)
@@ -108,7 +110,7 @@ Species goat_species = {
     .base_stats = {1, 4, 1, 2, 3},
     .skillset_template = &goat_skillset_template};
 
-SkillSetTemplate goat_skillset_template;
+SkillSetMetadata goat_skillset_template;
 
 ActiveSkillMetadata *actives_metadata[] = {
     &goat_kick_meta,
@@ -131,3 +133,5 @@ void goat_init()
         goat_skillset_template.n_passives = sizeof(passives_metadata) / sizeof(PassiveSkillMetadata *);
     }
 }
+
+#endif

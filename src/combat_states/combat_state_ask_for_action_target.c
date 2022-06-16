@@ -21,9 +21,9 @@ State *combat_state_ask_for_action_target_func()
 
     const CombatUnit *cu = combat_team_get_combat_unit(
         &(combat_engine.players_team), combat_interface.slot);
-    const SkillSetTemplate *template = cu->unit->species->skillset_template;
+    const SkillSetMetadata *template = cu->unit->species->skillset_template;
 
-    display_skill_targets(&(template->actives_metadata[combat_interface.cursor]->metadata));
+    display_skill_targets(template->skills_metadata[combat_interface.chosen_skill]);
 
     // Handle input
     if (input_button_pressed(BUTTON_UP))
@@ -62,7 +62,7 @@ void add_active_to_queue()
     // Caster and skill
     CombatUnit *caster = combat_team_get_combat_unit(&(combat_engine.players_team), combat_interface.slot);
     SkillSet *skillset = &(caster->skillset);
-    ActiveSkill *skill = skillset->actives + combat_interface.chosen_skill;
+    Skill *skill = skillset->skills + combat_interface.chosen_skill;
 
     // Target
     CombatTeam *targets_team = &(combat_engine.enemy_team);
@@ -76,9 +76,9 @@ void add_active_to_queue()
     CombatUnit *target = combat_team_get_combat_unit(targets_team, targets_slot); // TODO: What if NULL?
 
     // Full command
-    ActiveSkillCommand command = {.active = skill,
-                                  .caster = {.unit_id = caster->unit->id, .unit_slot = combat_interface.slot, .combat_team = &(combat_engine.players_team)},
-                                  .target = {.unit_id = target->unit->id, .unit_slot = targets_slot, .combat_team = targets_team}};
+    SkillCommand command = {.skill = skill,
+                            .caster = {.unit_id = caster->unit->id, .unit_slot = combat_interface.slot, .combat_team = &(combat_engine.players_team)},
+                            .target = {.unit_id = target->unit->id, .unit_slot = targets_slot, .combat_team = targets_team}};
 
     // Add to queue
     ce_add_active_to_queue(&command);
@@ -86,6 +86,9 @@ void add_active_to_queue()
 
 void display_skill_targets(const SkillMetadata *metadata)
 {
+    tb_printf(&(commands_window.buffer), 0x00FFFFFF, L"%ls: %ls\n",
+              metadata->name, metadata->description);
+
     for (combat_slot_t slot = 0; slot < MAX_UNITS_IN_COMBAT; ++slot)
     {
         const CombatUnit *cu = combat_team_get_combat_unit(&(combat_engine.players_team), slot);

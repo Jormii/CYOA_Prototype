@@ -7,7 +7,6 @@
 #include "fixed_list.h"
 #include "dynamic_list.h"
 #include "combat_damage.h"
-#include "special_condition.h"
 
 #define MAX_UNITS_IN_COMBAT 2
 
@@ -16,7 +15,7 @@ typedef struct CombatUnit_st
     Unit *unit;
     bool_t slot_occupied;
     SkillSet skillset;
-    DynamicList special_conditions;
+    // TODO: Special conditions
 } CombatUnit;
 
 typedef struct CombatTeam_st
@@ -35,8 +34,7 @@ struct
     bool_t in_combat;
     CombatTeam players_team;
     CombatTeam enemy_team;
-    FixedList active_commands_queue;
-    DynamicList event_commands_queue;
+    DynamicList skills_queue;
 } combat_engine;
 
 void ce_initialize();
@@ -47,10 +45,10 @@ void ce_remove_from_combat(CombatTeam *combat_team, combat_slot_t slot);
 void ce_broadcast_engine_event(CombatEvent event);
 void ce_broadcast_event(CombatEventSource *source);
 
-void ce_add_active_to_queue(const ActiveSkillCommand *command);
+void ce_add_active_to_queue(const SkillCommand *command);
 void ce_remove_queue_tail();
 void ce_execute_queue();
 
-void ce_apply_condition(size_t cause_id, CombatUnit *target, SpecialConditionMetadata *metadata);
+// TODO: Special conditions
 
 #endif

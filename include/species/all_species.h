@@ -7,11 +7,6 @@
 void all_species_initialize();
 
 extern Species bird_species;
-extern SkillSetTemplate bird_skillset_template;
-extern void bird_init();
-
-extern Species goat_species;
-extern SkillSetTemplate goat_skillset_template;
-extern void goat_init();
+// extern Species goat_species;
 
 #endif
