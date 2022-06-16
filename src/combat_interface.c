@@ -28,10 +28,10 @@ void combat_interface_initialize()
 {
     // Initialize combat engine and species
     ce_initialize();
-    all_species_initialize();
 
+    // TODO: Remove this
     init_unit(combat_engine.players_team.team.units, L"First", &bird_species);
-    init_unit(combat_engine.players_team.team.units + 1, L"Second", &goat_species);
+    init_unit(combat_engine.players_team.team.units + 1, L"Second", &bird_species);
 
     init_unit(combat_engine.enemy_team.team.units, L"Enemy 1", &bird_species);
     init_unit(combat_engine.enemy_team.team.units + 1, L"Enemy 2", &bird_species);

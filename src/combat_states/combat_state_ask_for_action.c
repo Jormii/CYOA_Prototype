@@ -27,7 +27,7 @@ State *combat_state_ask_for_action_func()
 
     const CombatUnit *cu = combat_team_get_combat_unit(
         &(combat_engine.players_team), combat_interface.slot);
-    const SkillSetTemplate *template = cu->unit->species->skillset_template;
+    const SkillSetMetadata *template = cu->unit->species->skillset_template;
 
     // Update interface
     tb_clear(&(commands_window.buffer), NULL);
@@ -43,15 +43,14 @@ State *combat_state_ask_for_action_func()
     }
     else if (input_button_pressed(BUTTON_DOWN))
     {
-        size_t bound = template->n_actives + template->n_passives;
-        if ((combat_interface.cursor + 1) != bound)
+        if ((combat_interface.cursor + 1) != template->n_skills)
         {
             combat_interface.cursor += 1;
         }
     }
     else if (input_button_pressed(BUTTON_CROSS))
     {
-        if (combat_interface.cursor < template->n_actives)
+        if (combat_interface.cursor < template->n_skills)
         {
             // Step only if an active was chosen
             combat_interface.chosen_skill = combat_interface.cursor;
@@ -123,18 +122,13 @@ void display_combat_team(CombatTeam *combat_team)
 void display_unit_skills(const CombatUnit *combat_unit)
 {
     const Unit *unit = combat_unit->unit;
-    const SkillSetTemplate *skillset_template = unit->species->skillset_template;
+    const SkillSetMetadata *skillset_template = unit->species->skillset_template;
 
-    tb_print(&(commands_window.buffer), 0x00FFFFFF, L"-- Actives --\n");
-    for (size_t i = 0; i < skillset_template->n_actives; ++i)
+    tb_printf(&(commands_window.buffer), 0x00FFFFFF, L"\n-- %ls's skills --\n",
+              unit->name);
+    for (size_t i = 0; i < skillset_template->n_skills; ++i)
     {
-        display_skill(&(skillset_template->actives_metadata[i]->metadata), i);
-    }
-
-    tb_print(&(commands_window.buffer), 0x00FFFFFF, L"\n-- Passives --\n");
-    for (size_t i = 0; i < skillset_template->n_passives; ++i)
-    {
-        display_skill(&(skillset_template->passives_metadata[i]->metadata), skillset_template->n_actives + i);
+        display_skill(skillset_template->skills_metadata[i], i);
     }
 }
 

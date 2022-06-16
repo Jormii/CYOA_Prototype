@@ -1,24 +1,12 @@
 #include "utils.h"
 #include "combat_engine.h"
 
-// TODO: Redo at some point
-typedef struct EventCommand_st
-{
-    bool_t is_skill;
-    union
-    {
-        PassiveSkillCommand skill_cmd;
-        SpecialConditionCommand condition_cmd;
-    };
-} EventCommand;
-
 void combat_team_initialize(CombatTeam *combat_team, bool_t is_players_team);
 
 void ce_broadcast_event_to_unit(CombatEventSource *source, CombatTeam *combat_team, combat_slot_t slot);
 
-bool_t active_queue_compare(const byte_t *first, const byte_t *second);
-bool_t passive_queue_compare(const byte_t *first, const byte_t *second);
-bool_t queue_compare(const SkillMetadata *first_metadata, const CombatDescriptor *first_caster,
+bool_t queue_compare(const byte_t *first, const byte_t *second);
+bool_t skill_compare(const SkillMetadata *first_metadata, const CombatDescriptor *first_caster,
                      const SkillMetadata *second_metadata, const CombatDescriptor *second_caster);
 
 CombatUnit *combat_team_get_combat_unit(CombatTeam *combat_team, combat_slot_t slot)
@@ -66,10 +54,9 @@ void ce_initialize()
     combat_engine.in_combat = FALSE;
     combat_team_initialize(&(combat_engine.players_team), TRUE);
     combat_team_initialize(&(combat_engine.enemy_team), FALSE);
-    fixed_list_init(
-        &(combat_engine.active_commands_queue), 2 * MAX_UNITS_IN_COMBAT, sizeof(ActiveSkillCommand));
     dynamic_list_init(
-        &(combat_engine.event_commands_queue), 2 * 2 * MAX_UNITS_IN_COMBAT, 2, sizeof(EventCommand));
+        &(combat_engine.skills_queue), 2 * 2 * MAX_UNITS_IN_COMBAT, 2,
+        sizeof(SkillCommand));
 
     ce_damage_initialize();
 }
@@ -88,7 +75,6 @@ void ce_remove_from_combat(CombatTeam *combat_team, combat_slot_t slot)
     cu->unit = NULL;
     cu->slot_occupied = FALSE;
     skillset_deinitialize(&(cu->skillset));
-    fixed_list_clear(&(cu->special_conditions.fixed_list));
 }
 
 void ce_broadcast_engine_event(CombatEvent event)
@@ -111,48 +97,32 @@ void ce_broadcast_event(CombatEventSource *source)
         ce_broadcast_event_to_unit(source, &(combat_engine.enemy_team), slot);
     }
 
-    // Execute passive commands
-    // TODO: Check if the queue is being executed?
-    FixedList *queue = &(combat_engine.event_commands_queue.fixed_list);
-    fixed_list_bubble_sort(queue, passive_queue_compare); // TODO: New passives might be added to the queue
-
-    EventCommand command;
-    while (queue->length != 0)
-    {
-        copy_buffer(fixed_list_get(queue, 0), (byte_t *)&command, queue->element_size);
-        fixed_list_remove(queue, 0);
-
-        if (command.is_skill)
-        {
-            command.skill_cmd.passive->metadata->execute_cb(&(command.skill_cmd));
-        }
-        else
-        {
-            command.condition_cmd.condition->metadata->execute_cb(&(command.condition_cmd));
-        }
-    }
+    ce_execute_queue();
 }
 
-void ce_add_active_to_queue(const ActiveSkillCommand *command)
+void ce_add_active_to_queue(const SkillCommand *command)
 {
-    fixed_list_append(&(combat_engine.active_commands_queue), (byte_t *)command);
+    fixed_list_append(
+        &(combat_engine.skills_queue.fixed_list), (byte_t *)command);
 }
 
 void ce_remove_queue_tail()
 {
-    size_t l = combat_engine.active_commands_queue.length;
+    size_t l = combat_engine.skills_queue.fixed_list.length;
     if (l != 0)
     {
-        fixed_list_remove(&(combat_engine.active_commands_queue), l - 1);
+        fixed_list_remove(&(combat_engine.skills_queue.fixed_list), l - 1);
     }
 }
 
 void ce_execute_queue()
 {
-    FixedList *queue = &(combat_engine.active_commands_queue);
-    fixed_list_bubble_sort(queue, active_queue_compare);
+    // TODO: Check if the queue is being executed?
+    // TODO: What if the size of the queue increases?
+    FixedList *queue = &(combat_engine.skills_queue.fixed_list);
+    fixed_list_bubble_sort(queue, queue_compare);
 
-    ActiveSkillCommand command;
+    SkillCommand command;
     CombatEventSource source = {
         .caused_by_engine = FALSE,
         .event = COMBAT_EVENT_SKILL_EXECUTION};
@@ -167,16 +137,8 @@ void ce_execute_queue()
         ce_broadcast_event(&source);
 
         // Execute
-        command.active->metadata->execute_cb(&command);
+        command.skill->metadata->execute_cb(&command);
     }
-}
-
-void ce_apply_condition(size_t cause_id, CombatUnit *target, SpecialConditionMetadata *metadata)
-{
-    SpecialCondition condition = {
-        .cause_id = cause_id,
-        .metadata = metadata};
-    dynamic_list_append(&(target->special_conditions), (byte_t *)&condition);
 }
 
 void combat_team_initialize(CombatTeam *combat_team, bool_t is_players_team)
@@ -189,7 +151,6 @@ void combat_team_initialize(CombatTeam *combat_team, bool_t is_players_team)
         CombatUnit *cu = combat_team->combat_units + slot;
         cu->unit = NULL;
         cu->slot_occupied = FALSE;
-        dynamic_list_init(&(cu->special_conditions), 2, 1, sizeof(SpecialCondition));
     }
 }
 
@@ -201,79 +162,36 @@ void ce_broadcast_event_to_unit(CombatEventSource *source, CombatTeam *combat_te
         return;
     }
 
-    EventCommand event_cmd;
+    SkillCommand command = {
+        .caster = {
+            .combat_team = combat_team,
+            .unit_id = caster->unit->id,
+            .unit_slot = slot},
+        .event_source = *source};
 
-    // Broadcast to passives
-    event_cmd.is_skill = TRUE;
-    event_cmd.skill_cmd.caster.unit_id = caster->unit->id;
-    event_cmd.skill_cmd.caster.unit_slot = slot;
-    event_cmd.skill_cmd.caster.combat_team = combat_team;
-    event_cmd.skill_cmd.source = source;
-
+    // Broadcast to skills
     SkillSet *skillset = &(caster->skillset);
-    for (size_t i = 0; i < skillset->n_passives; ++i)
+    for (size_t i = 0; i < skillset->metadata->n_skills; ++i)
     {
-        PassiveSkill *skill = skillset->passives + i;
+        Skill *skill = skillset->skills + i;
         if (skill->metadata->triggers & source->event)
         {
-            event_cmd.skill_cmd.passive = skill;
-            dynamic_list_append(&(combat_engine.event_commands_queue), (byte_t *)&event_cmd);
-        }
-    }
-
-    // Broadcast to active's passives
-    for (size_t i = 0; i < skillset->n_actives; ++i)
-    {
-        ActiveSkill *skill = skillset->actives + i;
-        for (size_t j = 0; j < skill->metadata->n_passives; ++j)
-        {
-            PassiveSkill *passive = skill->passives + j;
-            if (passive->metadata->triggers & source->event)
-            {
-                event_cmd.skill_cmd.passive = passive;
-                dynamic_list_append(&(combat_engine.event_commands_queue), (byte_t *)&event_cmd);
-            }
-        }
-    }
-
-    // Broadcast to conditions
-    event_cmd.is_skill = FALSE;
-    event_cmd.condition_cmd.affected.unit_id = caster->unit->id;
-    event_cmd.condition_cmd.affected.unit_slot = slot;
-    event_cmd.condition_cmd.affected.combat_team = combat_team;
-    event_cmd.condition_cmd.source = source;
-
-    FixedList *conditions = &(caster->special_conditions.fixed_list);
-    for (size_t i = 0; i < conditions->length; ++i)
-    {
-        SpecialCondition *condition = (SpecialCondition *)fixed_list_get(conditions, i);
-        if (condition->metadata->triggers & source->event)
-        {
-            event_cmd.condition_cmd.condition = condition;
-            dynamic_list_append(&(combat_engine.event_commands_queue), (byte_t *)&event_cmd);
+            command.skill = skill;
+            dynamic_list_append(&(combat_engine.skills_queue), (byte_t *)&command);
         }
     }
 }
 
-bool_t active_queue_compare(const byte_t *first, const byte_t *second)
+bool_t queue_compare(const byte_t *first, const byte_t *second)
 {
-    ActiveSkillCommand *first_cmd = (ActiveSkillCommand *)first;
-    ActiveSkillCommand *second_cmd = (ActiveSkillCommand *)second;
+    SkillCommand *first_cmd = (SkillCommand *)first;
+    SkillCommand *second_cmd = (SkillCommand *)second;
 
-    return queue_compare(&(first_cmd->active->metadata->metadata), &(first_cmd->caster),
-                         &(second_cmd->active->metadata->metadata), &(second_cmd->caster));
+    return skill_compare(first_cmd->skill->metadata, &(first_cmd->caster),
+                         second_cmd->skill->metadata, &(second_cmd->caster));
 }
 
-bool_t passive_queue_compare(const byte_t *first, const byte_t *second)
-{
-    PassiveSkillCommand *first_cmd = (PassiveSkillCommand *)first;
-    PassiveSkillCommand *second_cmd = (PassiveSkillCommand *)second;
-
-    return queue_compare(&(first_cmd->passive->metadata->metadata), &(first_cmd->caster),
-                         &(second_cmd->passive->metadata->metadata), &(second_cmd->caster));
-}
-
-bool_t queue_compare(const SkillMetadata *first_metadata, const CombatDescriptor *first_caster,
+bool_t skill_compare(const SkillMetadata *first_metadata, const CombatDescriptor *first_caster,
                      const SkillMetadata *second_metadata, const CombatDescriptor *second_caster)
 {
     if (first_metadata->priority > second_metadata->priority)

@@ -7,7 +7,7 @@
 typedef struct SkillSetMetadata_st
 {
     size_t n_skills;
-    SkillMetadata *skills_metadata[];
+    SkillMetadata **skills_metadata;
 } SkillSetMetadata;
 
 typedef struct SkillSet_st
