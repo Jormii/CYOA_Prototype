@@ -124,7 +124,7 @@ void display_unit_skills(const CombatUnit *combat_unit)
     const Unit *unit = combat_unit->unit;
     const SkillSetMetadata *skillset_template = unit->species->skillset_template;
 
-    tb_printf(&(commands_window.buffer), 0x00FFFFFF, L"\n-- %ls's skills --\n",
+    tb_printf(&(commands_window.buffer), 0x00FFFFFF, L"-- %ls's skills --\n",
               unit->name);
     for (size_t i = 0; i < skillset_template->n_skills; ++i)
     {

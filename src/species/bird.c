@@ -95,7 +95,7 @@ SkillMetadata take_damage_meta = {
     .name = L"Bleed",
     .description = L"Takes 1 point of damage at round start and round end",
     .priority = SKILL_PRIORITY_AVERAGE,
-    .triggers = COMBAT_EVENT_START_OF_TURN & COMBAT_EVENT_END_OF_TURN,
+    .triggers = COMBAT_EVENT_START_OF_TURN | COMBAT_EVENT_END_OF_TURN,
 
     .initialization = {
         .skill_buffer_size = 0,

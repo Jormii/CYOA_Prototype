@@ -23,7 +23,7 @@ State *combat_state_ask_for_action_target_func()
         &(combat_engine.players_team), combat_interface.slot);
     const SkillSetMetadata *template = cu->unit->species->skillset_template;
 
-    display_skill_targets(template->skills_metadata[combat_interface.cursor]);
+    display_skill_targets(template->skills_metadata[combat_interface.chosen_skill]);
 
     // Handle input
     if (input_button_pressed(BUTTON_UP))
@@ -86,6 +86,9 @@ void add_active_to_queue()
 
 void display_skill_targets(const SkillMetadata *metadata)
 {
+    tb_printf(&(commands_window.buffer), 0x00FFFFFF, L"%ls: %ls\n",
+              metadata->name, metadata->description);
+
     for (combat_slot_t slot = 0; slot < MAX_UNITS_IN_COMBAT; ++slot)
     {
         const CombatUnit *cu = combat_team_get_combat_unit(&(combat_engine.players_team), slot);
