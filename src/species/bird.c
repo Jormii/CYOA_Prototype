@@ -84,16 +84,19 @@ void deplete_stamina(ActiveSkillCommand *command)
 
 ActiveSkillMetadata active1_example = {
     .metadata = {.name = L"Say hi", .cost = 1, .priority = SKILL_PRIORITY_AVERAGE},
-    .execute_cb = say_hi};
+    .execute_cb = say_hi,
+    .n_passives = 0};
 
 ActiveSkillMetadata active2_example = {
     .metadata = {.name = L"Deal damage equal to random number", .cost = 2, .priority = SKILL_PRIORITY_AVERAGE},
     .initialize_cb = deal_damage_initialize,
-    .execute_cb = deal_damage};
+    .execute_cb = deal_damage,
+    .n_passives = 0};
 
 ActiveSkillMetadata active3_example = {
     .metadata = {.name = L"Deplete target STA at round end", .cost = 0, .priority = SKILL_PRIORITY_AVERAGE},
-    .execute_cb = deplete_stamina};
+    .execute_cb = deplete_stamina,
+    .n_passives = 0};
 
 #pragma endregion
 
@@ -123,11 +126,11 @@ Species bird_species = {
     .skillset_template = &bird_skillset_template};
 
 SkillSetTemplate bird_skillset_template;
-ActiveSkillMetadata *actives_metadata[] = {
+ActiveSkillMetadata *bird_actives_metadata[] = {
     &active1_example,
     &active2_example,
     &active3_example};
-PassiveSkillMetadata *passives_metadata[] = {
+PassiveSkillMetadata *bird_passives_metadata[] = {
     &passive1_example,
     &passive2_example};
 
@@ -136,15 +139,15 @@ void bird_init()
     srand(time(NULL)); // TODO: Remove
     bird_skillset_template.n_actives = 0;
     bird_skillset_template.n_passives = 0;
-    bird_skillset_template.actives_metadata = actives_metadata;
-    bird_skillset_template.passives_metadata = passives_metadata;
+    bird_skillset_template.actives_metadata = bird_actives_metadata;
+    bird_skillset_template.passives_metadata = bird_passives_metadata;
 
-    if (actives_metadata != NULL)
+    if (bird_actives_metadata != NULL)
     {
-        bird_skillset_template.n_actives = sizeof(actives_metadata) / sizeof(ActiveSkillMetadata *);
+        bird_skillset_template.n_actives = sizeof(bird_actives_metadata) / sizeof(ActiveSkillMetadata *);
     }
-    if (passives_metadata != NULL)
+    if (bird_passives_metadata != NULL)
     {
-        bird_skillset_template.n_passives = sizeof(passives_metadata) / sizeof(PassiveSkillMetadata *);
+        bird_skillset_template.n_passives = sizeof(bird_passives_metadata) / sizeof(PassiveSkillMetadata *);
     }
 }
