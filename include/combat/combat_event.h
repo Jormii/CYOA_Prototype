@@ -7,7 +7,8 @@
 typedef enum CombatEvent_en
 {
     COMBAT_EVENT_START_OF_TURN = 0x00000001,
-    COMBAT_EVENT_END_OF_TURN = 0x00000002
+    COMBAT_EVENT_END_OF_TURN = 0x00000002,
+    COMBAT_EVENT_SKILL_EXECUTION = 0x00000004
 } CombatEvent;
 
 typedef struct CombatEventSource_st

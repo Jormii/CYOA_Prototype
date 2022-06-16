@@ -84,16 +84,19 @@ void deplete_stamina(ActiveSkillCommand *command)
 
 ActiveSkillMetadata active1_example = {
     .metadata = {.name = L"Say hi", .cost = 1, .priority = SKILL_PRIORITY_AVERAGE},
-    .execute_cb = say_hi};
+    .execute_cb = say_hi,
+    .n_passives = 0};
 
 ActiveSkillMetadata active2_example = {
     .metadata = {.name = L"Deal damage equal to random number", .cost = 2, .priority = SKILL_PRIORITY_AVERAGE},
     .initialize_cb = deal_damage_initialize,
-    .execute_cb = deal_damage};
+    .execute_cb = deal_damage,
+    .n_passives = 0};
 
 ActiveSkillMetadata active3_example = {
     .metadata = {.name = L"Deplete target STA at round end", .cost = 0, .priority = SKILL_PRIORITY_AVERAGE},
-    .execute_cb = deplete_stamina};
+    .execute_cb = deplete_stamina,
+    .n_passives = 0};
 
 #pragma endregion
 

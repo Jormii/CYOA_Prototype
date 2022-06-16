@@ -2,7 +2,10 @@
 #define ACTIVE_SKILL_H
 
 #include "skill.h"
+#include "skill_passive.h"
 #include "combat_descriptor.h"
+
+// TODO: Unify skills
 
 struct ActiveSkill_st;
 struct ActiveSkillCommand_st;
@@ -17,11 +20,15 @@ typedef struct ActiveSkillMetadata_st
     ActiveSkillInitialize_fp initialize_cb;
     ActiveSkillDeinitialize_fp deinitialize_cb;
     ActiveSkillExecute_fp execute_cb;
+
+    size_t n_passives;
+    PassiveSkillMetadata *passives[];
 } ActiveSkillMetadata;
 
 typedef struct ActiveSkill_st
 {
     const ActiveSkillMetadata *metadata;
+    PassiveSkill *passives;
     void *buffer;
 } ActiveSkill;
 

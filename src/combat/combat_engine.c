@@ -153,11 +153,18 @@ void ce_execute_queue()
     fixed_list_bubble_sort(queue, active_queue_compare);
 
     ActiveSkillCommand command;
+    CombatEventSource source = {
+        .caused_by_engine = FALSE,
+        .event = COMBAT_EVENT_SKILL_EXECUTION};
     while (queue->length != 0)
     {
         // Pop
         copy_buffer(fixed_list_get(queue, 0), (byte_t *)&command, queue->element_size);
         fixed_list_remove(queue, 0);
+
+        // Broadcast execution
+        source.caused_by = command.caster;
+        ce_broadcast_event(&source);
 
         // Execute
         command.active->metadata->execute_cb(&command);
@@ -211,6 +218,21 @@ void ce_broadcast_event_to_unit(CombatEventSource *source, CombatTeam *combat_te
         {
             event_cmd.skill_cmd.passive = skill;
             dynamic_list_append(&(combat_engine.event_commands_queue), (byte_t *)&event_cmd);
+        }
+    }
+
+    // Broadcast to active's passives
+    for (size_t i = 0; i < skillset->n_actives; ++i)
+    {
+        ActiveSkill *skill = skillset->actives + i;
+        for (size_t j = 0; j < skill->metadata->n_passives; ++j)
+        {
+            PassiveSkill *passive = skill->passives + j;
+            if (passive->metadata->triggers & source->event)
+            {
+                event_cmd.skill_cmd.passive = passive;
+                dynamic_list_append(&(combat_engine.event_commands_queue), (byte_t *)&event_cmd);
+            }
         }
     }
 
