@@ -143,7 +143,8 @@ def main():
         SourceDir("../src/data_structures"),
         SourceDir("../src/combat"),
         SourceDir("../src/combat_states"),
-        SourceDir("../src/species"),
+        SourceDir("../src/skills_database"),
+        SourceDir("../src/skills_database/goat"),
         SourceDir("../src"),
         File("../main.o")
     ]
@@ -161,7 +162,7 @@ def main():
         IncludeDir("../include/pspp/"),
         IncludeDir("../include/data_structures"),
         IncludeDir("../include/combat"),
-        IncludeDir("../include/species"),
+        IncludeDir("../include/skills_database"),
         IncludeDir("../include/")
     ]
     for _inc in includes:
