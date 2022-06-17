@@ -19,7 +19,10 @@ typedef uint8_t u8_t;
 typedef uint32_t u32_t;
 
 // Custom types
+typedef u8_t stat_t;
+typedef u8_t health_t;
 typedef u8_t stamina_t;
+typedef u8_t attribute_t;
 
 typedef u8_t combat_slot_t;
 

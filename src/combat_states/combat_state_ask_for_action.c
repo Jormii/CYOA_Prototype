@@ -62,7 +62,7 @@ State *combat_state_ask_for_action_func()
     {
         if (combat_interface.slot != 0)
         {
-            ce_remove_queue_tail();
+            combat_engine_remove_queue_tail();
 
             combat_interface.cursor = 0;
             combat_interface.slot -= 1;
@@ -106,11 +106,6 @@ void display_combat_team(CombatTeam *combat_team)
         if (combat_unit != NULL)
         {
             rgb_t color = 0x00FFFFFF;
-            if (combat_team->is_players_team && slot == combat_interface.slot)
-            {
-                color = 0x008888FF;
-            }
-
             const Unit *unit = combat_unit->unit;
             tb_printf(&(print_window.buffer), color, L"%u :: %ls (%ls / %u) :: HP: %u || STA: %u\n",
                       slot, unit->name, unit->species->name, unit->id,

@@ -22,7 +22,7 @@ State *combat_state_start_of_combat_func()
             Unit *unit = team_get_unit(t, slot);
             if (unit != NULL)
             {
-                ce_choose_unit(ct, unit, slot);
+                combat_team_deploy_unit(ct, unit, slot);
             }
         }
 

@@ -3,8 +3,6 @@
 
 #include "types.h"
 
-typedef u8_t attribute_t;
-
 typedef enum Attribute_en
 {
     ATTR_STRENGTH,

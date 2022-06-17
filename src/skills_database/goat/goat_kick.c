@@ -1,10 +1,11 @@
 #include "all_skills.h"
+#include "combat_damage.h"
 
 void goat_kick_execute(SkillCommand *command)
 {
     // TODO
-    ce_damage_declare_attack(&(command->caster), &(command->target));
-    ce_damage_perform();
+    combat_damage_declare_attack(&(command->caster), &(command->target));
+    combat_damage_perform();
 }
 
 SkillMetadata goat_kick_meta = {

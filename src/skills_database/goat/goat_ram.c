@@ -1,5 +1,6 @@
 #include "ui.h"
 #include "all_skills.h"
+#include "combat_damage.h"
 
 typedef struct GoatRamBuffer_st
 {
@@ -22,8 +23,8 @@ void goat_ram_execute(SkillCommand *command)
     buffer->consecutive_uses += 1;
     for (uint8_t i = 0; i < buffer->consecutive_uses; ++i)
     {
-        ce_damage_declare_attack(&(command->caster), &(command->target));
-        ce_damage_perform();
+        combat_damage_declare_attack(&(command->caster), &(command->target));
+        combat_damage_perform();
     }
 
     tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%ls charges for %u damage\n",

@@ -81,7 +81,7 @@ void add_active_to_queue()
                             .target = {.unit_id = target->unit->id, .unit_slot = targets_slot, .combat_team = targets_team}};
 
     // Add to queue
-    ce_add_active_to_queue(&command);
+    combat_engine_add_active_to_queue(&command);
 }
 
 void display_skill_targets(const SkillMetadata *metadata)

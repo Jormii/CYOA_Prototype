@@ -3,7 +3,7 @@
 
 #include "types.h"
 #include "combat_event.h"
-#include "combat_descriptor.h"
+#include "combat_identifier.h"
 
 struct SkillCommand_st;
 typedef void (*SkillInitialize_fp)(void *skill_buffer);
@@ -14,6 +14,7 @@ typedef enum SkillType_en
 {
     SKILL_TYPE_PASSIVE,
     SKILL_TYPE_SPECIAL_CONDITION,
+    _SKILL_TYPE_ACTIVE_,
     SKILL_TYPE_ACTIVE_NOT_SELF
 } SkillType;
 
@@ -59,8 +60,9 @@ void skill_deinitialize(Skill *skill);
 typedef struct SkillCommand_st
 {
     Skill *skill;
-    CombatDescriptor caster;
-    CombatDescriptor target;
+    // TODO: Might be possible to optimize
+    CombatIdentifier caster;
+    CombatIdentifier target;
     CombatEventSource event_source;
 } SkillCommand;
 

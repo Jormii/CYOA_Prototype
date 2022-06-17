@@ -10,6 +10,6 @@ State combat_state_start_of_round = {
 
 State *combat_state_start_of_round_func()
 {
-    ce_broadcast_engine_event(COMBAT_EVENT_START_OF_TURN);
+    combat_engine_broadcast_engine_event(COMBAT_EVENT_START_OF_ROUND);
     return &combat_state_check_units;
 }

@@ -2,6 +2,7 @@
 
 #include "ui.h"
 #include "all_species.h"
+#include "combat_damage.h"
 #include "combat_engine.h"
 #include "unsigned_math.h"
 
@@ -38,8 +39,8 @@ void deal_damage(SkillCommand *command)
     DealDamageBuffer *buffer = (DealDamageBuffer *)(command->skill->skill_buffer);
     for (size_t i = 0; i < buffer->random; ++i)
     {
-        ce_damage_declare_attack(&(command->caster), &(command->target));
-        ce_damage_perform();
+        combat_damage_declare_attack(&(command->caster), &(command->target));
+        combat_damage_perform();
     }
 
     tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%ls (%u) attacks %ls (%u) for %u damage\n",
@@ -95,7 +96,7 @@ SkillMetadata take_damage_meta = {
     .name = L"Bleed",
     .description = L"Takes 1 point of damage at round start and round end",
     .priority = SKILL_PRIORITY_AVERAGE,
-    .triggers = COMBAT_EVENT_START_OF_TURN | COMBAT_EVENT_END_OF_TURN,
+    .triggers = COMBAT_EVENT_START_OF_ROUND | COMBAT_EVENT_END_OF_ROUND,
 
     .initialization = {
         .skill_buffer_size = 0,

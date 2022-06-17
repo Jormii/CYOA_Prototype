@@ -1,6 +1,6 @@
 #include "unit.h"
 
-void unit_default_initialization(Unit *unit)
+void unit_initialize(Unit *unit)
 {
     unit->id = UNDEFINED_UNIT_ID;
 }
@@ -8,6 +8,11 @@ void unit_default_initialization(Unit *unit)
 bool_t unit_is_valid(const Unit *unit)
 {
     return unit->id != UNDEFINED_UNIT_ID;
+}
+
+bool_t unit_is_alive(const Unit *unit)
+{
+    return unit_is_valid(unit) && unit->hp != 0;
 }
 
 stat_t unit_calculate_stat(const Unit *unit, Stat stat)
