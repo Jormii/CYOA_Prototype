@@ -14,10 +14,10 @@ SkillMetadata goat_kick_meta = {
     .name = L"Kick",
     .description = L"Kicks a single unit, dealing damage to it",
     .priority = SKILL_PRIORITY_AVERAGE,
+    .triggers = COMBAT_EVENT_NONE,
 
     .initialization = {
         .skill_buffer_size = 0,
         .initialize_cb = NULL},
     .deinitialize_cb = NULL,
-    .trigger_fp = NULL,
     .execute_cb = goat_kick_execute};
