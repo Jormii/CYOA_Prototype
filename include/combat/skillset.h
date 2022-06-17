@@ -1,7 +1,6 @@
 #ifndef SKILLSET_H
 #define SKILLSET_H
 
-#include "types.h"
 #include "skill.h"
 
 typedef struct SkillSetMetadata_st

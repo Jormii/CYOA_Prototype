@@ -1,10 +1,10 @@
 #include "team.h"
 
-void team_default_initialization(Team *team)
+void team_initialize(Team *team)
 {
     for (size_t i = 0; i < MAX_UNITS_IN_TEAM; ++i)
     {
-        unit_default_initialization(team->units + i);
+        unit_initialize(team->units + i);
     }
 }
 

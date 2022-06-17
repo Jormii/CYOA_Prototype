@@ -3,8 +3,6 @@
 
 #include "types.h"
 
-typedef u8_t stat_t;
-
 typedef enum Stat_en
 {
     STAT_HEALTH,

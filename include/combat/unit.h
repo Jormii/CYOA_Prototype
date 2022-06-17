@@ -7,8 +7,6 @@
 
 #define UNDEFINED_UNIT_ID 0
 
-typedef u8_t health_t;
-
 typedef struct Unit_st
 {
     size_t id;
@@ -19,9 +17,10 @@ typedef struct Unit_st
     const Species *species;
 } Unit;
 
-void unit_default_initialization(Unit *unit);
-bool_t unit_is_valid(const Unit *unit);
+void unit_initialize(Unit *unit);
 
+bool_t unit_is_valid(const Unit *unit);
+bool_t unit_is_alive(const Unit *unit);
 stat_t unit_calculate_stat(const Unit *unit, Stat stat);
 
 #endif

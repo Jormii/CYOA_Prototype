@@ -1,91 +1,34 @@
 #include "utils.h"
+#include "combat_damage.h"
 #include "combat_engine.h"
-
-void combat_team_initialize(CombatTeam *combat_team, bool_t is_players_team);
 
 void ce_broadcast_event_to_unit(CombatEventSource *source, CombatTeam *combat_team, combat_slot_t slot);
 
 bool_t queue_compare(const byte_t *first, const byte_t *second);
-bool_t skill_compare(const SkillMetadata *first_metadata, const CombatDescriptor *first_caster,
-                     const SkillMetadata *second_metadata, const CombatDescriptor *second_caster);
+bool_t skill_compare(const SkillMetadata *first_metadata, const CombatIdentifier *first_caster,
+                     const SkillMetadata *second_metadata, const CombatIdentifier *second_caster);
 
-CombatUnit *combat_team_get_combat_unit(CombatTeam *combat_team, combat_slot_t slot)
-{
-    CombatUnit *cu = combat_team->combat_units + slot;
-    if (cu->slot_occupied)
-    {
-        return cu;
-    }
-    else
-    {
-        return NULL;
-    }
-}
-
-combat_slot_t combat_team_count_available_units(const CombatTeam *combat_team)
-{
-    combat_slot_t count = 0;
-    for (combat_slot_t i = 0; i < MAX_UNITS_IN_TEAM; ++i)
-    {
-        const Unit *unit = combat_team->team.units + i;
-        bool_t available = unit_is_valid(unit) && unit->hp > 0 && !combat_team_unit_is_in_combat(combat_team, unit->id);
-        count += available;
-    }
-
-    return count;
-}
-
-bool_t combat_team_unit_is_in_combat(const CombatTeam *combat_team, size_t unit_id)
-{
-    for (combat_slot_t slot = 0; slot < MAX_UNITS_IN_COMBAT; ++slot)
-    {
-        const CombatUnit *cu = combat_team->combat_units + slot;
-        if (cu->slot_occupied && cu->unit->id == unit_id)
-        {
-            return TRUE;
-        }
-    }
-
-    return FALSE;
-}
-
-void ce_initialize()
+void combat_engine_initialize()
 {
     combat_engine.in_combat = FALSE;
-    combat_team_initialize(&(combat_engine.players_team), TRUE);
-    combat_team_initialize(&(combat_engine.enemy_team), FALSE);
+    combat_team_initialize(&(combat_engine.players_team));
+    combat_team_initialize(&(combat_engine.enemy_team));
     dynamic_list_init(
         &(combat_engine.skills_queue), 2 * 2 * MAX_UNITS_IN_COMBAT, 2,
         sizeof(SkillCommand));
 
-    ce_damage_initialize();
+    combat_damage_initialize();
 }
 
-void ce_choose_unit(CombatTeam *combat_team, Unit *unit, combat_slot_t slot)
-{
-    CombatUnit *cu = combat_team->combat_units + slot;
-    cu->unit = unit;
-    cu->slot_occupied = TRUE;
-    skillset_initialize(&(cu->skillset), unit->species->skillset_template);
-}
-
-void ce_remove_from_combat(CombatTeam *combat_team, combat_slot_t slot)
-{
-    CombatUnit *cu = combat_team->combat_units + slot;
-    cu->unit = NULL;
-    cu->slot_occupied = FALSE;
-    skillset_deinitialize(&(cu->skillset));
-}
-
-void ce_broadcast_engine_event(CombatEvent event)
+void combat_engine_broadcast_engine_event(CombatEvent event)
 {
     CombatEventSource source = {
         .caused_by_engine = TRUE,
         .event = event};
-    ce_broadcast_event(&source);
+    combat_engine_broadcast_event(&source);
 }
 
-void ce_broadcast_event(CombatEventSource *source)
+void combat_engine_broadcast_event(CombatEventSource *source)
 {
     // Broadcast to units
     for (combat_slot_t slot = 0; slot < MAX_UNITS_IN_COMBAT; ++slot)
@@ -97,16 +40,16 @@ void ce_broadcast_event(CombatEventSource *source)
         ce_broadcast_event_to_unit(source, &(combat_engine.enemy_team), slot);
     }
 
-    ce_execute_queue();
+    combat_engine_execute_queue();
 }
 
-void ce_add_active_to_queue(const SkillCommand *command)
+void combat_engine_add_active_to_queue(const SkillCommand *command)
 {
     fixed_list_append(
         &(combat_engine.skills_queue.fixed_list), (byte_t *)command);
 }
 
-void ce_remove_queue_tail()
+void combat_engine_remove_queue_tail()
 {
     size_t l = combat_engine.skills_queue.fixed_list.length;
     if (l != 0)
@@ -115,7 +58,7 @@ void ce_remove_queue_tail()
     }
 }
 
-void ce_execute_queue()
+void combat_engine_execute_queue()
 {
     // TODO: Check if the queue is being executed?
     // TODO: What if the size of the queue increases?
@@ -134,23 +77,10 @@ void ce_execute_queue()
 
         // Broadcast execution
         source.caused_by = command.caster;
-        ce_broadcast_event(&source);
+        combat_engine_broadcast_event(&source);
 
         // Execute
         command.skill->metadata->execute_cb(&command);
-    }
-}
-
-void combat_team_initialize(CombatTeam *combat_team, bool_t is_players_team)
-{
-    team_default_initialization(&(combat_team->team));
-    combat_team->is_players_team = is_players_team;
-
-    for (combat_slot_t slot = 0; slot < MAX_UNITS_IN_COMBAT; ++slot)
-    {
-        CombatUnit *cu = combat_team->combat_units + slot;
-        cu->unit = NULL;
-        cu->slot_occupied = FALSE;
     }
 }
 
@@ -191,8 +121,8 @@ bool_t queue_compare(const byte_t *first, const byte_t *second)
                          second_cmd->skill->metadata, &(second_cmd->caster));
 }
 
-bool_t skill_compare(const SkillMetadata *first_metadata, const CombatDescriptor *first_caster,
-                     const SkillMetadata *second_metadata, const CombatDescriptor *second_caster)
+bool_t skill_compare(const SkillMetadata *first_metadata, const CombatIdentifier *first_caster,
+                     const SkillMetadata *second_metadata, const CombatIdentifier *second_caster)
 {
     if (first_metadata->priority > second_metadata->priority)
     {

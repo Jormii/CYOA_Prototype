@@ -2,6 +2,7 @@
 
 #include "ui.h"
 #include "all_species.h"
+#include "combat_damage.h"
 #include "combat_engine.h"
 #include "unsigned_math.h"
 
@@ -38,8 +39,8 @@ void deal_damage(SkillCommand *command)
     DealDamageBuffer *buffer = (DealDamageBuffer *)(command->skill->skill_buffer);
     for (size_t i = 0; i < buffer->random; ++i)
     {
-        ce_damage_declare_attack(&(command->caster), &(command->target));
-        ce_damage_perform();
+        combat_damage_declare_attack(&(command->caster), &(command->target));
+        combat_damage_perform();
     }
 
     tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%ls (%u) attacks %ls (%u) for %u damage\n",
@@ -55,12 +56,12 @@ SkillMetadata bird_say_hi_meta = {
     .name = L"Say hi!",
     .description = L"Writes to console the names of this unit and this skill's target",
     .priority = SKILL_PRIORITY_AVERAGE,
+    .triggers = COMBAT_EVENT_NONE,
 
     .initialization = {
         .skill_buffer_size = 0,
         .initialize_cb = NULL},
     .deinitialize_cb = NULL,
-    .trigger_fp = NULL,
     .execute_cb = say_hi};
 
 SkillMetadata bird_deal_random_dmg_meta = {
@@ -70,29 +71,17 @@ SkillMetadata bird_deal_random_dmg_meta = {
     .name = L"Deal RND damage",
     .description = L"Deal a fixed amount of damage. This value is set when the unit is deployed",
     .priority = SKILL_PRIORITY_AVERAGE,
+    .triggers = COMBAT_EVENT_NONE,
 
     .initialization = {
         .skill_buffer_size = sizeof(DealDamageBuffer),
         .initialize_cb = deal_damage_initialize},
     .deinitialize_cb = NULL,
-    .trigger_fp = NULL,
     .execute_cb = deal_damage};
 
 #pragma endregion
 
 #pragma region Passives
-
-bool_t take_damage_trigger(const SkillCommand *command)
-{
-    const CombatEventSource *source = &(command->event_source);
-    if (source->cause == COMBAT_EVENT_CAUSE_ENGINE)
-    {
-        CombatEvent event = source->event;
-        return event == COMBAT_EVENT_START_OF_ROUND || event == COMBAT_EVENT_END_OF_ROUND;
-    }
-
-    return FALSE;
-}
 
 void take_damage(SkillCommand *command)
 {
@@ -107,12 +96,12 @@ SkillMetadata take_damage_meta = {
     .name = L"Bleed",
     .description = L"Takes 1 point of damage at round start and round end",
     .priority = SKILL_PRIORITY_AVERAGE,
+    .triggers = COMBAT_EVENT_START_OF_ROUND | COMBAT_EVENT_END_OF_ROUND,
 
     .initialization = {
         .skill_buffer_size = 0,
         .initialize_cb = NULL},
     .deinitialize_cb = NULL,
-    .trigger_fp = take_damage_trigger,
     .execute_cb = take_damage};
 
 #pragma endregion

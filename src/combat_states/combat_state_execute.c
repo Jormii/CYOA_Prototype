@@ -15,7 +15,7 @@ State *combat_state_execute_func()
 {
     if (input_button_pressed(BUTTON_CROSS))
     {
-        ce_broadcast_engine_event(COMBAT_EVENT_END_OF_TURN);
+        combat_engine_broadcast_engine_event(COMBAT_EVENT_END_OF_ROUND);
         return &combat_state_start_of_round;
     }
 
@@ -27,6 +27,6 @@ void combat_state_execute_on_enter(state_id_t previous_id)
     tb_clear(&(print_window.buffer), NULL);
     tb_clear(&(commands_window.buffer), NULL);
 
-    ce_execute_queue();
+    combat_engine_execute_queue();
     tb_print(&(commands_window.buffer), 0x00FFFFFF, L"Executing skills... Press X to return to main state\n");
 }

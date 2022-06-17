@@ -1,6 +1,6 @@
 #include "all_species.h"
 
-// TODO: Maybe create a huge array and simple index it?
+// TODO: Maybe create a huge array and simply index it?
 
 extern SkillMetadata goat_kick_meta;
 extern SkillMetadata goat_ram_meta;

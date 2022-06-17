@@ -27,7 +27,7 @@ void init_unit(Unit *unit, wchar_t *name, const Species *species)
 void combat_interface_initialize()
 {
     // Initialize combat engine and species
-    ce_initialize();
+    combat_engine_initialize();
 
     // TODO: Remove this
     init_unit(combat_engine.players_team.team.units, L"First", &bird_species);

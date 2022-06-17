@@ -1,10 +1,11 @@
 #include "all_skills.h"
+#include "combat_damage.h"
 
 void goat_kick_execute(SkillCommand *command)
 {
     // TODO
-    ce_damage_declare_attack(&(command->caster), &(command->target));
-    ce_damage_perform();
+    combat_damage_declare_attack(&(command->caster), &(command->target));
+    combat_damage_perform();
 }
 
 SkillMetadata goat_kick_meta = {
@@ -14,10 +15,10 @@ SkillMetadata goat_kick_meta = {
     .name = L"Kick",
     .description = L"Kicks a single unit, dealing damage to it",
     .priority = SKILL_PRIORITY_AVERAGE,
+    .triggers = COMBAT_EVENT_NONE,
 
     .initialization = {
         .skill_buffer_size = 0,
         .initialize_cb = NULL},
     .deinitialize_cb = NULL,
-    .trigger_fp = NULL,
     .execute_cb = goat_kick_execute};

@@ -41,7 +41,8 @@ State *combat_state_choose_unit_func()
         Unit *unit_highlighted = team_get_unit(&(combat_engine.players_team.team), combat_interface.cursor);
         if (unit_highlighted != NULL && unit_highlighted->hp != 0 && !combat_team_unit_is_in_combat(&(combat_engine.players_team), unit_highlighted->id))
         {
-            ce_choose_unit(&(combat_engine.players_team), unit_highlighted, combat_interface.slot);
+            combat_team_deploy_unit(
+                &(combat_engine.players_team), unit_highlighted, combat_interface.slot);
 
             if (combat_engine.in_combat)
             {
@@ -61,7 +62,8 @@ State *combat_state_choose_unit_func()
         if (!combat_engine.in_combat && combat_interface.slot != 0)
         {
             combat_interface.slot -= 1;
-            ce_remove_from_combat(&(combat_engine.players_team), combat_interface.slot);
+            combat_team_remove_from_combat(
+                &(combat_engine.players_team), combat_interface.slot);
             return &combat_state_start_of_combat;
         }
     }

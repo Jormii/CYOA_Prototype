@@ -10,7 +10,8 @@ typedef struct Team_st
     Unit units[MAX_UNITS_IN_TEAM];
 } Team;
 
-void team_default_initialization(Team *team);
+void team_initialize(Team *team);
+
 Unit *team_get_unit(Team *team, size_t index);
 
 #endif

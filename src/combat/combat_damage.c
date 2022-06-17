@@ -7,22 +7,22 @@
 
 DynamicList dmg_instances_queue;
 
-void ce_damage_initialize()
+void combat_damage_initialize()
 {
     dynamic_list_init(&dmg_instances_queue, DEFAULT_QUEUE_SIZE, 1,
                       sizeof(DmgCalcInstance));
 }
 
-void ce_damage_declare_attack(CombatDescriptor *attacker, CombatDescriptor *defender)
+void combat_damage_declare_attack(const CombatIdentifier *attacker, const CombatIdentifier *defender)
 {
     DmgCalcInstance instance = {
-        .attacker = attacker,
-        .defender = defender};
+        .attacker = *attacker,
+        .defender = *defender};
 
     dynamic_list_append(&dmg_instances_queue, (byte_t *)&instance);
 }
 
-DmgCalcInstance *ce_damage_current()
+DmgCalcInstance *combat_damage_peek_queue()
 {
     FixedList *l = &(dmg_instances_queue.fixed_list);
     if (l->length == 0)
@@ -33,17 +33,25 @@ DmgCalcInstance *ce_damage_current()
     return (DmgCalcInstance *)fixed_list_get(l, l->length - 1);
 }
 
-void ce_damage_perform()
+void combat_damage_perform()
 {
-    DmgCalcInstance *instance = ce_damage_current();
+    DmgCalcInstance *instance = combat_damage_peek_queue();
     if (instance == NULL)
     {
         return;
     }
 
     health_t damage = 1;
-    CombatUnit *defender = combat_team_get_combat_unit(instance->defender->combat_team, instance->defender->unit_slot);
-    defender->unit->hp = umath_substract(defender->unit->hp, damage);
+    if (combat_identifier_still_deployed(&(instance->attacker)))
+    {
+        // TODO
+        // CombatUnit *attacker = combat_identifier_get_combat_unit(&(instance->attacker));
+        CombatUnit *defender = combat_identifier_get_combat_unit(&(instance->defender));
+        if (defender != NULL)
+        {
+            defender->unit->hp = umath_substract(defender->unit->hp, damage);
+        }
+    }
 
     fixed_list_remove(&(dmg_instances_queue.fixed_list),
                       dmg_instances_queue.fixed_list.length - 1);

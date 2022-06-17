@@ -1,17 +1,19 @@
 #ifndef COMBAT_DAMAGE_H
 #define COMBAT_DAMAGE_H
 
-#include "combat_descriptor.h"
+#include "combat_identifier.h"
 
 typedef struct DmgCalcInstance_st
 {
-    CombatDescriptor *attacker;
-    CombatDescriptor *defender;
+    CombatIdentifier attacker;
+    CombatIdentifier defender;
 } DmgCalcInstance;
 
-void ce_damage_initialize();
-void ce_damage_declare_attack(CombatDescriptor *attacker, CombatDescriptor *defender);
-DmgCalcInstance *ce_damage_current();
-void ce_damage_perform();
+void combat_damage_initialize();
+
+void combat_damage_declare_attack(const CombatIdentifier *attacker, const CombatIdentifier *defender);
+void combat_damage_perform();
+
+DmgCalcInstance *combat_damage_peek_queue();
 
 #endif
