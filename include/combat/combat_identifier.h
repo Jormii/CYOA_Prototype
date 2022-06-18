@@ -13,6 +13,9 @@ typedef struct CombatIdentifier_st
     struct CombatTeam_st *combat_team; // What team the unit belongs to
 } CombatIdentifier;
 
+void combat_identifier_copy(const CombatIdentifier *src, CombatIdentifier *dst);
+
+bool_t combat_identifier_are_same_unit(const CombatIdentifier *first, const CombatIdentifier *second);
 bool_t combat_identifier_still_deployed(const CombatIdentifier *identifier);
 struct CombatUnit_st *combat_identifier_get_combat_unit(const CombatIdentifier *identifier);
 

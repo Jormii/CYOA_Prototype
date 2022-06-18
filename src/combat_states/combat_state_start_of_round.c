@@ -11,5 +11,6 @@ State combat_state_start_of_round = {
 State *combat_state_start_of_round_func()
 {
     combat_engine_broadcast_engine_event(COMBAT_EVENT_ENGINE_START_OF_ROUND);
+    combat_engine_execute_queue();
     return &combat_state_check_units;
 }

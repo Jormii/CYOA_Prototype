@@ -6,7 +6,7 @@
 #include <pspiofilemgr.h>
 
 SceUID log_fd;
-char buffer[1024];
+char log_buffer[1024];
 
 #define LOG(format, ...)                                                           \
     {                                                                              \
@@ -15,8 +15,8 @@ char buffer[1024];
             log_fd = sceIoOpen("umd0:/log.txt", PSP_O_WRONLY | PSP_O_CREAT, 0777); \
         }                                                                          \
                                                                                    \
-        int l = snprintf(buffer, 1024, format, ##__VA_ARGS__);                     \
-        sceIoWrite(log_fd, buffer, l);                                             \
+        int l = snprintf(log_buffer, 1024, format, ##__VA_ARGS__);                 \
+        sceIoWrite(log_fd, log_buffer, l);                                         \
     }
 
 #define LOG_CLOSE()             \

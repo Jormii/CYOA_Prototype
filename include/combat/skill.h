@@ -49,6 +49,8 @@ typedef struct SkillMetadata_st
     SkillExecute_fp execute_cb;
 } SkillMetadata;
 
+bool_t skill_metadata_is_active(const SkillMetadata *metadata);
+
 typedef struct Skill_st
 {
     const SkillMetadata *metadata;
@@ -61,11 +63,12 @@ void skill_deinitialize(Skill *skill);
 typedef struct SkillCommand_st
 {
     Skill *skill;
+    CombatEvent event;
     CombatIdentifier caster;
     CombatIdentifier target;
-    CombatEventSource cause;
 } SkillCommand;
 
+bool_t skill_command_is_active(const SkillCommand *command);
 bool_t skill_command_caster_is_cause_of_event(const SkillCommand *command);
 
 #endif

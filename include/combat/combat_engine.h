@@ -16,10 +16,17 @@ struct
 void combat_engine_initialize();
 
 void combat_engine_broadcast_engine_event(CombatEvent event);
-void combat_engine_broadcast_event(CombatEventSource *source);
+void combat_engine_broadcast_event(SkillCommand *event_command);
 
-void combat_engine_add_active_to_queue(Skill *skill, const CombatIdentifier *caster, const CombatIdentifier *target);
+void combat_engine_add_command_to_queue(const SkillCommand *command);
 void combat_engine_remove_queue_tail();
 void combat_engine_execute_queue();
+
+void combat_engine_format_active_command(
+    Skill *skill, const CombatIdentifier *caster, const CombatIdentifier *target,
+    SkillCommand *out_command);
+void combat_engine_format_passive_command(
+    Skill *skill, const CombatIdentifier *caster, const CombatIdentifier *target,
+    CombatEvent event, SkillCommand *cause, SkillCommand *out_command);
 
 #endif

@@ -3,7 +3,8 @@
 #include "combat_damage.h"
 #include "combat_engine.h"
 
-void ce_broadcast_event_to_unit(CombatEventSource *source, CombatTeam *combat_team, combat_slot_t slot);
+void broadcast_event_to_unit(SkillCommand *event_command, CombatTeam *combat_team, combat_slot_t slot);
+void check_dead_units(CombatTeam *combat_team);
 
 bool_t queue_compare(const byte_t *first, const byte_t *second);
 bool_t skill_compare(const SkillMetadata *first_metadata, const CombatIdentifier *first_caster,
@@ -24,36 +25,29 @@ void combat_engine_initialize()
 
 void combat_engine_broadcast_engine_event(CombatEvent event)
 {
-    CombatEventSource source = {
+    SkillCommand event_command = {
+        .skill = NULL,
         .event = event};
-    combat_engine_broadcast_event(&source);
+    combat_engine_broadcast_event(&event_command);
 }
 
-void combat_engine_broadcast_event(CombatEventSource *source)
+void combat_engine_broadcast_event(SkillCommand *event_command)
 {
     // Broadcast to units
     for (combat_slot_t slot = 0; slot < MAX_UNITS_IN_COMBAT; ++slot)
     {
-        ce_broadcast_event_to_unit(source, &(combat_engine.players_team), slot);
+        broadcast_event_to_unit(event_command, &(combat_engine.players_team), slot);
     }
     for (combat_slot_t slot = 0; slot < MAX_UNITS_IN_COMBAT; ++slot)
     {
-        ce_broadcast_event_to_unit(source, &(combat_engine.enemy_team), slot);
+        broadcast_event_to_unit(event_command, &(combat_engine.enemy_team), slot);
     }
-
-    combat_engine_execute_queue();
 }
 
-void combat_engine_add_active_to_queue(Skill *skill, const CombatIdentifier *caster, const CombatIdentifier *target)
+void combat_engine_add_command_to_queue(const SkillCommand *command)
 {
-    SkillCommand command = {
-        .skill = skill,
-        .caster = *caster,
-        .target = *target,
-        .cause = {
-            .event = COMBAT_EVENT_ENGINE_NONE}};
     fixed_list_append(
-        &(combat_engine.skills_queue.fixed_list), (byte_t *)&command);
+        &(combat_engine.skills_queue.fixed_list), (byte_t *)command);
 }
 
 void combat_engine_remove_queue_tail()
@@ -79,6 +73,7 @@ void combat_engine_execute_queue()
     combat_engine.executing_queue = TRUE;
 
     SkillCommand command;
+    SkillCommand broadcast_command;
     while (queue->length != 0)
     {
         // Pop
@@ -88,21 +83,45 @@ void combat_engine_execute_queue()
         if (combat_identifier_still_deployed(&(command.caster)))
         {
             // Broadcast execution
-            CombatEventSource source = {
-                .event = COMBAT_EVENT_SKILL_EXECUTION,
-                .skill_id = command.skill->metadata->id,
-                .caused_by = command.caster};
-            combat_engine_broadcast_event(&source);
+            combat_engine_format_passive_command(
+                command.skill, &(command.caster), &(command.target),
+                COMBAT_EVENT_SKILL_EXECUTION, &command, &broadcast_command);
+            combat_engine_broadcast_event(&broadcast_command);
 
             // Execute
             command.skill->metadata->execute_cb(&command);
+
+            check_dead_units(&(combat_engine.players_team));
+            check_dead_units(&(combat_engine.enemy_team));
         }
     }
 
     combat_engine.executing_queue = FALSE;
+
+    LOG("--- END OF QUEUE EXECUTION ---\n\n");
 }
 
-void ce_broadcast_event_to_unit(CombatEventSource *source, CombatTeam *combat_team, combat_slot_t slot)
+void combat_engine_format_active_command(
+    Skill *skill, const CombatIdentifier *caster, const CombatIdentifier *target,
+    SkillCommand *out_command)
+{
+    out_command->skill = skill;
+    out_command->event = COMBAT_EVENT_NONE;
+    combat_identifier_copy(caster, &(out_command->caster));
+    combat_identifier_copy(target, &(out_command->target));
+}
+
+void combat_engine_format_passive_command(
+    Skill *skill, const CombatIdentifier *caster, const CombatIdentifier *target,
+    CombatEvent event, SkillCommand *cause, SkillCommand *out_command)
+{
+    out_command->skill = skill;
+    out_command->event = event;
+    combat_identifier_copy(caster, &(out_command->caster));
+    combat_identifier_copy(target, &(out_command->target));
+}
+
+void broadcast_event_to_unit(SkillCommand *event_command, CombatTeam *combat_team, combat_slot_t slot)
 {
     CombatUnit *caster = combat_team_get_combat_unit(combat_team, slot);
     if (caster == NULL)
@@ -110,24 +129,36 @@ void ce_broadcast_event_to_unit(CombatEventSource *source, CombatTeam *combat_te
         return;
     }
 
-    SkillCommand command = {
-        .skill = NULL, // Modified as skills are iterated
-        .caster = {
-            .unit_id = caster->unit->id,
-            .unit_slot = slot,
-            .combat_team = combat_team},
-        .cause = *source};
+    CombatIdentifier caster_identifier = {
+        .unit_id = caster->unit->id,
+        .unit_slot = slot,
+        .combat_team = combat_team};
+    combat_identifier_copy(&caster_identifier, &(event_command->caster));
 
     // Broadcast to skills
     SkillSet *skillset = &(caster->skillset);
     for (size_t i = 0; i < skillset->metadata->n_skills; ++i)
     {
-        command.skill = skillset->skills + i;
+        event_command->skill = skillset->skills + i;
 
-        SkillTrigger_fp trigger_cb = command.skill->metadata->trigger_cb;
-        if (trigger_cb != NULL && trigger_cb(&command))
+        SkillTrigger_fp trigger_cb = event_command->skill->metadata->trigger_cb;
+        if (trigger_cb != NULL && trigger_cb(event_command))
         {
-            dynamic_list_append(&(combat_engine.skills_queue), (byte_t *)&command);
+            combat_engine_add_command_to_queue(event_command);
+        }
+    }
+}
+
+void check_dead_units(CombatTeam *combat_team)
+{
+    for (combat_slot_t slot = 0; slot < MAX_UNITS_IN_COMBAT; ++slot)
+    {
+        CombatUnit *cu = combat_team_get_combat_unit(combat_team, slot);
+        if (cu == NULL && !unit_is_alive(cu->unit) && combat_unit_tag_as_dead(cu))
+        {
+            // TODO: Engine shouldn't be in charge of "killing" units
+            // Unit died this round
+            combat_engine_broadcast_engine_event(COMBAT_EVENT_UNIT_DIED);
         }
     }
 }

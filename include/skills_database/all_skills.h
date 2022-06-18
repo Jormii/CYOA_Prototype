@@ -8,7 +8,8 @@ typedef enum SkillIdentifier_en
 {
 // Goat
     SKILL_ID_GOAT_KICK_ID,
-    SKILL_ID_GOAT_RAM_ID
+    SKILL_ID_GOAT_RAM_ID,
+    SKILL_ID_GOAT_UNSTOPPABLE_ID
 } SkillIdentifier;
 
 #endif

@@ -20,6 +20,7 @@ void combat_team_deploy_unit(CombatTeam *combat_team, Unit *unit, combat_slot_t 
 
     CombatUnit *cu = combat_team->combat_units + slot;
     cu->unit = unit;
+    cu->died_this_round = FALSE;
     skillset_initialize(&(cu->skillset), unit->species->skillset_template);
 }
 

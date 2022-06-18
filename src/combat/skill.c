@@ -1,4 +1,10 @@
 #include "skill.h"
+#include "combat_unit.h"
+
+bool_t skill_metadata_is_active(const SkillMetadata *metadata)
+{
+    return metadata->type > _SKILL_TYPE_ACTIVE_;
+}
 
 void skill_initialize(Skill *skill, const SkillMetadata *metadata)
 {
@@ -27,14 +33,18 @@ void skill_deinitialize(Skill *skill)
     }
 }
 
+bool_t skill_command_is_active(const SkillCommand *command)
+{
+    return command->event == COMBAT_EVENT_NONE;
+}
+
 bool_t skill_command_caster_is_cause_of_event(const SkillCommand *command)
 {
-    const CombatIdentifier *caster = &(command->caster);
-    const CombatEventSource *cause = &(command->cause);
-    if (combat_event_is_engine_event(cause->event))
+    const SkillCommand *cause = command->cause;
+    if (cause == NULL)
     {
         return FALSE;
     }
 
-    return caster->unit_id == cause->caused_by.unit_id;
+    return combat_identifier_are_same_unit(&(command->caster), &(cause->caster));
 }

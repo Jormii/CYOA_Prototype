@@ -85,7 +85,10 @@ void add_active_to_queue()
         .unit_slot = targets_slot,
         .combat_team = targets_team};
 
-    combat_engine_add_active_to_queue(skill, &caster_identifier, &target_identifier);
+    SkillCommand command;
+    combat_engine_format_active_command(
+        skill, &caster_identifier, &target_identifier, &command);
+    combat_engine_add_command_to_queue(&command);
 }
 
 void display_skill_targets(const SkillMetadata *metadata)
