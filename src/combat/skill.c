@@ -40,11 +40,10 @@ bool_t skill_command_is_active(const SkillCommand *command)
 
 bool_t skill_command_caster_is_cause_of_event(const SkillCommand *command)
 {
-    const SkillCommand *cause = command->cause;
-    if (cause == NULL)
+    if (command->event == COMBAT_EVENT_NONE)
     {
         return FALSE;
     }
 
-    return combat_identifier_are_same_unit(&(command->caster), &(cause->caster));
+    return combat_identifier_are_same_unit(&(command->caster), &(command->cause.caster));
 }

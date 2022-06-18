@@ -85,7 +85,7 @@ SkillMetadata bird_deal_random_dmg_meta = {
 
 bool_t take_damage_trigger(const SkillCommand *command)
 {
-    CombatEvent e = command->cause.event;
+    CombatEvent e = command->event;
     return e == COMBAT_EVENT_ENGINE_START_OF_ROUND || e == COMBAT_EVENT_ENGINE_END_OF_ROUND;
 }
 

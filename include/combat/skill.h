@@ -60,12 +60,19 @@ typedef struct Skill_st
 void skill_initialize(Skill *skill, const SkillMetadata *metadata);
 void skill_deinitialize(Skill *skill);
 
+typedef struct SkillCommandCause_st {
+    Skill *skill;
+    CombatEvent event;
+    CombatIdentifier caster;
+} SkillCommandCause;
+
 typedef struct SkillCommand_st
 {
     Skill *skill;
     CombatEvent event;
     CombatIdentifier caster;
     CombatIdentifier target;
+    SkillCommandCause cause;
 } SkillCommand;
 
 bool_t skill_command_is_active(const SkillCommand *command);

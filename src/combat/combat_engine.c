@@ -119,6 +119,11 @@ void combat_engine_format_passive_command(
     out_command->event = event;
     combat_identifier_copy(caster, &(out_command->caster));
     combat_identifier_copy(target, &(out_command->target));
+
+    SkillCommandCause *out_cause = &(out_command->cause);
+    out_cause->skill = cause->skill;
+    out_cause->event = cause->event;
+    combat_identifier_copy(&(cause->caster), &(out_cause->caster));
 }
 
 void broadcast_event_to_unit(SkillCommand *event_command, CombatTeam *combat_team, combat_slot_t slot)
