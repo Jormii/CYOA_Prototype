@@ -75,13 +75,17 @@ void add_active_to_queue()
     combat_slot_t targets_slot = combat_interface.cursor % MAX_UNITS_IN_COMBAT;
     CombatUnit *target = combat_team_get_combat_unit(targets_team, targets_slot); // TODO: What if NULL?
 
-    // Full command
-    SkillCommand command = {.skill = skill,
-                            .caster = {.unit_id = caster->unit->id, .unit_slot = combat_interface.slot, .combat_team = &(combat_engine.players_team)},
-                            .target = {.unit_id = target->unit->id, .unit_slot = targets_slot, .combat_team = targets_team}};
-
     // Add to queue
-    combat_engine_add_active_to_queue(&command);
+    CombatIdentifier caster_identifier = {
+        .unit_id = caster->unit->id,
+        .unit_slot = combat_interface.slot,
+        .combat_team = &(combat_engine.players_team)};
+    CombatIdentifier target_identifier = {
+        .unit_id = target->unit->id,
+        .unit_slot = targets_slot,
+        .combat_team = targets_team};
+
+    combat_engine_add_active_to_queue(skill, &caster_identifier, &target_identifier);
 }
 
 void display_skill_targets(const SkillMetadata *metadata)

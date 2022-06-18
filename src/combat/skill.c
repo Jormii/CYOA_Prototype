@@ -26,3 +26,15 @@ void skill_deinitialize(Skill *skill)
         free(skill->skill_buffer);
     }
 }
+
+bool_t skill_command_caster_is_cause_of_event(const SkillCommand *command)
+{
+    const CombatIdentifier *caster = &(command->caster);
+    const CombatEventSource *cause = &(command->cause);
+    if (combat_event_is_engine_event(cause->event))
+    {
+        return FALSE;
+    }
+
+    return caster->unit_id == cause->caused_by.unit_id;
+}

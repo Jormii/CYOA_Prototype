@@ -1,3 +1,4 @@
+#include "log.h"
 #include "utils.h"
 #include "combat_damage.h"
 #include "combat_engine.h"
@@ -11,6 +12,7 @@ bool_t skill_compare(const SkillMetadata *first_metadata, const CombatIdentifier
 void combat_engine_initialize()
 {
     combat_engine.in_combat = FALSE;
+    combat_engine.executing_queue = FALSE;
     combat_team_initialize(&(combat_engine.players_team));
     combat_team_initialize(&(combat_engine.enemy_team));
     dynamic_list_init(
@@ -23,7 +25,6 @@ void combat_engine_initialize()
 void combat_engine_broadcast_engine_event(CombatEvent event)
 {
     CombatEventSource source = {
-        .caused_by_engine = TRUE,
         .event = event};
     combat_engine_broadcast_event(&source);
 }
@@ -43,10 +44,16 @@ void combat_engine_broadcast_event(CombatEventSource *source)
     combat_engine_execute_queue();
 }
 
-void combat_engine_add_active_to_queue(const SkillCommand *command)
+void combat_engine_add_active_to_queue(Skill *skill, const CombatIdentifier *caster, const CombatIdentifier *target)
 {
+    SkillCommand command = {
+        .skill = skill,
+        .caster = *caster,
+        .target = *target,
+        .cause = {
+            .event = COMBAT_EVENT_ENGINE_NONE}};
     fixed_list_append(
-        &(combat_engine.skills_queue.fixed_list), (byte_t *)command);
+        &(combat_engine.skills_queue.fixed_list), (byte_t *)&command);
 }
 
 void combat_engine_remove_queue_tail()
@@ -60,28 +67,39 @@ void combat_engine_remove_queue_tail()
 
 void combat_engine_execute_queue()
 {
-    // TODO: Check if the queue is being executed?
-    // TODO: What if the size of the queue increases?
     FixedList *queue = &(combat_engine.skills_queue.fixed_list);
     fixed_list_bubble_sort(queue, queue_compare);
 
+    // TODO: What if a skill with higher priority is added?
+
+    if (combat_engine.executing_queue)
+    {
+        return;
+    }
+    combat_engine.executing_queue = TRUE;
+
     SkillCommand command;
-    CombatEventSource source = {
-        .caused_by_engine = FALSE,
-        .event = COMBAT_EVENT_SKILL_EXECUTION};
     while (queue->length != 0)
     {
         // Pop
         copy_buffer(fixed_list_get(queue, 0), (byte_t *)&command, queue->element_size);
         fixed_list_remove(queue, 0);
 
-        // Broadcast execution
-        source.caused_by = command.caster;
-        combat_engine_broadcast_event(&source);
+        if (combat_identifier_still_deployed(&(command.caster)))
+        {
+            // Broadcast execution
+            CombatEventSource source = {
+                .event = COMBAT_EVENT_SKILL_EXECUTION,
+                .skill_id = command.skill->metadata->id,
+                .caused_by = command.caster};
+            combat_engine_broadcast_event(&source);
 
-        // Execute
-        command.skill->metadata->execute_cb(&command);
+            // Execute
+            command.skill->metadata->execute_cb(&command);
+        }
     }
+
+    combat_engine.executing_queue = FALSE;
 }
 
 void ce_broadcast_event_to_unit(CombatEventSource *source, CombatTeam *combat_team, combat_slot_t slot)
@@ -93,20 +111,22 @@ void ce_broadcast_event_to_unit(CombatEventSource *source, CombatTeam *combat_te
     }
 
     SkillCommand command = {
+        .skill = NULL, // Modified as skills are iterated
         .caster = {
-            .combat_team = combat_team,
             .unit_id = caster->unit->id,
-            .unit_slot = slot},
-        .event_source = *source};
+            .unit_slot = slot,
+            .combat_team = combat_team},
+        .cause = *source};
 
     // Broadcast to skills
     SkillSet *skillset = &(caster->skillset);
     for (size_t i = 0; i < skillset->metadata->n_skills; ++i)
     {
-        Skill *skill = skillset->skills + i;
-        if (skill->metadata->triggers & source->event)
+        command.skill = skillset->skills + i;
+
+        SkillTrigger_fp trigger_cb = command.skill->metadata->trigger_cb;
+        if (trigger_cb != NULL && trigger_cb(&command))
         {
-            command.skill = skill;
             dynamic_list_append(&(combat_engine.skills_queue), (byte_t *)&command);
         }
     }

@@ -6,16 +6,23 @@
 
 typedef enum CombatEvent_en
 {
-    COMBAT_EVENT_NONE = 0,
-    COMBAT_EVENT_START_OF_ROUND = 0x00000001,
-    COMBAT_EVENT_END_OF_ROUND = 0x00000002,
-    COMBAT_EVENT_SKILL_EXECUTION = 0x00000004
+    // Engine events
+    _COMBAT_EVENT_ENGINE_,
+    COMBAT_EVENT_ENGINE_NONE, // TODO: Kind of ugly. Indicates that an skill is being executed
+    COMBAT_EVENT_ENGINE_START_OF_ROUND,
+    COMBAT_EVENT_ENGINE_END_OF_ROUND,
+
+    // Skill events
+    _COMBAT_EVENT_SKILL_,
+    COMBAT_EVENT_SKILL_EXECUTION
 } CombatEvent;
+
+bool_t combat_event_is_engine_event(CombatEvent event);
 
 typedef struct CombatEventSource_st
 {
     CombatEvent event;
-    bool_t caused_by_engine;
+    size_t skill_id;
     CombatIdentifier caused_by;
 } CombatEventSource;
 

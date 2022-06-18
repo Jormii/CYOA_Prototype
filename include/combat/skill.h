@@ -8,6 +8,7 @@
 struct SkillCommand_st;
 typedef void (*SkillInitialize_fp)(void *skill_buffer);
 typedef void (*SkillDeinitialize_fp)(void *skill_buffer);
+typedef bool_t (*SkillTrigger_fp)(const struct SkillCommand_st *command);
 typedef void (*SkillExecute_fp)(struct SkillCommand_st *command);
 
 typedef enum SkillType_en
@@ -41,10 +42,10 @@ typedef struct SkillMetadata_st
     const wchar_t *name;
     const wchar_t *description;
     SkillPriority priority;
-    event_flags_t triggers;
 
     SkillInitialization initialization;
     SkillDeinitialize_fp deinitialize_cb;
+    SkillTrigger_fp trigger_cb;
     SkillExecute_fp execute_cb;
 } SkillMetadata;
 
@@ -60,10 +61,11 @@ void skill_deinitialize(Skill *skill);
 typedef struct SkillCommand_st
 {
     Skill *skill;
-    // TODO: Might be possible to optimize
     CombatIdentifier caster;
     CombatIdentifier target;
-    CombatEventSource event_source;
+    CombatEventSource cause;
 } SkillCommand;
+
+bool_t skill_command_caster_is_cause_of_event(const SkillCommand *command);
 
 #endif
