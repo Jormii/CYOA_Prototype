@@ -99,6 +99,7 @@ void combat_engine_execute_queue()
 
             if (!combat_event_is_engine_event(command.event))
             {
+                // TODO: Checking will depend on targets
                 // Check if this command killed the target
                 CombatUnit *target = combat_identifier_get_combat_unit(&(command.target));
                 if (target != NULL && !unit_is_alive(target->unit) && combat_unit_tag_as_dead(target))

@@ -46,10 +46,44 @@ bool_t single_not_self_highlight_unit(const Skill *skill, size_t global_slot)
     return global_slot == combat_interface.cursor;
 }
 
-TargetCbs single_not_self = {
+TargetCbs single_not_self_cbs = {
     .format_skill_command = single_not_self_format_skill_command,
     .is_valid_target = single_not_self_is_valid_target,
     .highlight_unit_cb = single_not_self_highlight_unit};
+
+#pragma endregion
+
+#pragma region SKILL_TYPE_ACTIVE_ENEMY_TEAM
+
+void enemy_team_format_skill_command(CombatUnit *caster, Skill *skill, SkillCommand *out_command)
+{
+    CombatIdentifier caster_identifier = {
+        .unit_id = caster->unit->id,
+        .unit_slot = combat_interface.slot,
+        .combat_team = &(combat_engine.players_team)};
+
+    CombatIdentifier target_identifier = {
+        .unit_id = UNDEFINED_UNIT_ID,
+        .unit_slot = MAX_UNITS_IN_COMBAT,
+        .combat_team = &(combat_engine.enemy_team)};
+
+    combat_engine_format_active_command(skill, &caster_identifier, &target_identifier, out_command);
+}
+
+bool_t enemy_team_is_valid_target(const Skill *skill, size_t global_slot)
+{
+    return global_slot >= MAX_UNITS_IN_COMBAT;
+}
+
+bool_t enemy_team_highlight_unit(const Skill *skill, size_t global_slot)
+{
+    return combat_interface.cursor >= MAX_UNITS_IN_COMBAT;
+}
+
+TargetCbs enemy_team_cbs = {
+    .format_skill_command = enemy_team_format_skill_command,
+    .is_valid_target = enemy_team_is_valid_target,
+    .highlight_unit_cb = enemy_team_highlight_unit};
 
 #pragma endregion
 
@@ -125,7 +159,9 @@ TargetCbs *get_skill_target_cbs(const Skill *skill)
     switch (skill->metadata->type)
     {
     case SKILL_TYPE_ACTIVE_SINGLE_NOT_SELF:
-        return &single_not_self;
+        return &single_not_self_cbs;
+    case SKILL_TYPE_ACTIVE_ENEMY_TEAM:
+        return &enemy_team_cbs;
     default:
         break;
     }
