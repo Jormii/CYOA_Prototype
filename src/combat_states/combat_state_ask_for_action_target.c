@@ -9,6 +9,29 @@ typedef struct TargetCbs_st
     bool_t (*highlight_unit_cb)(const Skill *skill, size_t global_slot);
 } TargetCbs;
 
+#pragma region SKILL_TYPE_PASSIVE
+
+void passive_format_skill_command(CombatUnit *caster, Skill *skill, SkillCommand *out_command)
+{
+}
+
+bool_t passive_is_valid_target(const Skill *skill, size_t global_slot)
+{
+    return FALSE;
+}
+
+bool_t passive_highlight_unit(const Skill *skill, size_t global_slot)
+{
+    return FALSE;
+}
+
+TargetCbs passive_cbs = {
+    .format_skill_command = passive_format_skill_command,
+    .is_valid_target = passive_is_valid_target,
+    .highlight_unit_cb = passive_highlight_unit};
+
+#pragma endregion
+
 #pragma region SKILL_TYPE_ACTIVE_SINGLE_NOT_SELF
 
 void single_not_self_format_skill_command(CombatUnit *caster, Skill *skill, SkillCommand *out_command)
@@ -158,6 +181,8 @@ TargetCbs *get_skill_target_cbs(const Skill *skill)
 {
     switch (skill->metadata->type)
     {
+    case SKILL_TYPE_PASSIVE:
+        return &passive_cbs;
     case SKILL_TYPE_ACTIVE_SINGLE_NOT_SELF:
         return &single_not_self_cbs;
     case SKILL_TYPE_ACTIVE_ENEMY_TEAM:
