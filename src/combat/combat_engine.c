@@ -4,7 +4,6 @@
 #include "combat_engine.h"
 
 void broadcast_event_to_unit(SkillCommand *event_command, CombatTeam *combat_team, combat_slot_t slot);
-void check_dead_units(CombatTeam *combat_team);
 
 bool_t queue_compare(const byte_t *first, const byte_t *second);
 bool_t skill_compare(const SkillMetadata *first_metadata, const CombatIdentifier *first_caster,
@@ -91,8 +90,19 @@ void combat_engine_execute_queue()
             // Execute
             command.skill->metadata->execute_cb(&command);
 
-            check_dead_units(&(combat_engine.players_team));
-            check_dead_units(&(combat_engine.enemy_team));
+            if (!combat_event_is_engine_event(command.event))
+            {
+                // Check if this command killed the target
+                CombatUnit *target = combat_identifier_get_combat_unit(&(command.target));
+                if (target != NULL && !unit_is_alive(target->unit) && combat_unit_tag_as_dead(target))
+                {
+                    SkillCommand event_command;
+                    combat_engine_format_passive_command(
+                        command.skill, &(command.caster), &(command.target),
+                        COMBAT_EVENT_UNIT_DIED, &command, &event_command);
+                    combat_engine_broadcast_event(&event_command);
+                }
+            }
         }
     }
 
@@ -150,20 +160,6 @@ void broadcast_event_to_unit(SkillCommand *event_command, CombatTeam *combat_tea
         if (trigger_cb != NULL && trigger_cb(event_command))
         {
             combat_engine_add_command_to_queue(event_command);
-        }
-    }
-}
-
-void check_dead_units(CombatTeam *combat_team)
-{
-    for (combat_slot_t slot = 0; slot < MAX_UNITS_IN_COMBAT; ++slot)
-    {
-        CombatUnit *cu = combat_team_get_combat_unit(combat_team, slot);
-        if (cu == NULL && !unit_is_alive(cu->unit) && combat_unit_tag_as_dead(cu))
-        {
-            // TODO: Engine shouldn't be in charge of "killing" units
-            // Unit died this round
-            combat_engine_broadcast_engine_event(COMBAT_EVENT_UNIT_DIED);
         }
     }
 }

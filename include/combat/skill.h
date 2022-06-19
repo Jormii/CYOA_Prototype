@@ -66,6 +66,8 @@ typedef struct SkillCommandCause_st {
     CombatIdentifier caster;
 } SkillCommandCause;
 
+bool_t skill_command_cause_is_active(const SkillCommandCause *cause);
+
 typedef struct SkillCommand_st
 {
     Skill *skill;

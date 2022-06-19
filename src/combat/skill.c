@@ -33,6 +33,11 @@ void skill_deinitialize(Skill *skill)
     }
 }
 
+bool_t skill_command_cause_is_active(const SkillCommandCause *cause)
+{
+    return cause->event == COMBAT_EVENT_NONE;
+}
+
 bool_t skill_command_is_active(const SkillCommand *command)
 {
     return command->event == COMBAT_EVENT_NONE;
