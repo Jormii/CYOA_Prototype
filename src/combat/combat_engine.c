@@ -19,6 +19,8 @@ void combat_engine_initialize()
         &(combat_engine.skills_queue), 2 * 2 * MAX_UNITS_IN_COMBAT, 2,
         sizeof(SkillCommand));
 
+    combat_engine.on_event_cb = NULL;
+
     combat_damage_initialize();
 }
 
@@ -32,6 +34,11 @@ void combat_engine_broadcast_engine_event(CombatEvent event)
 
 void combat_engine_broadcast_event(SkillCommand *event_command)
 {
+    if (combat_engine.on_event_cb != NULL)
+    {
+        combat_engine.on_event_cb(event_command);
+    }
+
     // Broadcast to units
     for (combat_slot_t slot = 0; slot < MAX_UNITS_IN_COMBAT; ++slot)
     {

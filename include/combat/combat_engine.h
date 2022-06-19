@@ -4,6 +4,8 @@
 #include "combat_team.h"
 #include "dynamic_list.h"
 
+typedef void (*OnEvent_fp)(const SkillCommand *event_command);
+
 struct
 {
     bool_t in_combat;
@@ -11,6 +13,8 @@ struct
     CombatTeam players_team;
     CombatTeam enemy_team;
     DynamicList skills_queue;
+
+    OnEvent_fp on_event_cb;
 } combat_engine;
 
 void combat_engine_initialize();
