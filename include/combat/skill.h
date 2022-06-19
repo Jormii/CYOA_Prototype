@@ -16,7 +16,12 @@ typedef enum SkillType_en
     SKILL_TYPE_PASSIVE,
     SKILL_TYPE_SPECIAL_CONDITION,
     _SKILL_TYPE_ACTIVE_,
-    SKILL_TYPE_ACTIVE_NOT_SELF
+
+    // Single-targeted
+    SKILL_TYPE_ACTIVE_SINGLE_NOT_SELF,
+
+    // Team-targeted
+    SKILL_TYPE_ACTIVE_ENEMY_TEAM,
 } SkillType;
 
 typedef enum SkillPriority_en
@@ -60,7 +65,8 @@ typedef struct Skill_st
 void skill_initialize(Skill *skill, const SkillMetadata *metadata);
 void skill_deinitialize(Skill *skill);
 
-typedef struct SkillCommandCause_st {
+typedef struct SkillCommandCause_st
+{
     Skill *skill;
     CombatEvent event;
     CombatIdentifier caster;

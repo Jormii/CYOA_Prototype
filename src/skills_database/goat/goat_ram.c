@@ -72,7 +72,7 @@ void goat_ram_execute(SkillCommand *command)
 
 SkillMetadata goat_ram_meta = {
     .id = SKILL_ID_GOAT_RAM_ID,
-    .type = SKILL_TYPE_ACTIVE_NOT_SELF,
+    .type = SKILL_TYPE_ACTIVE_SINGLE_NOT_SELF,
     .cost = 0,
     .name = L"Ram",
     .description = L"Attacks a unit. Consecutive uses increase the damage of this attack",

@@ -50,7 +50,10 @@ State *combat_state_ask_for_action_func()
     }
     else if (input_button_pressed(BUTTON_CROSS))
     {
-        if (combat_interface.cursor < template->n_skills)
+        // Caster and skill
+        const CombatUnit *caster = combat_team_get_combat_unit(&(combat_engine.players_team), combat_interface.slot);
+        const Skill *skill = caster->skillset.skills + combat_interface.cursor;
+        if (skill_metadata_is_active(skill->metadata))
         {
             // Step only if an active was chosen
             combat_interface.chosen_skill = combat_interface.cursor;

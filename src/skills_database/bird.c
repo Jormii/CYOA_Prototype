@@ -51,7 +51,7 @@ void deal_damage(SkillCommand *command)
 
 SkillMetadata bird_say_hi_meta = {
     .id = 0,
-    .type = SKILL_TYPE_ACTIVE_NOT_SELF,
+    .type = SKILL_TYPE_ACTIVE_SINGLE_NOT_SELF,
     .cost = 0,
     .name = L"Say hi!",
     .description = L"Writes to console the names of this unit and this skill's target",
@@ -66,7 +66,7 @@ SkillMetadata bird_say_hi_meta = {
 
 SkillMetadata bird_deal_random_dmg_meta = {
     .id = 1,
-    .type = SKILL_TYPE_ACTIVE_NOT_SELF,
+    .type = SKILL_TYPE_ACTIVE_SINGLE_NOT_SELF,
     .cost = 0,
     .name = L"Deal RND damage",
     .description = L"Deal a fixed amount of damage. This value is set when the unit is deployed",
