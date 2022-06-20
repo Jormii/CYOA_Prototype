@@ -15,7 +15,7 @@ State *combat_state_execute_func()
 {
     if (input_button_pressed(BUTTON_CROSS))
     {
-        combat_engine_broadcast_engine_event(COMBAT_EVENT_END_OF_ROUND);
+        combat_engine_broadcast_engine_event(COMBAT_EVENT_ENGINE_END_OF_ROUND);
         return &combat_state_start_of_round;
     }
 

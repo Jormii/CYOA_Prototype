@@ -50,13 +50,9 @@ State *combat_state_ask_for_action_func()
     }
     else if (input_button_pressed(BUTTON_CROSS))
     {
-        if (combat_interface.cursor < template->n_skills)
-        {
-            // Step only if an active was chosen
-            combat_interface.chosen_skill = combat_interface.cursor;
-            combat_interface.cursor = 0;
-            return &combat_state_ask_for_action_target;
-        }
+        combat_interface.chosen_skill = combat_interface.cursor;
+        combat_interface.cursor = 0;
+        return &combat_state_ask_for_action_target;
     }
     else if (input_button_pressed(BUTTON_CIRCLE))
     {
@@ -106,6 +102,11 @@ void display_combat_team(CombatTeam *combat_team)
         if (combat_unit != NULL)
         {
             rgb_t color = 0x00FFFFFF;
+            if (combat_team == &(combat_engine.players_team) && slot == combat_interface.slot)
+            {
+                color = 0x008888FF;
+            }
+
             const Unit *unit = combat_unit->unit;
             tb_printf(&(print_window.buffer), color, L"%u :: %ls (%ls / %u) :: HP: %u || STA: %u\n",
                       slot, unit->name, unit->species->name, unit->id,

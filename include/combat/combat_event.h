@@ -4,19 +4,27 @@
 #include "types.h"
 #include "combat_identifier.h"
 
+struct Skill_st;
+
 typedef enum CombatEvent_en
 {
-    COMBAT_EVENT_NONE = 0,
-    COMBAT_EVENT_START_OF_ROUND = 0x00000001,
-    COMBAT_EVENT_END_OF_ROUND = 0x00000002,
-    COMBAT_EVENT_SKILL_EXECUTION = 0x00000004
+    COMBAT_EVENT_NONE, // Used to indicate the execution of an active
+
+    // Engine events
+    _COMBAT_EVENT_ENGINE_,
+    COMBAT_EVENT_ENGINE_START_OF_ROUND,
+    COMBAT_EVENT_ENGINE_END_OF_ROUND,
+    COMBAT_EVENT_ENGINE_ATTACK_DECLARATION,
+
+    // Unit events
+    _COMBAT_EVENT_UNIT_,
+    COMBAT_EVENT_UNIT_DIED,
+
+    // Skill events
+    _COMBAT_EVENT_SKILL_,
+    COMBAT_EVENT_SKILL_EXECUTION
 } CombatEvent;
 
-typedef struct CombatEventSource_st
-{
-    CombatEvent event;
-    bool_t caused_by_engine;
-    CombatIdentifier caused_by;
-} CombatEventSource;
+bool_t combat_event_is_engine_event(CombatEvent event);
 
 #endif

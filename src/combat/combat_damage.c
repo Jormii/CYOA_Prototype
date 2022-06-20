@@ -20,6 +20,7 @@ void combat_damage_declare_attack(const CombatIdentifier *attacker, const Combat
         .defender = *defender};
 
     dynamic_list_append(&dmg_instances_queue, (byte_t *)&instance);
+    combat_engine_broadcast_engine_event(COMBAT_EVENT_ENGINE_ATTACK_DECLARATION);
 }
 
 DmgCalcInstance *combat_damage_peek_queue()
