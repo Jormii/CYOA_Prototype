@@ -9,14 +9,11 @@ typedef struct GoatRamBuffer_st
 
 void goat_ram_buffer_reset(GoatRamBuffer *buffer, SkillCommand *command)
 {
-    if (buffer->consecutive_uses != 0)
-    {
-        buffer->consecutive_uses = 0;
+    buffer->consecutive_uses = 0;
 
-        CombatUnit *caster = combat_identifier_get_combat_unit(&(command->caster));
-        tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%ls stops its assault\n",
-                  caster->unit->name);
-    }
+    CombatUnit *caster = combat_identifier_get_combat_unit(&(command->caster));
+    tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%ls stops its assault\n",
+              caster->unit->name);
 }
 
 void goat_ram_buffer_attack(GoatRamBuffer *buffer, SkillCommand *command)
@@ -49,9 +46,10 @@ bool_t goat_ram_trigger(const SkillCommand *command)
     }
 
     CombatEvent event = command->event;
+    GoatRamBuffer *buffer = (GoatRamBuffer *)(command->skill->skill_buffer);
     const SkillMetadata *cause_skill_meta = command->cause.skill->metadata;
-    return event == COMBAT_EVENT_SKILL_EXECUTION && skill_metadata_is_active(cause_skill_meta) &&
-           cause_skill_meta->id != SKILL_ID_GOAT_RAM_ID;
+    return event == COMBAT_EVENT_SKILL_EXECUTION && buffer->consecutive_uses != 0 &&
+           skill_metadata_is_active(cause_skill_meta) && cause_skill_meta->id != SKILL_ID_GOAT_RAM_ID;
 }
 
 void goat_ram_execute(SkillCommand *command)

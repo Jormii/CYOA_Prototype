@@ -9,7 +9,6 @@ typedef void (*OnEvent_fp)(const SkillCommand *event_command);
 struct
 {
     bool_t in_combat;
-    bool_t executing_queue;
     CombatTeam players_team;
     CombatTeam enemy_team;
     DynamicList skills_queue;
@@ -31,6 +30,6 @@ void combat_engine_format_active_command(
     SkillCommand *out_command);
 void combat_engine_format_passive_command(
     Skill *skill, const CombatIdentifier *caster, const CombatIdentifier *target,
-    CombatEvent event, SkillCommand *cause, SkillCommand *out_command);
+    CombatEvent event, const SkillCommand *cause, SkillCommand *out_command);
 
 #endif

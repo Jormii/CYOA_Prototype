@@ -55,6 +55,7 @@ typedef struct SkillMetadata_st
 } SkillMetadata;
 
 bool_t skill_metadata_is_active(const SkillMetadata *metadata);
+bool_t skill_metadata_targets_single_unit(const SkillMetadata *metadata);
 
 typedef struct Skill_st
 {
@@ -81,6 +82,9 @@ typedef struct SkillCommand_st
     CombatIdentifier caster;
     CombatIdentifier target;
     SkillCommandCause cause;
+
+    bool_t broadcasted;
+    bool_t executed;
 } SkillCommand;
 
 bool_t skill_command_is_active(const SkillCommand *command);

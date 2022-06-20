@@ -6,6 +6,12 @@ bool_t skill_metadata_is_active(const SkillMetadata *metadata)
     return metadata->type > _SKILL_TYPE_ACTIVE_;
 }
 
+bool_t skill_metadata_targets_single_unit(const SkillMetadata *metadata)
+{
+    SkillType type = metadata->type;
+    return type == SKILL_TYPE_ACTIVE_SINGLE_NOT_SELF;
+}
+
 void skill_initialize(Skill *skill, const SkillMetadata *metadata)
 {
     skill->metadata = metadata;
