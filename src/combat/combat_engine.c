@@ -179,6 +179,26 @@ void combat_engine_format_passive_command(
     out_command->executed = FALSE;
 }
 
+void combat_engine_format_condition_command(
+    Skill *skill, const CombatIdentifier *afflicted, const CombatIdentifier *caused_by,
+    SkillCommand *out_command)
+{
+    out_command->skill = skill;
+    out_command->event = COMBAT_EVENT_CONDITION_REAPPLY;
+    combat_identifier_copy(afflicted, &(out_command->caster));
+    combat_identifier_copy(caused_by, &(out_command->target));
+
+    out_command->broadcasted = FALSE;
+    out_command->executed = FALSE;
+}
+
+void combat_engine_combat_identifier_from_combat_unit(const CombatUnit *combat_unit, CombatIdentifier *out_identifier)
+{
+    size_t unit_id = combat_unit->unit->id;
+    combat_team_format_combat_identifier(&(combat_engine.players_team), unit_id, out_identifier);
+    combat_team_format_combat_identifier(&(combat_engine.enemy_team), unit_id, out_identifier);
+}
+
 void broadcast_event_to_unit(SkillCommand *event_command, CombatTeam *combat_team, combat_slot_t slot)
 {
     CombatUnit *caster = combat_team_get_combat_unit(combat_team, slot);
@@ -201,6 +221,20 @@ void broadcast_event_to_unit(SkillCommand *event_command, CombatTeam *combat_tea
 
         SkillTrigger_fp trigger_cb = event_command->skill->metadata->trigger_cb;
         if (trigger_cb != NULL && trigger_cb(event_command))
+        {
+            combat_engine_add_command_to_queue(event_command);
+        }
+    }
+
+    // Broadcast to conditions
+    FixedList *conditions = &(caster->special_conditions.fixed_list);
+    for (size_t i = 0; i < conditions->length; ++i)
+    {
+        SpecialCondition *condition = (SpecialCondition *)fixed_list_get(conditions, i);
+        event_command->skill = &(condition->skill);
+
+        SkillTrigger_fp trigger_fp = event_command->skill->metadata->trigger_cb;
+        if (trigger_fp(event_command))
         {
             combat_engine_add_command_to_queue(event_command);
         }

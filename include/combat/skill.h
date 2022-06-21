@@ -18,6 +18,7 @@ typedef enum SkillType_en
     _SKILL_TYPE_ACTIVE_,
 
     // Single-targeted
+    SKILL_TYPE_ACTIVE_SELF,
     SKILL_TYPE_ACTIVE_SINGLE_NOT_SELF,
 
     // Team-targeted

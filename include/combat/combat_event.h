@@ -22,7 +22,11 @@ typedef enum CombatEvent_en
 
     // Skill events
     _COMBAT_EVENT_SKILL_,
-    COMBAT_EVENT_SKILL_EXECUTION
+    COMBAT_EVENT_SKILL_EXECUTION,
+
+    // Condition events
+    _COMBAT_EVENT_CONDITION_,
+    COMBAT_EVENT_CONDITION_REAPPLY
 } CombatEvent;
 
 bool_t combat_event_is_engine_event(CombatEvent event);

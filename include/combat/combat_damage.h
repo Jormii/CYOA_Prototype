@@ -1,10 +1,12 @@
 #ifndef COMBAT_DAMAGE_H
 #define COMBAT_DAMAGE_H
 
+#include "types.h"
 #include "combat_identifier.h"
 
 typedef struct DmgCalcInstance_st
 {
+    health_t damage;
     CombatIdentifier attacker;
     CombatIdentifier defender;
 } DmgCalcInstance;

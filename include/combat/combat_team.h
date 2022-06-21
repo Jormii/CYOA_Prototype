@@ -21,4 +21,6 @@ CombatUnit *combat_team_get_combat_unit(CombatTeam *combat_team, combat_slot_t s
 bool_t combat_team_unit_is_in_combat(CombatTeam *combat_team, size_t unit_id);
 combat_slot_t combat_team_count_available_units(CombatTeam *combat_team);
 
+bool_t combat_team_format_combat_identifier(CombatTeam *combat_team, size_t unit_id, CombatIdentifier *out_identifier);
+
 #endif
