@@ -181,7 +181,7 @@ void combat_engine_format_passive_command(
 
 void combat_engine_format_condition_command(
     Skill *skill, const CombatIdentifier *afflicted, const CombatIdentifier *caused_by,
-    SkillCommand *out_command)
+    CombatEvent condition_event, SkillCommand *out_command)
 {
     out_command->skill = skill;
     out_command->event = COMBAT_EVENT_CONDITION_REAPPLY;

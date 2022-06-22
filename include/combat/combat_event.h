@@ -26,7 +26,8 @@ typedef enum CombatEvent_en
 
     // Condition events
     _COMBAT_EVENT_CONDITION_,
-    COMBAT_EVENT_CONDITION_REAPPLY
+    COMBAT_EVENT_CONDITION_REAPPLY,
+    COMBAT_EVENT_CONDITION_REMOVAL
 } CombatEvent;
 
 bool_t combat_event_is_engine_event(CombatEvent event);

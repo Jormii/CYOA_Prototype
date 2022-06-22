@@ -15,6 +15,7 @@
 typedef uint8_t bool_t;
 typedef uint8_t byte_t;
 
+typedef int8_t i8_t;
 typedef uint8_t u8_t;
 typedef uint32_t u32_t;
 

@@ -6,7 +6,7 @@ void special_condition_reapply(SpecialCondition *condition, const CombatIdentifi
     SkillCommand condition_command;
     combat_engine_format_condition_command(
         &(condition->skill), afflicted, &(condition->caused_by),
-        &condition_command);
+        COMBAT_EVENT_CONDITION_REAPPLY, &condition_command);
 
     // TODO: Should be broadcasted?
     const SkillMetadata *metadata = condition->skill.metadata;
