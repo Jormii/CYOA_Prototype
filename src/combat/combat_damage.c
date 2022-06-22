@@ -16,6 +16,7 @@ void combat_damage_initialize()
 void combat_damage_declare_attack(const CombatIdentifier *attacker, const CombatIdentifier *defender)
 {
     DmgCalcInstance instance = {
+        .damage = 1,
         .attacker = *attacker,
         .defender = *defender};
 
@@ -42,7 +43,7 @@ void combat_damage_perform()
         return;
     }
 
-    health_t damage = 1;
+    health_t damage = instance->damage;
     if (combat_identifier_still_deployed(&(instance->attacker)))
     {
         // TODO

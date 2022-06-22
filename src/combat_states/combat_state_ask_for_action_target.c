@@ -32,6 +32,36 @@ TargetCbs passive_cbs = {
 
 #pragma endregion
 
+#pragma region SKILL_TYPE_ACTIVE_SELF
+
+void self_format_skill_command(CombatUnit *caster, Skill *skill, SkillCommand *out_command)
+{
+    CombatIdentifier target_identifier; // Irrelevant
+    CombatIdentifier caster_identifier = {
+        .unit_id = caster->unit->id,
+        .unit_slot = combat_interface.slot,
+        .combat_team = &(combat_engine.players_team)};
+
+    combat_engine_format_active_command(skill, &caster_identifier, &target_identifier, out_command);
+}
+
+bool_t self_is_valid_target(const Skill *skill, size_t global_slot)
+{
+    return combat_interface.slot == global_slot;
+}
+
+bool_t self_highlight_unit(const Skill *skill, size_t global_slot)
+{
+    return combat_interface.cursor == global_slot;
+}
+
+TargetCbs self_cbs = {
+    .format_skill_command = self_format_skill_command,
+    .is_valid_target = self_is_valid_target,
+    .highlight_unit_cb = self_highlight_unit};
+
+#pragma endregion
+
 #pragma region SKILL_TYPE_ACTIVE_SINGLE_NOT_SELF
 
 void single_not_self_format_skill_command(CombatUnit *caster, Skill *skill, SkillCommand *out_command)
@@ -183,6 +213,8 @@ TargetCbs *get_skill_target_cbs(const Skill *skill)
     {
     case SKILL_TYPE_PASSIVE:
         return &passive_cbs;
+    case SKILL_TYPE_ACTIVE_SELF:
+        return &self_cbs;
     case SKILL_TYPE_ACTIVE_SINGLE_NOT_SELF:
         return &single_not_self_cbs;
     case SKILL_TYPE_ACTIVE_ENEMY_TEAM:

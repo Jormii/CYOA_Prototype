@@ -34,6 +34,9 @@ void combat_team_remove_from_combat(CombatTeam *combat_team, combat_slot_t slot)
 
     cu->unit = NULL;
     skillset_deinitialize(&(cu->skillset));
+    fixed_list_clear(&(cu->special_conditions.fixed_list));
+
+    // TODO: Notify skills this unit has been removed
 }
 
 CombatUnit *combat_team_get_combat_unit(CombatTeam *combat_team, combat_slot_t slot)
@@ -78,4 +81,21 @@ combat_slot_t combat_team_count_available_units(CombatTeam *combat_team)
     }
 
     return count;
+}
+
+bool_t combat_team_format_combat_identifier(CombatTeam *combat_team, size_t unit_id, CombatIdentifier *out_identifier)
+{
+    for (combat_slot_t slot = 0; slot < MAX_UNITS_IN_COMBAT; ++slot)
+    {
+        const CombatUnit *cu = combat_team_get_combat_unit(combat_team, slot);
+        if (cu != NULL && cu->unit->id == unit_id)
+        {
+            out_identifier->unit_id = unit_id;
+            out_identifier->unit_slot = slot;
+            out_identifier->combat_team = combat_team;
+            return TRUE;
+        }
+    }
+
+    return FALSE;
 }

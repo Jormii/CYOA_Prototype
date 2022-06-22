@@ -5,6 +5,7 @@
 extern SkillMetadata goat_kick_meta;
 extern SkillMetadata goat_ram_meta;
 extern SkillMetadata goat_unstoppable_meta;
+extern SkillMetadata goat_focus_meta;
 extern SkillMetadata goat_charge_meta;
 extern SkillMetadata goat_anticipation_meta;
 
@@ -12,6 +13,7 @@ SkillMetadata *goat_skills_meta[] = {
     &goat_kick_meta,
     &goat_ram_meta,
     &goat_unstoppable_meta,
+    &goat_focus_meta,
     &goat_charge_meta,
     &goat_anticipation_meta};
 
