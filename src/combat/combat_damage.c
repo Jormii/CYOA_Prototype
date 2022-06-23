@@ -55,6 +55,7 @@ void combat_damage_perform()
         }
     }
 
+    combat_engine_broadcast_engine_event(COMBAT_EVENT_ENGINE_ATTACK_COMPLETION);
     fixed_list_remove(&(dmg_instances_queue.fixed_list),
                       dmg_instances_queue.fixed_list.length - 1);
 }
