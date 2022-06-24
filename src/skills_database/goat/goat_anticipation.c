@@ -12,7 +12,7 @@ typedef struct GoatAnticipationBuffer_st
 void goat_anticipation_buffer_reset(GoatAnticipationBuffer *buffer);
 void goat_anticipation_buffer_store_target(GoatAnticipationBuffer *buffer, const SkillCommand *command);
 void goat_anticipation_buffer_store_attacker(GoatAnticipationBuffer *buffer, size_t unit_id);
-void goat_anticipation_buffer_counter_attack(const GoatAnticipationBuffer *buffer, const SkillCommand *command);
+void goat_anticipation_buffer_counter_attack(const GoatAnticipationBuffer *buffer, SkillCommand *command);
 bool_t goat_anticipation_buffer_attacker_is_stored_target(const GoatAnticipationBuffer *buffer,
                                                           const SkillCommand *command, const DmgCalcInstance *dmg_inst);
 bool_t goat_anticipation_buffer_attacked_by(GoatAnticipationBuffer *buffer, size_t unit_id);
@@ -33,10 +33,11 @@ void goat_anticipation_buffer_store_attacker(GoatAnticipationBuffer *buffer, siz
     fixed_list_append(&(buffer->attacked_by_ids), (byte_t *)&unit_id);
 }
 
-void goat_anticipation_buffer_counter_attack(const GoatAnticipationBuffer *buffer, const SkillCommand *command)
+void goat_anticipation_buffer_counter_attack(const GoatAnticipationBuffer *buffer, SkillCommand *command)
 {
-    combat_damage_declare_attack(&(command->caster), &(buffer->target));
-    combat_damage_perform();
+    DmgCalcInstance *dmg_instance = combat_damage_declare_attack(
+        &(command->caster), &(buffer->target), command);
+    combat_damage_perform(dmg_instance);
 
     const CombatUnit *caster = combat_identifier_get_combat_unit(&(command->caster));
     const CombatUnit *target = combat_identifier_get_combat_unit(&(buffer->target));
@@ -90,12 +91,13 @@ bool_t goat_anticipation_trigger(const SkillCommand *command)
     case COMBAT_EVENT_SKILL_EXECUTION:
         return skill_command_caster_is_cause_of_event(command) &&
                skill_metadata_targets_single_unit(command->cause.skill->metadata);
-    case COMBAT_EVENT_ENGINE_ATTACK_DECLARATION:
+    case COMBAT_EVENT_UNIT_ATTACK_DECLARATION:
     {
-        const DmgCalcInstance *dmg_inst = combat_damage_peek_queue();
+        const DmgCalcInstance *dmg_instance = combat_damage_get_instance(
+            command->cause.dmg_instance_id);
         GoatAnticipationBuffer *buffer = (GoatAnticipationBuffer *)(command->skill->skill_buffer);
-        return dmg_inst->defender.unit_id == command->caster.unit_id &&
-               !goat_anticipation_buffer_attacked_by(buffer, dmg_inst->attacker.unit_id);
+        return dmg_instance->defender.unit_id == command->caster.unit_id &&
+               !goat_anticipation_buffer_attacked_by(buffer, dmg_instance->attacker.unit_id);
     }
     default:
         break;
@@ -123,11 +125,12 @@ void goat_anticipation_execute(SkillCommand *command)
                       caster->unit->name);
         }
         break;
-    case COMBAT_EVENT_ENGINE_ATTACK_DECLARATION:
+    case COMBAT_EVENT_UNIT_ATTACK_DECLARATION:
     {
-        const DmgCalcInstance *dmg_inst = combat_damage_peek_queue();
-        goat_anticipation_buffer_store_attacker(buffer, dmg_inst->attacker.unit_id);
-        if (goat_anticipation_buffer_attacker_is_stored_target(buffer, command, dmg_inst))
+        const DmgCalcInstance *dmg_instance = combat_damage_get_instance(
+            command->cause.dmg_instance_id);
+        goat_anticipation_buffer_store_attacker(buffer, dmg_instance->attacker.unit_id);
+        if (goat_anticipation_buffer_attacker_is_stored_target(buffer, command, dmg_instance))
         {
             goat_anticipation_buffer_counter_attack(buffer, command);
         }

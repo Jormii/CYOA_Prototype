@@ -72,6 +72,7 @@ typedef struct SkillCommandCause_st
     Skill *skill;
     CombatEvent event;
     CombatIdentifier caster;
+    size_t dmg_instance_id;
 } SkillCommandCause;
 
 bool_t skill_command_cause_is_active(const SkillCommandCause *cause);
@@ -79,6 +80,7 @@ bool_t skill_command_cause_is_active(const SkillCommandCause *cause);
 typedef struct SkillCommand_st
 {
     Skill *skill;
+    SkillPriority priority;
     CombatEvent event;
     CombatIdentifier caster;
     CombatIdentifier target;

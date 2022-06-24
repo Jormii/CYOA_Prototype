@@ -6,8 +6,8 @@
 void broadcast_event_to_unit(SkillCommand *event_command, CombatTeam *combat_team, combat_slot_t slot);
 
 bool_t queue_compare(const byte_t *first, const byte_t *second);
-bool_t skill_compare(const SkillMetadata *first_metadata, const CombatIdentifier *first_caster,
-                     const SkillMetadata *second_metadata, const CombatIdentifier *second_caster);
+bool_t command_compare(SkillPriority first_priority, const CombatIdentifier *first_caster,
+                       SkillPriority second_priority, const CombatIdentifier *second_caster);
 
 void combat_engine_initialize()
 {
@@ -100,7 +100,7 @@ void combat_engine_execute_queue()
                 command->broadcasted = TRUE;
                 combat_engine_format_passive_command(
                     command->skill, &(command->caster), &(command->target),
-                    COMBAT_EVENT_SKILL_EXECUTION, command, &broadcast_command);
+                    COMBAT_EVENT_SKILL_EXECUTION, command, 0, &broadcast_command);
                 combat_engine_broadcast_event(&broadcast_command);
             }
             else
@@ -122,6 +122,7 @@ void combat_engine_execute_queue()
                 return; // See comment atop the function
             }
 
+#if 0
             if (!combat_event_is_engine_event(command->event))
             {
                 // TODO: Checking will depend on targets
@@ -136,6 +137,7 @@ void combat_engine_execute_queue()
                     combat_engine_broadcast_event(&event_command);
                 }
             }
+#endif
 
             LOG("%ls: %ls | %u (END)\n",
                 caster->unit->name, command->skill->metadata->name, command->event);
@@ -153,6 +155,7 @@ void combat_engine_format_active_command(
     SkillCommand *out_command)
 {
     out_command->skill = skill;
+    out_command->priority = skill->metadata->priority;
     out_command->event = COMBAT_EVENT_NONE;
     combat_identifier_copy(caster, &(out_command->caster));
     combat_identifier_copy(target, &(out_command->target));
@@ -163,9 +166,10 @@ void combat_engine_format_active_command(
 
 void combat_engine_format_passive_command(
     Skill *skill, const CombatIdentifier *caster, const CombatIdentifier *target,
-    CombatEvent event, const SkillCommand *cause, SkillCommand *out_command)
+    CombatEvent event, const SkillCommand *cause, size_t dmg_instance_id, SkillCommand *out_command)
 {
     out_command->skill = skill;
+    out_command->priority = skill->metadata->priority;
     out_command->event = event;
     combat_identifier_copy(caster, &(out_command->caster));
     combat_identifier_copy(target, &(out_command->target));
@@ -174,6 +178,7 @@ void combat_engine_format_passive_command(
     out_cause->skill = cause->skill;
     out_cause->event = cause->event;
     combat_identifier_copy(&(cause->caster), &(out_cause->caster));
+    out_cause->dmg_instance_id = dmg_instance_id;
 
     out_command->broadcasted = FALSE;
     out_command->executed = FALSE;
@@ -184,6 +189,7 @@ void combat_engine_format_condition_command(
     CombatEvent condition_event, SkillCommand *out_command)
 {
     out_command->skill = skill;
+    out_command->priority = skill->metadata->priority;
     out_command->event = COMBAT_EVENT_CONDITION_REAPPLY;
     combat_identifier_copy(afflicted, &(out_command->caster));
     combat_identifier_copy(caused_by, &(out_command->target));
@@ -246,18 +252,18 @@ bool_t queue_compare(const byte_t *first, const byte_t *second)
     SkillCommand *first_cmd = (SkillCommand *)first;
     SkillCommand *second_cmd = (SkillCommand *)second;
 
-    return skill_compare(first_cmd->skill->metadata, &(first_cmd->caster),
-                         second_cmd->skill->metadata, &(second_cmd->caster));
+    return command_compare(first_cmd->priority, &(first_cmd->caster),
+                           second_cmd->priority, &(second_cmd->caster));
 }
 
-bool_t skill_compare(const SkillMetadata *first_metadata, const CombatIdentifier *first_caster,
-                     const SkillMetadata *second_metadata, const CombatIdentifier *second_caster)
+bool_t command_compare(SkillPriority first_priority, const CombatIdentifier *first_caster,
+                       SkillPriority second_priority, const CombatIdentifier *second_caster)
 {
-    if (first_metadata->priority > second_metadata->priority)
+    if (first_priority > second_priority)
     {
         return TRUE;
     }
-    else if (first_metadata->priority < second_metadata->priority)
+    else if (first_priority < second_priority)
     {
         return FALSE;
     }

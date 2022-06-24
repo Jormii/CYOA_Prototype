@@ -22,10 +22,11 @@ bool_t goat_penetration_condition_trigger(const SkillCommand *command)
     case COMBAT_EVENT_ENGINE_END_OF_ROUND:
     case COMBAT_EVENT_CONDITION_REAPPLY:
         return TRUE;
-    case COMBAT_EVENT_ENGINE_ATTACK_DECLARATION:
+    case COMBAT_EVENT_UNIT_ATTACK_DECLARATION:
     {
-        const DmgCalcInstance *dmg_inst = combat_damage_peek_queue();
-        return dmg_inst->defender.unit_id == command->caster.unit_id;
+        const DmgCalcInstance *dmg_instance = combat_damage_get_instance(
+            command->cause.dmg_instance_id);
+        return dmg_instance->defender.unit_id == command->caster.unit_id;
     }
     default:
         break;
@@ -56,10 +57,11 @@ void goat_penetration_condition_execute(SkillCommand *command)
             }
         }
         break;
-    case COMBAT_EVENT_ENGINE_ATTACK_DECLARATION:
+    case COMBAT_EVENT_UNIT_ATTACK_DECLARATION:
     {
-        DmgCalcInstance *dmg_inst = combat_damage_peek_queue();
-        dmg_inst->damage += buffer->stacks;
+        DmgCalcInstance *dmg_instance = combat_damage_get_instance(
+            command->cause.dmg_instance_id);
+        dmg_instance->damage += buffer->stacks;
 
         tb_printf(&(print_window.buffer), 0x008888FF,
                   L"%ls's armor is shredded by %u!\n",
@@ -91,15 +93,17 @@ SkillMetadata goat_penetration_condition_meta = {
 
 bool_t goat_penetration_trigger(const SkillCommand *command)
 {
-    const DmgCalcInstance *dmg_inst = combat_damage_peek_queue();
-    return command->event == COMBAT_EVENT_ENGINE_ATTACK_COMPLETION &&
-           dmg_inst->attacker.unit_id == command->caster.unit_id;
+    const DmgCalcInstance *dmg_instance = combat_damage_get_instance(
+        command->cause.dmg_instance_id);
+    return command->event == COMBAT_EVENT_UNIT_ATTACK_COMPLETION &&
+           dmg_instance->attacker.unit_id == command->caster.unit_id;
 }
 
 void goat_penetration_execute(SkillCommand *command)
 {
-    DmgCalcInstance *dmg_inst = combat_damage_peek_queue();
-    CombatUnit *target = combat_identifier_get_combat_unit(&(dmg_inst->defender));
+    DmgCalcInstance *dmg_instance = combat_damage_get_instance(
+        command->cause.dmg_instance_id);
+    CombatUnit *target = combat_identifier_get_combat_unit(&(dmg_instance->defender));
 
     combat_unit_apply_condition(
         target, &goat_penetration_condition_meta, &(command->caster));

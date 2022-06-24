@@ -4,11 +4,11 @@
 
 void goat_desperation_execute(SkillCommand *command)
 {
-    combat_damage_declare_attack(&(command->caster), &(command->target));
+    DmgCalcInstance *dmg_instance = combat_damage_declare_attack(
+        &(command->caster), &(command->target), command);
 
-    DmgCalcInstance *dmg_inst = combat_damage_peek_queue();
-    dmg_inst->damage = 5;
-    combat_damage_perform();
+    dmg_instance->damage = 5;
+    combat_damage_perform(dmg_instance);
 
     CombatUnit *caster = combat_identifier_get_combat_unit(&(command->caster));
     const CombatUnit *target = combat_identifier_get_combat_unit(&(command->target));

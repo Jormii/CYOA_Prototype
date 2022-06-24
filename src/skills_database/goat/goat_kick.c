@@ -5,8 +5,9 @@
 void goat_kick_execute(SkillCommand *command)
 {
     // TODO
-    combat_damage_declare_attack(&(command->caster), &(command->target));
-    combat_damage_perform();
+    DmgCalcInstance *dmg_instance = combat_damage_declare_attack(
+        &(command->caster), &(command->target), command);
+    combat_damage_perform(dmg_instance);
 
     const CombatUnit *caster = combat_identifier_get_combat_unit(&(command->caster));
     const CombatUnit *target = combat_identifier_get_combat_unit(&(command->target));
