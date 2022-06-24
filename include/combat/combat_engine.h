@@ -30,7 +30,7 @@ void combat_engine_format_active_command(
     SkillCommand *out_command);
 void combat_engine_format_passive_command(
     Skill *skill, const CombatIdentifier *caster, const CombatIdentifier *target,
-    CombatEvent event, const SkillCommand *cause, SkillCommand *out_command);
+    CombatEvent event, const SkillCommand *cause, size_t dmg_instance_id, SkillCommand *out_command);
 void combat_engine_format_condition_command(
     Skill *skill, const CombatIdentifier *afflicted, const CombatIdentifier *caused_by,
     CombatEvent condition_event, SkillCommand *out_command);

@@ -20,9 +20,10 @@ bool_t goat_focus_condition_trigger(const SkillCommand *command)
     case COMBAT_EVENT_ENGINE_END_OF_ROUND:
     case COMBAT_EVENT_CONDITION_REAPPLY:
         return TRUE;
-    case COMBAT_EVENT_ENGINE_ATTACK_DECLARATION:
+    case COMBAT_EVENT_UNIT_ATTACK_DECLARATION:
     {
-        const DmgCalcInstance *dmg_inst = combat_damage_peek_queue();
+        const DmgCalcInstance *dmg_inst = combat_damage_get_instance(
+            command->cause.dmg_instance_id);
         return dmg_inst->attacker.unit_id == command->caster.unit_id;
     }
     default:
@@ -46,9 +47,9 @@ void goat_focus_condition_execute(SkillCommand *command)
                 affected, command->skill->metadata, &(command->caster));
         }
         break;
-    case COMBAT_EVENT_ENGINE_ATTACK_DECLARATION:
+    case COMBAT_EVENT_UNIT_ATTACK_DECLARATION:
     {
-        DmgCalcInstance *dmg_inst = combat_damage_peek_queue();
+        DmgCalcInstance *dmg_inst = combat_damage_get_instance(command->cause.dmg_instance_id);
         dmg_inst->damage += 1;
         tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%d\n", buffer->rounds_left);
         break;

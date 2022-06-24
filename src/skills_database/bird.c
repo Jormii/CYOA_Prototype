@@ -39,8 +39,9 @@ void deal_damage(SkillCommand *command)
     DealDamageBuffer *buffer = (DealDamageBuffer *)(command->skill->skill_buffer);
     for (size_t i = 0; i < buffer->random; ++i)
     {
-        combat_damage_declare_attack(&(command->caster), &(command->target));
-        combat_damage_perform();
+        DmgCalcInstance *dmg_instance = combat_damage_declare_attack(
+            &(command->caster), &(command->target), command);
+        combat_damage_perform(dmg_instance);
     }
 
     tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%ls (%u) attacks %ls (%u) for %u damage\n",
@@ -112,8 +113,11 @@ SkillMetadata take_damage_meta = {
 
 #pragma endregion
 
-SkillMetadata *bird_skill[] = {&bird_say_hi_meta, &bird_deal_random_dmg_meta,
-                               &take_damage_meta};
+SkillMetadata *bird_skill[] = {
+    &bird_say_hi_meta,
+    &bird_deal_random_dmg_meta,
+    &take_damage_meta};
+
 SkillSetMetadata bird_skillset_template = {
     .n_skills = sizeof(bird_skill) / sizeof(SkillMetadata *),
     .skills_metadata = bird_skill};

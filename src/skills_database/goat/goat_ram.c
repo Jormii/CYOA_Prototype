@@ -22,8 +22,9 @@ void goat_ram_buffer_attack(GoatRamBuffer *buffer, SkillCommand *command)
 
     for (uint8_t i = 0; i < buffer->consecutive_uses; ++i)
     {
-        combat_damage_declare_attack(&(command->caster), &(command->target));
-        combat_damage_perform();
+        DmgCalcInstance *dmg_instance = combat_damage_declare_attack(
+            &(command->caster), &(command->target), command);
+        combat_damage_perform(dmg_instance);
     }
 
     CombatUnit *caster = combat_identifier_get_combat_unit(&(command->caster));

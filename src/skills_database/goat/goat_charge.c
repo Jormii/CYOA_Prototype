@@ -28,8 +28,9 @@ void goat_charge_execute(SkillCommand *command)
             .unit_slot = target_slot,
             .combat_team = target_team};
 
-        combat_damage_declare_attack(&(command->caster), &target_identifier);
-        combat_damage_perform();
+        DmgCalcInstance *dmg_instance = combat_damage_declare_attack(
+            &(command->caster), &target_identifier, command);
+        combat_damage_perform(dmg_instance);
 
         const CombatUnit *caster = combat_identifier_get_combat_unit(&(command->caster));
         tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%ls charges, hitting %ls\n",
