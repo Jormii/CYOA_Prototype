@@ -1,5 +1,6 @@
 #include "ui.h"
 #include "input.h"
+#include "combat_damage.h"
 #include "combat_interface.h"
 
 State *combat_state_execute_func();
@@ -16,6 +17,7 @@ State *combat_state_execute_func()
     if (input_button_pressed(BUTTON_CROSS))
     {
         combat_engine_broadcast_engine_event(COMBAT_EVENT_ENGINE_END_OF_ROUND);
+        combat_damage_reset();
         return &combat_state_start_of_round;
     }
 
