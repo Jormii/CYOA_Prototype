@@ -54,7 +54,7 @@ const Key keys[] = {
     KEYBOARD_NEW_LINE,
     KEYBOARD_NEW_LINE,
 
-    {.display = L"[Espacio]", .actual_char = L'\0'},
+    {.display = L"[Espacio]", .actual_char = L' '},
     {.display = L"[Borrar]", .actual_char = L'\0'},
     {.display = L"[Confirmar]", .actual_char = L'\0'}};
 
@@ -71,6 +71,8 @@ bool_t key_is_newline(const Key *key);
 void keyboard_display_buffer();
 void keyboard_display_keys();
 bool_t keyboard_handle_input();
+size_t keyboard_up();
+size_t keyboard_down();
 
 State *keyboard_update()
 {
@@ -154,18 +156,102 @@ bool_t keyboard_handle_input()
             keyboard.buffer[keyboard.curr_buffer_length] = L'\0';
         }
     }
-    else if (input_button_pressed(BUTTON_UP))
+    else if (input_button_pressed(BUTTON_LEFT))
     {
+        if (keyboard.cursor != 0)
+        {
+            const Key *previous_key = keyboard.keys + (keyboard.cursor - 1);
+            if (!key_is_newline(previous_key))
+            {
+                keyboard.cursor -= 1;
+            }
+        }
     }
     else if (input_button_pressed(BUTTON_RIGHT))
     {
+        if ((keyboard.cursor + 1) != keyboard.n_keys)
+        {
+            const Key *next_key = keyboard.keys + (keyboard.cursor + 1);
+            if (!key_is_newline(next_key))
+            {
+                keyboard.cursor += 1;
+            }
+        }
+    }
+    else if (input_button_pressed(BUTTON_UP))
+    {
+        keyboard.cursor = keyboard_up();
     }
     else if (input_button_pressed(BUTTON_DOWN))
     {
-    }
-    else if (input_button_pressed(BUTTON_RIGHT))
-    {
+        keyboard.cursor = keyboard_down();
     }
 
     return exit;
+}
+
+size_t keyboard_up()
+{
+    // TODO: Code duplication <=> keyboard_down()
+    bool_t found_newline = FALSE;
+    size_t cursor = keyboard.cursor - 1;
+    for (; cursor != -1; --cursor) // TODO: Is "!= -1" hacky?
+    {
+        const Key *key = keyboard.keys + cursor;
+        if (key_is_newline(key))
+        {
+            found_newline = TRUE;
+        }
+        else if (found_newline)
+        {
+            break;
+        }
+    }
+
+    // Keep iterating until the next newline is found
+    for (; cursor != -1; --cursor)
+    {
+        const Key *key = keyboard.keys + cursor;
+        if (key_is_newline(key))
+        {
+            cursor += 1; // +1 so it doesn't point to a newline key
+            break;
+        }
+    }
+
+    if (cursor == -1)
+    {
+        // If the beginning of the layout was found, place the cursor at the
+        //  start if a newline was found => Go up only if the cursor isn't
+        //  located at the first line
+        cursor = (found_newline) ? 0 : keyboard.cursor;
+    }
+
+    return cursor;
+}
+
+size_t keyboard_down()
+{
+    bool_t found_newline = FALSE;
+    size_t cursor = keyboard.cursor + 1;
+    for (; cursor < keyboard.n_keys; ++cursor)
+    {
+        const Key *key = keyboard.keys + cursor;
+        if (key_is_newline(key))
+        {
+            found_newline = TRUE;
+        }
+        else if (found_newline)
+        {
+            break;
+        }
+    }
+
+    if (cursor == keyboard.n_keys)
+    {
+        // If the end of the layout was found, do not modify cursor
+        cursor = keyboard.cursor;
+    }
+
+    return cursor;
 }
