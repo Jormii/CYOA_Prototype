@@ -16,6 +16,7 @@ typedef struct Keyboard_st
 {
     size_t n_keys;
     const Key *keys;
+    size_t cursor;
 
     wchar_t *prompt;
     wchar_t buffer[KEYBOARD_BUFFER_LENGTH + 1];
