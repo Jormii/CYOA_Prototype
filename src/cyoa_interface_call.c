@@ -4,24 +4,16 @@
 #include "vm_stack.h"
 #include "virtual_machine.h"
 
-extern uint16_t *color(int32_t a0, int32_t a1, int32_t a2);
-extern uint16_t *previous_color();
+extern uint16_t *open_keyboard(int32_t a0);
 
 void cyoa_interface_call(uint32_t hash)
 {
     switch (hash)
     {
-    case 63946:
+    case 15266:
     {
         int32_t a0 = vm_stack_pop(&(vm.stack));
-        int32_t a1 = vm_stack_pop(&(vm.stack));
-        int32_t a2 = vm_stack_pop(&(vm.stack));
-        vm_stack_push(&(vm.stack), (vm_stack_t)color(a0, a1, a2));
-    }
-    break;
-    case 36017:
-    {
-        vm_stack_push(&(vm.stack), (vm_stack_t)previous_color());
+        vm_stack_push(&(vm.stack), (vm_stack_t)open_keyboard(a0));
     }
     break;
     default:

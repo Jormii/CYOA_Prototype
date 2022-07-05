@@ -5,6 +5,7 @@
 
 extern State game_state_story;
 extern State game_state_combat;
+extern State game_state_keyboard;
 
 void game_state_initialize(State *starting_state);
 void game_state_update();
