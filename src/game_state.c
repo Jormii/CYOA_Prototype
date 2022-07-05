@@ -53,6 +53,7 @@ void game_state_keyboard_on_enter(state_id_t previous_id)
     keyboard.cursor = 0;
 
     keyboard.uppercase = TRUE;
+    keyboard.uppercase_lock = FALSE;
     keyboard.buffer[0] = L'\0';
     keyboard.buffer[KEYBOARD_BUFFER_LENGTH] = L'\0';
     keyboard.buffer[keyboard.curr_max_buffer_length] = L'\0';

@@ -66,8 +66,10 @@ bool_t key_is_newline(const Key *key);
 void keyboard_display_buffer();
 void keyboard_display_keys();
 bool_t keyboard_handle_input();
+
 size_t keyboard_up();
 size_t keyboard_down();
+bool_t keyboard_is_uppercase();
 
 State *keyboard_update()
 {
@@ -86,7 +88,7 @@ State *keyboard_update()
 
 wchar_t key_get_character(const Key *key)
 {
-    bool_t flag = keyboard.uppercase * key->allows_uppercase;
+    bool_t flag = keyboard_is_uppercase() * key->allows_uppercase;
     return key->character - 32 * flag;
 }
 
@@ -117,8 +119,17 @@ void keyboard_display_buffer()
 void keyboard_display_keys()
 {
     {
-        rgb_t color = (keyboard.uppercase) ? 0x008888FF : 0x00FFFFFF;
-        tb_printf(&(print_window.buffer), color, L"Uppercase on? %u\n", keyboard.uppercase);
+        rgb_t color = (keyboard_is_uppercase()) ? 0x008888FF : 0x00FFFFFF;
+        wchar_t *msg = L"No";
+        if (keyboard.uppercase_lock)
+        {
+            msg = L"Locked";
+        }
+        else if (keyboard.uppercase)
+        {
+            msg = L"Yes";
+        }
+        tb_printf(&(print_window.buffer), color, L"Uppercase on? %ls\n", msg);
     }
 
     for (size_t i = 0; i < keyboard.n_keys; ++i)
@@ -175,6 +186,25 @@ bool_t keyboard_handle_input()
 
             keyboard.uppercase = keyboard.curr_buffer_length == 0;
         }
+    }
+    else if (input_button_pressed(BUTTON_SQUARE))
+    {
+        if (keyboard.curr_buffer_length != keyboard.curr_max_buffer_length)
+        {
+            keyboard.buffer[keyboard.curr_buffer_length] = L' ';
+            keyboard.curr_buffer_length += 1;
+
+            keyboard.uppercase = FALSE;
+        }
+    }
+    else if (input_button_pressed(BUTTON_LT))
+    {
+        keyboard.uppercase = !keyboard.uppercase;
+    }
+    else if (input_button_pressed(BUTTON_RT))
+    {
+        keyboard.uppercase_lock = !keyboard.uppercase_lock;
+        keyboard.uppercase = keyboard.uppercase_lock;
     }
     else if (input_button_pressed(BUTTON_LEFT))
     {
@@ -274,4 +304,9 @@ size_t keyboard_down()
     }
 
     return cursor;
+}
+
+bool_t keyboard_is_uppercase()
+{
+    return keyboard.uppercase || keyboard.uppercase_lock;
 }

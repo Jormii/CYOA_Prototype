@@ -20,6 +20,7 @@ typedef struct Keyboard_st
     size_t cursor;
 
     bool_t uppercase;
+    bool_t uppercase_lock;
     wchar_t *prompt;
     wchar_t buffer[KEYBOARD_BUFFER_LENGTH + 1];
     size_t curr_buffer_length;
