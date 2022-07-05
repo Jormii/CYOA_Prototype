@@ -1,5 +1,6 @@
 #include "ui.h"
 #include "input.h"
+#include "macros.h"
 #include "keyboard.h"
 
 #define KEYBOARD_NEW_LINE \
@@ -55,35 +56,40 @@ const Key keys[] = {
 Keyboard keyboard = {
     .n_keys = sizeof(keys) / sizeof(Key),
     .keys = keys,
-
-    .prompt = L"Type something...",
-    .curr_buffer_length = 0,
-    .curr_max_buffer_length = KEYBOARD_BUFFER_LENGTH};
+    .prompt = L"Type something..."};
 
 wchar_t key_get_character(const Key *key);
 bool_t key_is_newline(const Key *key);
 
 void keyboard_display_buffer();
 void keyboard_display_keys();
-bool_t keyboard_handle_input();
+void keyboard_handle_input();
 
 size_t keyboard_up();
 size_t keyboard_down();
 bool_t keyboard_is_uppercase();
 
-State *keyboard_update()
+void keyboard_reset(size_t buffer_length)
+{
+    keyboard.curr_max_buffer_length = MIN(buffer_length, KEYBOARD_BUFFER_LENGTH);
+
+    keyboard.running = TRUE;
+    keyboard.cursor = 0;
+
+    keyboard.uppercase = TRUE;
+    keyboard.uppercase_lock = FALSE;
+    keyboard.buffer[0] = L'\0';
+    keyboard.buffer[keyboard.curr_max_buffer_length] = L'\0';
+    keyboard.curr_buffer_length = 0;
+}
+
+void keyboard_update()
 {
     tb_clear(&(print_window.buffer), NULL);
     keyboard_display_buffer();
     keyboard_display_keys();
 
-    bool_t exit = keyboard_handle_input();
-    if (exit)
-    {
-        // TODO
-    }
-
-    return STATE_SAME_STATE;
+    keyboard_handle_input();
 }
 
 wchar_t key_get_character(const Key *key)
@@ -162,9 +168,8 @@ void keyboard_display_keys()
     tb_print(&(print_window.buffer), 0x00FFFFFF, L"Start: Confirmar");
 }
 
-bool_t keyboard_handle_input()
+void keyboard_handle_input()
 {
-    bool_t exit = FALSE;
     const Key *key_under_cursor = keyboard.keys + keyboard.cursor;
 
     if (input_button_pressed(BUTTON_CROSS))
@@ -235,9 +240,9 @@ bool_t keyboard_handle_input()
     else if (input_button_pressed(BUTTON_DOWN))
     {
         keyboard.cursor = keyboard_down();
+    } else if (input_button_pressed(BUTTON_START)) {
+        keyboard.running = FALSE;
     }
-
-    return exit;
 }
 
 size_t keyboard_up()

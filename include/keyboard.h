@@ -15,6 +15,8 @@ typedef struct Key_st
 
 typedef struct Keyboard_st
 {
+    bool_t running;
+
     size_t n_keys;
     const Key *keys;
     size_t cursor;
@@ -29,6 +31,7 @@ typedef struct Keyboard_st
 
 extern Keyboard keyboard;
 
-State *keyboard_update();
+void keyboard_reset(size_t buffer_length);
+void keyboard_update();
 
 #endif
