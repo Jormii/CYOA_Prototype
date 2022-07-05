@@ -8,8 +8,9 @@
 
 typedef struct Key_st
 {
-    wchar_t *display;
-    wchar_t actual_char;
+    wchar_t character;
+    const wchar_t *display;
+    bool_t allows_uppercase;
 } Key;
 
 typedef struct Keyboard_st
@@ -18,6 +19,7 @@ typedef struct Keyboard_st
     const Key *keys;
     size_t cursor;
 
+    bool_t uppercase;
     wchar_t *prompt;
     wchar_t buffer[KEYBOARD_BUFFER_LENGTH + 1];
     size_t curr_buffer_length;

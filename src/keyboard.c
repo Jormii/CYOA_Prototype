@@ -2,61 +2,55 @@
 #include "input.h"
 #include "keyboard.h"
 
-#define KEYBOARD_NEW_LINE                    \
-    {                                        \
-        .display = L"", .actual_char = L'\0' \
+#define KEYBOARD_NEW_LINE \
+    {                     \
+        .display = L""    \
     }
 
 const Key keys[] = {
-    {.display = L"1", .actual_char = L'1'},
-    {.display = L"2", .actual_char = L'2'},
-    {.display = L"3", .actual_char = L'3'},
-    {.display = L"4", .actual_char = L'4'},
-    {.display = L"5", .actual_char = L'5'},
-    {.display = L"6", .actual_char = L'6'},
-    {.display = L"7", .actual_char = L'7'},
-    {.display = L"8", .actual_char = L'8'},
-    {.display = L"9", .actual_char = L'9'},
-    {.display = L"0", .actual_char = L'0'},
+    {.display = L"1", .character = L'1', .allows_uppercase = FALSE},
+    {.display = L"2", .character = L'2', .allows_uppercase = FALSE},
+    {.display = L"3", .character = L'3', .allows_uppercase = FALSE},
+    {.display = L"4", .character = L'4', .allows_uppercase = FALSE},
+    {.display = L"5", .character = L'5', .allows_uppercase = FALSE},
+    {.display = L"6", .character = L'6', .allows_uppercase = FALSE},
+    {.display = L"7", .character = L'7', .allows_uppercase = FALSE},
+    {.display = L"8", .character = L'8', .allows_uppercase = FALSE},
+    {.display = L"9", .character = L'9', .allows_uppercase = FALSE},
+    {.display = L"0", .character = L'0', .allows_uppercase = FALSE},
     KEYBOARD_NEW_LINE,
 
-    {.display = L"q", .actual_char = L'q'},
-    {.display = L"w", .actual_char = L'w'},
-    {.display = L"e", .actual_char = L'e'},
-    {.display = L"r", .actual_char = L'r'},
-    {.display = L"t", .actual_char = L't'},
-    {.display = L"y", .actual_char = L'y'},
-    {.display = L"u", .actual_char = L'u'},
-    {.display = L"i", .actual_char = L'i'},
-    {.display = L"o", .actual_char = L'o'},
-    {.display = L"p", .actual_char = L'p'},
+    {.display = L"q", .character = L'q', .allows_uppercase = TRUE},
+    {.display = L"w", .character = L'w', .allows_uppercase = TRUE},
+    {.display = L"e", .character = L'e', .allows_uppercase = TRUE},
+    {.display = L"r", .character = L'r', .allows_uppercase = TRUE},
+    {.display = L"t", .character = L't', .allows_uppercase = TRUE},
+    {.display = L"y", .character = L'y', .allows_uppercase = TRUE},
+    {.display = L"u", .character = L'u', .allows_uppercase = TRUE},
+    {.display = L"i", .character = L'i', .allows_uppercase = TRUE},
+    {.display = L"o", .character = L'o', .allows_uppercase = TRUE},
+    {.display = L"p", .character = L'p', .allows_uppercase = TRUE},
     KEYBOARD_NEW_LINE,
 
-    {.display = L"a", .actual_char = L'a'},
-    {.display = L"s", .actual_char = L's'},
-    {.display = L"d", .actual_char = L'd'},
-    {.display = L"f", .actual_char = L'f'},
-    {.display = L"g", .actual_char = L'g'},
-    {.display = L"h", .actual_char = L'h'},
-    {.display = L"j", .actual_char = L'j'},
-    {.display = L"k", .actual_char = L'k'},
-    {.display = L"l", .actual_char = L'l'},
-    {.display = L"ñ", .actual_char = L'ñ'},
+    {.display = L"a", .character = L'a', .allows_uppercase = TRUE},
+    {.display = L"s", .character = L's', .allows_uppercase = TRUE},
+    {.display = L"d", .character = L'd', .allows_uppercase = TRUE},
+    {.display = L"f", .character = L'f', .allows_uppercase = TRUE},
+    {.display = L"g", .character = L'g', .allows_uppercase = TRUE},
+    {.display = L"h", .character = L'h', .allows_uppercase = TRUE},
+    {.display = L"j", .character = L'j', .allows_uppercase = TRUE},
+    {.display = L"k", .character = L'k', .allows_uppercase = TRUE},
+    {.display = L"l", .character = L'l', .allows_uppercase = TRUE},
+    {.display = L"ñ", .character = L'ñ', .allows_uppercase = TRUE},
     KEYBOARD_NEW_LINE,
 
-    {.display = L"z", .actual_char = L'z'},
-    {.display = L"x", .actual_char = L'x'},
-    {.display = L"c", .actual_char = L'c'},
-    {.display = L"v", .actual_char = L'v'},
-    {.display = L"b", .actual_char = L'b'},
-    {.display = L"n", .actual_char = L'n'},
-    {.display = L"m", .actual_char = L'm'},
-    KEYBOARD_NEW_LINE,
-    KEYBOARD_NEW_LINE,
-
-    {.display = L"[Espacio]", .actual_char = L' '},
-    {.display = L"[Borrar]", .actual_char = L'\0'},
-    {.display = L"[Confirmar]", .actual_char = L'\0'}};
+    {.display = L"z", .character = L'z', .allows_uppercase = TRUE},
+    {.display = L"x", .character = L'x', .allows_uppercase = TRUE},
+    {.display = L"c", .character = L'c', .allows_uppercase = TRUE},
+    {.display = L"v", .character = L'v', .allows_uppercase = TRUE},
+    {.display = L"b", .character = L'b', .allows_uppercase = TRUE},
+    {.display = L"n", .character = L'n', .allows_uppercase = TRUE},
+    {.display = L"m", .character = L'm', .allows_uppercase = TRUE}};
 
 Keyboard keyboard = {
     .n_keys = sizeof(keys) / sizeof(Key),
@@ -66,6 +60,7 @@ Keyboard keyboard = {
     .curr_buffer_length = 0,
     .curr_max_buffer_length = KEYBOARD_BUFFER_LENGTH};
 
+wchar_t key_get_character(const Key *key);
 bool_t key_is_newline(const Key *key);
 
 void keyboard_display_buffer();
@@ -87,6 +82,12 @@ State *keyboard_update()
     }
 
     return STATE_SAME_STATE;
+}
+
+wchar_t key_get_character(const Key *key)
+{
+    bool_t flag = keyboard.uppercase * key->allows_uppercase;
+    return key->character - 32 * flag;
 }
 
 bool_t key_is_newline(const Key *key)
@@ -115,6 +116,11 @@ void keyboard_display_buffer()
 
 void keyboard_display_keys()
 {
+    {
+        rgb_t color = (keyboard.uppercase) ? 0x008888FF : 0x00FFFFFF;
+        tb_printf(&(print_window.buffer), color, L"Uppercase on? %u\n", keyboard.uppercase);
+    }
+
     for (size_t i = 0; i < keyboard.n_keys; ++i)
     {
         const Key *key = keyboard.keys + i;
@@ -133,6 +139,16 @@ void keyboard_display_keys()
         tb_print(&(print_window.buffer), color, key->display);
         tb_print(&(print_window.buffer), color, L" ");
     }
+
+    // Indicate special keys manually
+    tb_print(&(print_window.buffer), 0x00FFFFFF, L"\n\nX: Pulsar     ");
+    tb_print(&(print_window.buffer), 0x00FFFFFF, L"O: Borrar     ");
+    tb_print(&(print_window.buffer), 0x00FFFFFF, L"#: Espacio\n");
+
+    tb_print(&(print_window.buffer), 0x00FFFFFF, L"L: Minúsculas/Mayúsculas     ");
+    tb_print(&(print_window.buffer), 0x00FFFFFF, L"R: Bloquear mayúsculas\n");
+
+    tb_print(&(print_window.buffer), 0x00FFFFFF, L"Start: Confirmar");
 }
 
 bool_t keyboard_handle_input()
@@ -144,8 +160,10 @@ bool_t keyboard_handle_input()
     {
         if (keyboard.curr_buffer_length != keyboard.curr_max_buffer_length)
         {
-            keyboard.buffer[keyboard.curr_buffer_length] = key_under_cursor->actual_char;
+            keyboard.buffer[keyboard.curr_buffer_length] = key_get_character(key_under_cursor);
             keyboard.curr_buffer_length += 1;
+
+            keyboard.uppercase = FALSE;
         }
     }
     else if (input_button_pressed(BUTTON_CIRCLE))
@@ -154,6 +172,8 @@ bool_t keyboard_handle_input()
         {
             keyboard.curr_buffer_length -= 1;
             keyboard.buffer[keyboard.curr_buffer_length] = L'\0';
+
+            keyboard.uppercase = keyboard.curr_buffer_length == 0;
         }
     }
     else if (input_button_pressed(BUTTON_LEFT))
