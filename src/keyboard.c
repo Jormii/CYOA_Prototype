@@ -2,9 +2,61 @@
 #include "input.h"
 #include "keyboard.h"
 
+#define KEYBOARD_NEW_LINE                    \
+    {                                        \
+        .display = L"", .actual_char = L'\0' \
+    }
+
 const Key keys[] = {
-    {.display = L"A", .actual_char = L'A'},
-    {.display = L"B", .actual_char = L'B'}};
+    {.display = L"1", .actual_char = L'1'},
+    {.display = L"2", .actual_char = L'2'},
+    {.display = L"3", .actual_char = L'3'},
+    {.display = L"4", .actual_char = L'4'},
+    {.display = L"5", .actual_char = L'5'},
+    {.display = L"6", .actual_char = L'6'},
+    {.display = L"7", .actual_char = L'7'},
+    {.display = L"8", .actual_char = L'8'},
+    {.display = L"9", .actual_char = L'9'},
+    {.display = L"0", .actual_char = L'0'},
+    KEYBOARD_NEW_LINE,
+
+    {.display = L"q", .actual_char = L'q'},
+    {.display = L"w", .actual_char = L'w'},
+    {.display = L"e", .actual_char = L'e'},
+    {.display = L"r", .actual_char = L'r'},
+    {.display = L"t", .actual_char = L't'},
+    {.display = L"y", .actual_char = L'y'},
+    {.display = L"u", .actual_char = L'u'},
+    {.display = L"i", .actual_char = L'i'},
+    {.display = L"o", .actual_char = L'o'},
+    {.display = L"p", .actual_char = L'p'},
+    KEYBOARD_NEW_LINE,
+
+    {.display = L"a", .actual_char = L'a'},
+    {.display = L"s", .actual_char = L's'},
+    {.display = L"d", .actual_char = L'd'},
+    {.display = L"f", .actual_char = L'f'},
+    {.display = L"g", .actual_char = L'g'},
+    {.display = L"h", .actual_char = L'h'},
+    {.display = L"j", .actual_char = L'j'},
+    {.display = L"k", .actual_char = L'k'},
+    {.display = L"l", .actual_char = L'l'},
+    {.display = L"ñ", .actual_char = L'ñ'},
+    KEYBOARD_NEW_LINE,
+
+    {.display = L"z", .actual_char = L'z'},
+    {.display = L"x", .actual_char = L'x'},
+    {.display = L"c", .actual_char = L'c'},
+    {.display = L"v", .actual_char = L'v'},
+    {.display = L"b", .actual_char = L'b'},
+    {.display = L"n", .actual_char = L'n'},
+    {.display = L"m", .actual_char = L'm'},
+    KEYBOARD_NEW_LINE,
+    KEYBOARD_NEW_LINE,
+
+    {.display = L"[Espacio]", .actual_char = L'\0'},
+    {.display = L"[Borrar]", .actual_char = L'\0'},
+    {.display = L"[Confirmar]", .actual_char = L'\0'}};
 
 Keyboard keyboard = {
     .n_keys = sizeof(keys) / sizeof(Key),
@@ -13,6 +65,8 @@ Keyboard keyboard = {
     .prompt = L"Type something...",
     .curr_buffer_length = 0,
     .curr_max_buffer_length = KEYBOARD_BUFFER_LENGTH};
+
+bool_t key_is_newline(const Key *key);
 
 void keyboard_display_buffer();
 void keyboard_display_keys();
@@ -31,6 +85,11 @@ State *keyboard_update()
     }
 
     return STATE_SAME_STATE;
+}
+
+bool_t key_is_newline(const Key *key)
+{
+    return key->display[0] == L'\0';
 }
 
 void keyboard_display_buffer()
@@ -56,9 +115,14 @@ void keyboard_display_keys()
 {
     for (size_t i = 0; i < keyboard.n_keys; ++i)
     {
-        rgb_t color = 0x00FFFFFF;
         const Key *key = keyboard.keys + i;
+        if (key_is_newline(key))
+        {
+            tb_print(&(print_window.buffer), 0x00FFFFFF, L"\n");
+            continue;
+        }
 
+        rgb_t color = 0x00FFFFFF;
         if (keyboard.cursor == i)
         {
             color = 0x0000FFFF;
