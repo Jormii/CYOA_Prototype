@@ -49,7 +49,7 @@ void initialize()
     combat_interface_initialize();
 
     // Initialize game state
-    game_state_initialize(&game_state_combat);
+    game_state_initialize(&game_state_keyboard);
 }
 
 void game_loop()
