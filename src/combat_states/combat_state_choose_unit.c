@@ -2,7 +2,7 @@
 #include "input.h"
 #include "combat_interface.h"
 
-State *combat_state_choose_unit_func();
+State *combat_state_choose_unit_update();
 void combat_state_choose_unit_on_enter(state_id_t previous_id);
 
 void display_players_units();
@@ -10,11 +10,10 @@ extern void display_combat_state(); // TODO: Move to some .h
 
 State combat_state_choose_unit = {
     .id = COMBAT_STATE_CHOOSE_UNIT,
-    .func_cb = combat_state_choose_unit_func,
     .on_enter_cb = combat_state_choose_unit_on_enter,
-    .on_exit_cb = STATE_CALLBACK_NONE};
+    .update_cb = combat_state_choose_unit_update};
 
-State *combat_state_choose_unit_func()
+State *combat_state_choose_unit_update()
 {
     // Update interface
     tb_clear(&(commands_window.buffer), NULL);

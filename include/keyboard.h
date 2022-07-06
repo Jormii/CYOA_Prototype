@@ -32,6 +32,6 @@ typedef struct Keyboard_st
 extern Keyboard keyboard;
 
 void keyboard_reset(size_t buffer_length);
-void keyboard_update();
+State *keyboard_update();
 
 #endif

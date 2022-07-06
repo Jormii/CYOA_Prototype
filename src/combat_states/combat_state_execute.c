@@ -3,16 +3,15 @@
 #include "combat_damage.h"
 #include "combat_interface.h"
 
-State *combat_state_execute_func();
+State *combat_state_execute_update();
 void combat_state_execute_on_enter(state_id_t previous_id);
 
 State combat_state_execute = {
     .id = COMBAT_STATE_EXECUTE,
-    .func_cb = combat_state_execute_func,
     .on_enter_cb = combat_state_execute_on_enter,
-    .on_exit_cb = STATE_CALLBACK_NONE};
+    .update_cb = combat_state_execute_update};
 
-State *combat_state_execute_func()
+State *combat_state_execute_update()
 {
     if (input_button_pressed(BUTTON_CROSS))
     {

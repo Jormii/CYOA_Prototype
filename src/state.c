@@ -2,6 +2,7 @@
 
 void state_manager_initialize(StateManager *manager, State *starting_state)
 {
+    manager->running = TRUE;
     manager->state = starting_state;
     if (starting_state->on_enter_cb != STATE_CALLBACK_NONE)
     {
@@ -9,16 +10,22 @@ void state_manager_initialize(StateManager *manager, State *starting_state)
     }
 }
 
-void state_manager_execute(StateManager *manager)
+void state_manager_spawn(State *starting_state)
+{
+    StateManager manager;
+    state_manager_initialize(&manager, starting_state);
+    while (manager.running)
+    {
+        state_manager_update(&manager);
+    }
+}
+
+void state_manager_update(StateManager *manager)
 {
     State *current = manager->state;
-    State *returned = current->func_cb();
+    State *returned = current->update_cb();
     if (returned != STATE_SAME_STATE && returned->id != current->id)
     {
-        if (current->on_exit_cb != STATE_CALLBACK_NONE)
-        {
-            current->on_exit_cb(returned->id);
-        }
         if (returned->on_enter_cb != STATE_CALLBACK_NONE)
         {
             returned->on_enter_cb(current->id);

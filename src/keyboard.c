@@ -83,13 +83,15 @@ void keyboard_reset(size_t buffer_length)
     keyboard.curr_buffer_length = 0;
 }
 
-void keyboard_update()
+State *keyboard_update()
 {
     tb_clear(&(print_window.buffer), NULL);
     keyboard_display_buffer();
     keyboard_display_keys();
 
     keyboard_handle_input();
+
+    return STATE_SAME_STATE;
 }
 
 wchar_t key_get_character(const Key *key)
@@ -240,7 +242,9 @@ void keyboard_handle_input()
     else if (input_button_pressed(BUTTON_DOWN))
     {
         keyboard.cursor = keyboard_down();
-    } else if (input_button_pressed(BUTTON_START)) {
+    }
+    else if (input_button_pressed(BUTTON_START))
+    {
         keyboard.running = FALSE;
     }
 }

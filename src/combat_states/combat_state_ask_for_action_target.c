@@ -140,7 +140,7 @@ TargetCbs enemy_team_cbs = {
 
 #pragma endregion
 
-State *combat_state_ask_for_action_target_func();
+State *combat_state_ask_for_action_target_update();
 
 void add_active_to_queue(CombatUnit *caster, Skill *skill, const TargetCbs *cbs);
 TargetCbs *get_skill_target_cbs(const Skill *skill);
@@ -149,11 +149,10 @@ void display_skill_target(const Skill *skill, const CombatUnit *combat_unit, siz
 
 State combat_state_ask_for_action_target = {
     .id = COMBAT_STATE_ASK_FOR_ACTION_TARGET,
-    .func_cb = combat_state_ask_for_action_target_func,
     .on_enter_cb = STATE_CALLBACK_NONE,
-    .on_exit_cb = STATE_CALLBACK_NONE};
+    .update_cb = combat_state_ask_for_action_target_update};
 
-State *combat_state_ask_for_action_target_func()
+State *combat_state_ask_for_action_target_update()
 {
     // Update interface
     tb_clear(&(commands_window.buffer), NULL);
