@@ -9,8 +9,11 @@ void init_window(Window *w, size_t buffer_length);
 
 void ui_initialize()
 {
+    ui_hide_all();
+
     init_window(&print_window, 2048);
     init_window(&commands_window, 1024);
+    init_window(&keyboard_window, 256);
 
     screen_t divider = 0.66f * SCREEN_HEIGHT;
 
@@ -24,20 +27,32 @@ void ui_initialize()
     commands_window.margin.top = divider + 1;
     commands_window.margin.bottom = SCREEN_HEIGHT - 2;
 
-    print_scrollbar.window = &print_window;
-    print_scrollbar.margin_left = print_window.margin.right + 2;
-    print_scrollbar.margin_right = SCREEN_WIDTH - 2;
+    keyboard_window.margin = print_window.margin;
 }
 
 void ui_update()
 {
-    display_window(&print_window);
-    display_window(&commands_window);
-    display_scrollbar(&print_scrollbar, RGB(255, 255, 255));
+    if (print_window_visible)
+    {
+        display_window(&print_window);
+    }
 
-    // TODO: Remove
-    display_margin(&(print_window.margin), 0x00444444);
-    display_margin(&(commands_window.margin), 0x00444444);
+    if (commands_window_visible)
+    {
+        display_window(&commands_window);
+    }
+
+    if (keyboard_window_visible)
+    {
+        display_window(&keyboard_window);
+    }
+}
+
+void ui_hide_all()
+{
+    print_window_visible = FALSE;
+    commands_window_visible = FALSE;
+    keyboard_window_visible = FALSE;
 }
 
 void init_window(Window *w, size_t buffer_length)
