@@ -4,6 +4,7 @@
 #include "types.h"
 
 #define STATE_SAME_STATE NULL
+#define STATE_EXIT_STATE ((void *)1)
 #define STATE_CALLBACK_NONE NULL
 
 struct State_st;

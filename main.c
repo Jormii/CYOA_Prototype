@@ -5,6 +5,7 @@
 #include "log.h"
 #include "input.h"
 #include "callbacks.h"
+#include "game_loop.h"
 #include "game_state.h"
 #include "screen_buffer.h"
 #include "cyoa_interface.h"
@@ -14,16 +15,12 @@ PSP_MODULE_INFO("Prototype", 0, 1, 0);
 PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER);
 
 void initialize();
-void game_loop();
 void deinitialize();
 
 int main()
 {
     initialize();
-    while (running())
-    {
-        game_loop();
-    }
+    game_loop_spawn(&game_state_story);
     deinitialize();
 
     return 0;
@@ -48,18 +45,8 @@ void initialize()
     // Initialize combat engine
     combat_interface_initialize();
 
-    // Initialize game state
-    game_state_initialize(&game_state_story);
-}
-
-void game_loop()
-{
-    input_update();
-    game_state_update();
-
-    ui_update();
-    sb_swap_buffers();
-    sceDisplayWaitVblankStart();
+    // Initialize game states
+    game_state_initialize();
 }
 
 void deinitialize()

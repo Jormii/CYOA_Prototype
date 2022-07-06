@@ -22,9 +22,18 @@ void state_manager_spawn(State *starting_state)
 
 void state_manager_update(StateManager *manager)
 {
+    if (!manager->running)
+    {
+        return;
+    }
+
     State *current = manager->state;
     State *returned = current->update_cb();
-    if (returned != STATE_SAME_STATE && returned->id != current->id)
+    if (returned == STATE_EXIT_STATE)
+    {
+        manager->running = FALSE;
+    }
+    else if (returned != STATE_SAME_STATE && returned->id != current->id)
     {
         if (returned->on_enter_cb != STATE_CALLBACK_NONE)
         {

@@ -15,8 +15,6 @@ typedef struct Key_st
 
 typedef struct Keyboard_st
 {
-    bool_t running;
-
     size_t n_keys;
     const Key *keys;
     size_t cursor;

@@ -63,7 +63,7 @@ bool_t key_is_newline(const Key *key);
 
 void keyboard_display_buffer();
 void keyboard_display_keys();
-void keyboard_handle_input();
+bool_t keyboard_handle_input();
 
 size_t keyboard_up();
 size_t keyboard_down();
@@ -73,7 +73,6 @@ void keyboard_reset(size_t buffer_length)
 {
     keyboard.curr_max_buffer_length = MIN(buffer_length, KEYBOARD_BUFFER_LENGTH);
 
-    keyboard.running = TRUE;
     keyboard.cursor = 0;
 
     keyboard.uppercase = TRUE;
@@ -89,9 +88,15 @@ State *keyboard_update()
     keyboard_display_buffer();
     keyboard_display_keys();
 
-    keyboard_handle_input();
-
-    return STATE_SAME_STATE;
+    bool_t quit = keyboard_handle_input();
+    if (quit)
+    {
+        return STATE_EXIT_STATE;
+    }
+    else
+    {
+        return STATE_SAME_STATE;
+    }
 }
 
 wchar_t key_get_character(const Key *key)
@@ -170,8 +175,9 @@ void keyboard_display_keys()
     tb_print(&(print_window.buffer), 0x00FFFFFF, L"Start: Confirmar");
 }
 
-void keyboard_handle_input()
+bool_t keyboard_handle_input()
 {
+    bool_t quit = FALSE;
     const Key *key_under_cursor = keyboard.keys + keyboard.cursor;
 
     if (input_button_pressed(BUTTON_CROSS))
@@ -245,8 +251,10 @@ void keyboard_handle_input()
     }
     else if (input_button_pressed(BUTTON_START))
     {
-        keyboard.running = FALSE;
+        quit = TRUE;
     }
+
+    return quit;
 }
 
 size_t keyboard_up()
