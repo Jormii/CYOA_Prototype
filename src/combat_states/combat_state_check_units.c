@@ -1,14 +1,13 @@
 #include "combat_interface.h"
 
-State *combat_state_check_units_func();
+State *combat_state_check_units_update();
 
 State combat_state_check_units = {
     .id = COMBAT_STATE_CHECK_UNITS,
-    .func_cb = combat_state_check_units_func,
     .on_enter_cb = STATE_CALLBACK_NONE,
-    .on_exit_cb = STATE_CALLBACK_NONE};
+    .update_cb = combat_state_check_units_update};
 
-State *combat_state_check_units_func()
+State *combat_state_check_units_update()
 {
     combat_interface.slot = 0;
     while (combat_interface.slot != MAX_UNITS_IN_COMBAT)

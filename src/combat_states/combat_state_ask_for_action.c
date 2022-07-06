@@ -2,9 +2,8 @@
 #include "input.h"
 #include "combat_interface.h"
 
-State *combat_state_ask_for_action_func();
+State *combat_state_ask_for_action_update();
 void combat_state_ask_for_action_on_enter(state_id_t previous_id);
-void combat_state_ask_for_action_on_exit(state_id_t next_id);
 
 void display_combat_state();
 void display_combat_team(CombatTeam *combat_team);
@@ -13,11 +12,10 @@ void display_skill(const SkillMetadata *metadata, size_t index);
 
 State combat_state_ask_for_action = {
     .id = COMBAT_STATE_ASK_FOR_ACTION,
-    .func_cb = combat_state_ask_for_action_func,
     .on_enter_cb = combat_state_ask_for_action_on_enter,
-    .on_exit_cb = STATE_CALLBACK_NONE};
+    .update_cb = combat_state_ask_for_action_update};
 
-State *combat_state_ask_for_action_func()
+State *combat_state_ask_for_action_update()
 {
     if (combat_interface.slot >= MAX_UNITS_IN_COMBAT)
     {
@@ -74,15 +72,6 @@ void combat_state_ask_for_action_on_enter(state_id_t previous_id)
     // Update interface
     tb_clear(&(print_window.buffer), NULL);
     display_combat_state();
-}
-
-void combat_state_ask_for_action_on_exit(state_id_t next_id)
-{
-    if (next_id == COMBAT_STATE_ASK_FOR_ACTION_TARGET)
-    {
-        combat_interface.chosen_skill = combat_interface.cursor;
-        combat_interface.cursor = 0;
-    }
 }
 
 void display_combat_state()

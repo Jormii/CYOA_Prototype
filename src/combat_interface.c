@@ -43,7 +43,7 @@ void combat_interface_initialize()
 
 State *combat_interface_update()
 {
-    state_manager_execute(&(combat_interface.combat_state));
+    state_manager_update(&(combat_interface.combat_state));
     if (combat_engine.in_combat)
     {
         return STATE_SAME_STATE;

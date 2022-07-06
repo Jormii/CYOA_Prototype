@@ -1,14 +1,13 @@
 #include "combat_interface.h"
 
-State *combat_state_start_of_combat_func();
+State *combat_state_start_of_combat_update();
 
 State combat_state_start_of_combat = {
     .id = COMBAT_STATE_START_OF_COMBAT,
-    .func_cb = combat_state_start_of_combat_func,
     .on_enter_cb = STATE_CALLBACK_NONE,
-    .on_exit_cb = STATE_CALLBACK_NONE};
+    .update_cb = combat_state_start_of_combat_update};
 
-State *combat_state_start_of_combat_func()
+State *combat_state_start_of_combat_update()
 {
     // If all units have been chosen, start combat formally
     combat_slot_t available = combat_team_count_available_units(&(combat_engine.players_team));

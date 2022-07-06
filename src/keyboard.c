@@ -63,7 +63,7 @@ bool_t key_is_newline(const Key *key);
 
 void keyboard_display_buffer();
 void keyboard_display_keys();
-void keyboard_handle_input();
+bool_t keyboard_handle_input();
 
 size_t keyboard_up();
 size_t keyboard_down();
@@ -73,7 +73,6 @@ void keyboard_reset(size_t buffer_length)
 {
     keyboard.curr_max_buffer_length = MIN(buffer_length, KEYBOARD_BUFFER_LENGTH);
 
-    keyboard.running = TRUE;
     keyboard.cursor = 0;
 
     keyboard.uppercase = TRUE;
@@ -83,13 +82,25 @@ void keyboard_reset(size_t buffer_length)
     keyboard.curr_buffer_length = 0;
 }
 
-void keyboard_update()
+State *keyboard_update()
 {
-    tb_clear(&(print_window.buffer), NULL);
+    tb_clear(&(keyboard_window.buffer), NULL);
     keyboard_display_buffer();
     keyboard_display_keys();
 
-    keyboard_handle_input();
+    bool_t quit = keyboard_handle_input();
+    if (quit)
+    {
+        ui_hide_all();
+        print_window_visible = TRUE;
+        commands_window_visible = TRUE;
+        
+        return STATE_EXIT_STATE;
+    }
+    else
+    {
+        return STATE_SAME_STATE;
+    }
 }
 
 wchar_t key_get_character(const Key *key)
@@ -105,21 +116,21 @@ bool_t key_is_newline(const Key *key)
 
 void keyboard_display_buffer()
 {
-    tb_print(&(print_window.buffer), 0x00FFFFFF, keyboard.prompt);
-    tb_print(&(print_window.buffer), 0x00FFFFFF, L"\n\n");
+    tb_print(&(keyboard_window.buffer), 0x00FFFFFF, keyboard.prompt);
+    tb_print(&(keyboard_window.buffer), 0x00FFFFFF, L"\n\n");
 
-    tb_print(&(print_window.buffer), 0x00FFFFFF, L"> ");
-    tb_print(&(print_window.buffer), 0x00FFFFFF, keyboard.buffer);
+    tb_print(&(keyboard_window.buffer), 0x00FFFFFF, L"> ");
+    tb_print(&(keyboard_window.buffer), 0x00FFFFFF, keyboard.buffer);
 
     for (size_t i = keyboard.curr_buffer_length; i < keyboard.curr_max_buffer_length; ++i)
     {
-        tb_print(&(print_window.buffer), 0x00888888, L"_");
+        tb_print(&(keyboard_window.buffer), 0x00888888, L"_");
     }
 
-    tb_printf(&(print_window.buffer), 0x00888888, L"\n(%u characters max)\n",
+    tb_printf(&(keyboard_window.buffer), 0x00888888, L"\n(%u characters max)\n",
               keyboard.curr_max_buffer_length);
 
-    tb_print(&(print_window.buffer), 0x00FFFFFF, L"\n");
+    tb_print(&(keyboard_window.buffer), 0x00FFFFFF, L"\n");
 }
 
 void keyboard_display_keys()
@@ -135,7 +146,7 @@ void keyboard_display_keys()
         {
             msg = L"Yes";
         }
-        tb_printf(&(print_window.buffer), color, L"Uppercase on? %ls\n", msg);
+        tb_printf(&(keyboard_window.buffer), color, L"Uppercase on? %ls\n", msg);
     }
 
     for (size_t i = 0; i < keyboard.n_keys; ++i)
@@ -143,7 +154,7 @@ void keyboard_display_keys()
         const Key *key = keyboard.keys + i;
         if (key_is_newline(key))
         {
-            tb_print(&(print_window.buffer), 0x00FFFFFF, L"\n");
+            tb_print(&(keyboard_window.buffer), 0x00FFFFFF, L"\n");
             continue;
         }
 
@@ -153,23 +164,24 @@ void keyboard_display_keys()
             color = 0x0000FFFF;
         }
 
-        tb_print(&(print_window.buffer), color, key->display);
-        tb_print(&(print_window.buffer), color, L" ");
+        tb_print(&(keyboard_window.buffer), color, key->display);
+        tb_print(&(keyboard_window.buffer), color, L" ");
     }
 
     // Indicate special keys manually
-    tb_print(&(print_window.buffer), 0x00FFFFFF, L"\n\nX: Pulsar     ");
-    tb_print(&(print_window.buffer), 0x00FFFFFF, L"O: Borrar     ");
-    tb_print(&(print_window.buffer), 0x00FFFFFF, L"#: Espacio\n");
+    tb_print(&(keyboard_window.buffer), 0x00FFFFFF, L"\n\nX: Pulsar     ");
+    tb_print(&(keyboard_window.buffer), 0x00FFFFFF, L"O: Borrar     ");
+    tb_print(&(keyboard_window.buffer), 0x00FFFFFF, L"#: Espacio\n");
 
-    tb_print(&(print_window.buffer), 0x00FFFFFF, L"L: Minúsculas/Mayúsculas     ");
-    tb_print(&(print_window.buffer), 0x00FFFFFF, L"R: Bloquear mayúsculas\n");
+    tb_print(&(keyboard_window.buffer), 0x00FFFFFF, L"L: Minúsculas/Mayúsculas     ");
+    tb_print(&(keyboard_window.buffer), 0x00FFFFFF, L"R: Bloquear mayúsculas\n");
 
-    tb_print(&(print_window.buffer), 0x00FFFFFF, L"Start: Confirmar");
+    tb_print(&(keyboard_window.buffer), 0x00FFFFFF, L"Start: Confirmar");
 }
 
-void keyboard_handle_input()
+bool_t keyboard_handle_input()
 {
+    bool_t quit = FALSE;
     const Key *key_under_cursor = keyboard.keys + keyboard.cursor;
 
     if (input_button_pressed(BUTTON_CROSS))
@@ -240,9 +252,13 @@ void keyboard_handle_input()
     else if (input_button_pressed(BUTTON_DOWN))
     {
         keyboard.cursor = keyboard_down();
-    } else if (input_button_pressed(BUTTON_START)) {
-        keyboard.running = FALSE;
     }
+    else if (input_button_pressed(BUTTON_START))
+    {
+        quit = TRUE;
+    }
+
+    return quit;
 }
 
 size_t keyboard_up()
