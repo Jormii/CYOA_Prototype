@@ -8,7 +8,7 @@ typedef struct Item_st
 {
     uint8_t amount;
     uint8_t limit;
-    SkillMetadata metadata;
+    Skill skill;
 } Item;
 
 typedef struct Inventory_st

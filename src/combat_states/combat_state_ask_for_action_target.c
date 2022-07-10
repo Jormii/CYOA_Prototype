@@ -1,5 +1,6 @@
 #include "ui.h"
 #include "input.h"
+#include "all_species.h"
 #include "combat_interface.h"
 
 typedef struct TargetCbs_st
@@ -106,6 +107,42 @@ TargetCbs single_not_self_cbs = {
 
 #pragma endregion
 
+#pragma region SKILL_TYPE_ACTIVE_SINGLE_ALLY
+
+void single_ally_format_skill_command(CombatUnit *caster, Skill *skill, SkillCommand *out_command)
+{
+    CombatIdentifier caster_identifier = {
+        .unit_id = caster->unit->id,
+        .unit_slot = combat_interface.slot,
+        .combat_team = &(combat_engine.players_team)};
+
+    combat_slot_t target_slot = (combat_interface.cursor) % MAX_UNITS_IN_COMBAT;
+    CombatUnit *cu = combat_team_get_combat_unit(&(combat_engine.players_team), target_slot);
+    CombatIdentifier target_identifier = {
+        .unit_id = cu->unit->id,
+        .unit_slot = target_slot,
+        .combat_team = &(combat_engine.players_team)};
+
+    combat_engine_format_active_command(skill, &caster_identifier, &target_identifier, out_command);
+}
+
+bool_t single_ally_is_valid_target(const Skill *skill, size_t global_slot)
+{
+    return global_slot < MAX_UNITS_IN_COMBAT;
+}
+
+bool_t single_ally_highlight_unit(const Skill *skill, size_t global_slot)
+{
+    return global_slot == combat_interface.cursor;
+}
+
+TargetCbs single_ally_cbs = {
+    .format_skill_command = single_ally_format_skill_command,
+    .is_valid_target = single_ally_is_valid_target,
+    .highlight_unit_cb = single_ally_highlight_unit};
+
+#pragma endregion
+
 #pragma region SKILL_TYPE_ACTIVE_ENEMY_TEAM
 
 void enemy_team_format_skill_command(CombatUnit *caster, Skill *skill, SkillCommand *out_command)
@@ -159,9 +196,17 @@ State *combat_state_ask_for_action_target_update()
 
     CombatUnit *cu = combat_team_get_combat_unit(
         &(combat_engine.players_team), combat_interface.slot);
-    Skill *skill = cu->skillset.skills + combat_interface.chosen_skill;
-    const TargetCbs *cbs = get_skill_target_cbs(skill);
+    Skill *skill = NULL;
+    if (combat_interface.showing_items)
+    {
+        skill = &(inventory.items[combat_interface.chosen_skill]->skill);
+    }
+    else
+    {
+        skill = cu->skillset.skills + combat_interface.chosen_skill;
+    }
 
+    const TargetCbs *cbs = get_skill_target_cbs(skill);
     display_skill_targets(skill, cbs);
 
     // Handle input
@@ -216,6 +261,8 @@ TargetCbs *get_skill_target_cbs(const Skill *skill)
         return &self_cbs;
     case SKILL_TYPE_ACTIVE_SINGLE_NOT_SELF:
         return &single_not_self_cbs;
+    case SKILL_TYPE_ACTIVE_SINGLE_ALLY:
+        return &single_ally_cbs;
     case SKILL_TYPE_ACTIVE_ENEMY_TEAM:
         return &enemy_team_cbs;
     default:

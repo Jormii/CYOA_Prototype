@@ -56,7 +56,7 @@ State *combat_interface_update()
 
 void combat_interface_start_combat()
 {
-    combat_interface.combat_state.state = &combat_state_start_of_combat;
+    state_manager_initialize(&(combat_interface.combat_state), &combat_state_start_of_combat);
 }
 
 void on_event(const SkillCommand *event_command)

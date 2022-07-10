@@ -1,5 +1,6 @@
 #include "ui.h"
 #include "input.h"
+#include "all_species.h"
 #include "combat_interface.h"
 
 State *combat_state_ask_for_action_update();
@@ -7,6 +8,7 @@ void combat_state_ask_for_action_on_enter(state_id_t previous_id);
 
 void display_combat_state();
 void display_combat_team(CombatTeam *combat_team);
+void display_inventory();
 void display_unit_skills(const CombatUnit *unit);
 void display_skill(const SkillMetadata *metadata, size_t index);
 
@@ -29,7 +31,14 @@ State *combat_state_ask_for_action_update()
 
     // Update interface
     tb_clear(&(commands_window.buffer), NULL);
-    display_unit_skills(cu);
+    if (combat_interface.showing_items)
+    {
+        display_inventory();
+    }
+    else
+    {
+        display_unit_skills(cu);
+    }
 
     // Handle input
     if (input_button_pressed(BUTTON_UP))
@@ -41,7 +50,8 @@ State *combat_state_ask_for_action_update()
     }
     else if (input_button_pressed(BUTTON_DOWN))
     {
-        if ((combat_interface.cursor + 1) != template->n_skills)
+        size_t limit = (combat_interface.showing_items) ? inventory.n_items : template->n_skills;
+        if ((combat_interface.cursor + 1) != limit)
         {
             combat_interface.cursor += 1;
         }
@@ -63,12 +73,20 @@ State *combat_state_ask_for_action_update()
             combat_state_ask_for_action_on_enter(-1); // TODO: Forcing this is weird
         }
     }
+    else if (input_button_pressed(BUTTON_LT) || input_button_pressed(BUTTON_RT))
+    {
+        combat_interface.cursor = 0;
+        combat_interface.showing_items = !combat_interface.showing_items;
+    }
 
     return STATE_SAME_STATE;
 }
 
 void combat_state_ask_for_action_on_enter(state_id_t previous_id)
 {
+    // Update variables
+    combat_interface.showing_items = FALSE;
+
     // Update interface
     tb_clear(&(print_window.buffer), NULL);
     display_combat_state();
@@ -101,6 +119,17 @@ void display_combat_team(CombatTeam *combat_team)
                       slot, unit->name, unit->species->name, unit->id,
                       unit->hp, unit->stamina);
         }
+    }
+}
+
+void display_inventory()
+{
+    tb_print(&(commands_window.buffer), 0x00FFFFFF, L"-- Items --\n");
+
+    for (size_t i = 0; i < inventory.n_items; ++i)
+    {
+        const Item *item = inventory.items[i];
+        display_skill(item->skill.metadata, i);
     }
 }
 
