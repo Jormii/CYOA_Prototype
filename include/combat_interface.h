@@ -32,6 +32,7 @@ struct
     size_t cursor;
     combat_slot_t slot;
     size_t chosen_skill;
+    bool_t showing_items;
 } combat_interface;
 
 void combat_interface_initialize();

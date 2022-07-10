@@ -20,9 +20,10 @@ typedef enum SkillType_en
     // Single-targeted
     SKILL_TYPE_ACTIVE_SELF,
     SKILL_TYPE_ACTIVE_SINGLE_NOT_SELF,
+    SKILL_TYPE_ACTIVE_SINGLE_ALLY,
 
     // Team-targeted
-    SKILL_TYPE_ACTIVE_ENEMY_TEAM,
+    SKILL_TYPE_ACTIVE_ENEMY_TEAM
 } SkillType;
 
 typedef enum SkillPriority_en
@@ -31,7 +32,8 @@ typedef enum SkillPriority_en
     SKILL_PRIORITY_LOW,
     SKILL_PRIORITY_AVERAGE,
     SKILL_PRIORITY_HIGH,
-    SKILL_PRIORITY_HIGHEST
+    SKILL_PRIORITY_HIGHEST,
+    SKILL_PRIORITY_ITEM
 } SkillPriority;
 
 typedef struct SkillInitialization_st

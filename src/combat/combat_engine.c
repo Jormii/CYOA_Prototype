@@ -94,14 +94,19 @@ void combat_engine_execute_queue()
             // Broadcast execution
             if (!command->broadcasted)
             {
-                LOG("%ls: %ls | %u (Broadcast)\n",
-                    caster->unit->name, command->skill->metadata->name, command->event);
-
                 command->broadcasted = TRUE;
-                combat_engine_format_passive_command(
-                    command->skill, &(command->caster), &(command->target),
-                    COMBAT_EVENT_SKILL_EXECUTION, command, 0, &broadcast_command);
-                combat_engine_broadcast_event(&broadcast_command);
+
+                // Items are not broadcasted
+                if (command->skill->metadata->priority != SKILL_PRIORITY_ITEM)
+                {
+                    LOG("%ls: %ls | %u (Broadcast)\n",
+                        caster->unit->name, command->skill->metadata->name, command->event);
+
+                    combat_engine_format_passive_command(
+                        command->skill, &(command->caster), &(command->target),
+                        COMBAT_EVENT_SKILL_EXECUTION, command, 0, &broadcast_command);
+                    combat_engine_broadcast_event(&broadcast_command);
+                }
             }
             else
             {

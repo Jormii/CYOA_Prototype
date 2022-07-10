@@ -1,11 +1,15 @@
 #ifndef ALL_SKILLS_H
 #define ALL_SKILLS_H
 
+#include "item.h"
 #include "skill.h"
 #include "combat_engine.h"
 
 typedef enum SkillIdentifier_en
 {
+    // Items
+    SKILL_ID_ITEM_HEAL_ID,
+
     // Goat
     SKILL_ID_GOAT_KICK_ID,
     SKILL_ID_GOAT_RAM_ID,

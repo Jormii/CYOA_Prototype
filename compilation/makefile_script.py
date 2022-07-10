@@ -144,6 +144,7 @@ def main():
         SourceDir("../src/combat"),
         SourceDir("../src/combat_states"),
         SourceDir("../src/skills_database"),
+        SourceDir("../src/skills_database/items"),
         SourceDir("../src/skills_database/goat"),
         SourceDir("../src"),
         File("../main.o")
