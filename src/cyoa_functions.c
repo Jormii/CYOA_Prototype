@@ -7,6 +7,8 @@
 #include "game_state.h"
 #include "cyoa_interface.h"
 
+extern State game_state_keyboard;
+
 uint16_t *color(int32_t r, int32_t g, int32_t b)
 {
     cyoa_interface.previous_color = cyoa_interface.color;

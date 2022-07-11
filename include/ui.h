@@ -1,21 +1,18 @@
 #ifndef UI_H
 #define UI_H
 
-#include "types.h"
 #include "window.h"
-#include "scrollbar.h"
 
-Window print_window;
-Window commands_window;
-Window keyboard_window;
+#define WIDE_STR(s) L##s
+#define UI_WINDOW_PRINT(w, col, s) tb_print(&(w.buffer), col, WIDE_STR(s))
+#define UI_WINDOW_PRINTF(w, col, fmt, ...) tb_printf(&(w.buffer), col, WIDE_STR(fmt), ##__VA_ARGS__)
 
-bool_t print_window_visible;
-bool_t commands_window_visible;
-bool_t keyboard_window_visible;
+// TODO: Remove
+extern Window print_window;
+extern Window commands_window;
+extern Window keyboard_window;
 
 void ui_initialize();
 void ui_update();
-
-void ui_hide_all();
 
 #endif

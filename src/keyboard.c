@@ -91,10 +91,6 @@ State *keyboard_update()
     bool_t quit = keyboard_handle_input();
     if (quit)
     {
-        ui_hide_all();
-        print_window_visible = TRUE;
-        commands_window_visible = TRUE;
-        
         return STATE_EXIT_STATE;
     }
     else

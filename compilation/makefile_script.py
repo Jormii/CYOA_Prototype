@@ -146,6 +146,8 @@ def main():
         SourceDir("../src/skills_database"),
         SourceDir("../src/skills_database/items"),
         SourceDir("../src/skills_database/goat"),
+        SourceDir("../src/game_states"),
+        SourceDir("../src/screens"),
         SourceDir("../src"),
         File("../main.o")
     ]
@@ -164,6 +166,7 @@ def main():
         IncludeDir("../include/data_structures"),
         IncludeDir("../include/combat"),
         IncludeDir("../include/skills_database"),
+        IncludeDir("../include/screens"),
         IncludeDir("../include/")
     ]
     for _inc in includes:
