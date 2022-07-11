@@ -1,3 +1,4 @@
+#include "die.h"
 #include "dynamic_list.h"
 #include "combat_damage.h"
 #include "combat_engine.h"
@@ -18,7 +19,6 @@ DmgCalcInstance *combat_damage_declare_attack(const CombatIdentifier *attacker, 
 {
     DmgCalcInstance instance = {
         .id = dmg_instance_id_counter++,
-        .damage = 1,
         .cause = cause,
         .attacker = *attacker,
         .defender = *defender};
@@ -36,18 +36,33 @@ DmgCalcInstance *combat_damage_declare_attack(const CombatIdentifier *attacker, 
 
 void combat_damage_perform(DmgCalcInstance *dmg_instance)
 {
-    health_t damage = dmg_instance->damage;
-    if (combat_identifier_still_deployed(&(dmg_instance->attacker)))
+    if (!combat_identifier_still_deployed(&(dmg_instance->attacker)))
     {
-        // TODO: Implement damage function
-        // CombatUnit *attacker = combat_identifier_get_combat_unit(&(dmg_instance->attacker));
-        CombatUnit *defender = combat_identifier_get_combat_unit(&(dmg_instance->defender));
-        if (defender != NULL)
-        {
-            defender->unit->hp = umath_substract(defender->unit->hp, damage);
-        }
+        return;
     }
 
+    CombatUnit *attacker = combat_identifier_get_combat_unit(&(dmg_instance->attacker));
+    CombatUnit *defender = combat_identifier_get_combat_unit(&(dmg_instance->defender));
+    if (defender == NULL)
+    {
+        return;
+    }
+
+    // TODO: Take into account modifiers?
+    // TODO: Unit's levels
+    // TODO: Random number in range [1-0.2, 1+0.2]
+    stat_t attack = combat_unit_calculate_stat(attacker, STAT_DAMAGE);
+    stat_t defense = combat_unit_calculate_stat(defender, STAT_ENDURANCE);
+
+    u8_t attack_roll = roll_die(get_die(attack));
+    u8_t defense_roll = roll_die(get_die(defense));
+
+    float dmg = (float)dmg_instance->damage * (float)attack_roll / (float)defense_roll;
+    dmg_instance->damage_dealt = (health_t)dmg; // TODO: Ceil?
+
+    defender->unit->hp = umath_substract(defender->unit->hp, dmg_instance->damage_dealt);
+
+    // Broadcast combat
     SkillCommand command_event;
     combat_engine_format_passive_command(
         dmg_instance->cause->skill, &(dmg_instance->attacker), &(dmg_instance->defender),
