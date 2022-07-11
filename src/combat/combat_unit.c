@@ -66,6 +66,13 @@ void combat_unit_remove_condition(CombatUnit *combat_unit, const SkillMetadata *
     }
 }
 
+stat_t combat_unit_calculate_stat(const CombatUnit *combat_unit, Stat stat)
+{
+    // TODO: Take into account special conditions
+    stat_t base = unit_calculate_stat(combat_unit->unit, stat);
+    return base;
+}
+
 bool_t combat_unit_is_valid(const CombatUnit *combat_unit)
 {
     return combat_unit->unit != NULL;

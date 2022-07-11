@@ -115,9 +115,13 @@ void display_combat_team(CombatTeam *combat_team)
             }
 
             const Unit *unit = combat_unit->unit;
-            tb_printf(&(print_window.buffer), color, L"%u :: %ls (%ls / %u) :: HP: %u || STA: %u\n",
+            tb_printf(&(print_window.buffer), color, L"%u :: %ls (%ls / %u) :: HP: %u / %u || STA: %u / %u || (Dmg, Dff, Spd): (%u, %u, %u)\n",
                       slot, unit->name, unit->species->name, unit->id,
-                      unit->hp, unit->stamina);
+                      unit->hp, combat_unit_calculate_stat(combat_unit, STAT_HEALTH),
+                      unit->stamina, combat_unit_calculate_stat(combat_unit, STAT_STAMINA),
+                      combat_unit_calculate_stat(combat_unit, STAT_DAMAGE),
+                      combat_unit_calculate_stat(combat_unit, STAT_ENDURANCE),
+                      combat_unit_calculate_stat(combat_unit, STAT_SPEED));
         }
     }
 }

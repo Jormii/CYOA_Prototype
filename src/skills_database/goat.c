@@ -29,5 +29,5 @@ SkillSetMetadata goat_skillset_meta = {
 
 Species goat_species = {
     .name = L"Battalion",
-    .base_stats = {1, 1, 1, 1, 1},
+    .base_stats = {1, 2, 2, 3, 3},
     .skillset_template = &goat_skillset_meta};
