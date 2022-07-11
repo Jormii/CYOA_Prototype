@@ -19,6 +19,8 @@ bool_t combat_unit_tag_as_dead(CombatUnit *combat_unit);
 void combat_unit_apply_condition(CombatUnit *combat_unit, const SkillMetadata *metadata, const CombatIdentifier *caused_by);
 void combat_unit_remove_condition(CombatUnit *combat_unit, const SkillMetadata *metadata, const CombatIdentifier *caused_by);
 
+stat_t combat_unit_calculate_stat(const CombatUnit *combat_unit, Stat stat);
+
 bool_t combat_unit_is_valid(const CombatUnit *combat_unit);
 SpecialCondition *combat_unit_afflicted_by_condition(CombatUnit *combat_unit, const SkillMetadata *metadata, const CombatIdentifier *caused_by);
 

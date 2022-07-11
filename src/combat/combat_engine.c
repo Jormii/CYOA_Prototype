@@ -281,5 +281,7 @@ bool_t command_compare(SkillPriority first_priority, const CombatIdentifier *fir
         return TRUE;
     }
 
-    return unit_calculate_stat(first_unit->unit, STAT_SPEED) >= unit_calculate_stat(second_unit->unit, STAT_SPEED);
+    stat_t first_speed = combat_unit_calculate_stat(first_unit, STAT_SPEED);
+    stat_t second_speed = combat_unit_calculate_stat(second_unit, STAT_SPEED);
+    return first_speed > second_speed;
 }

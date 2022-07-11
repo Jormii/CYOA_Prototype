@@ -14,14 +14,14 @@ void init_unit(Unit *unit, wchar_t *name, const Species *species)
 {
     unit->id = ++id;
     unit->name = name;
-    unit->hp = 20;
-    unit->stamina = 10;
     for (size_t i = 0; i < ATTR_COUNT; ++i)
     {
         unit->attributes[i] = 1;
     }
-    unit->attributes[ATTR_AGILITY] = unit->id + 1;
     unit->species = species;
+
+    unit->hp = unit_calculate_stat(unit, STAT_HEALTH);
+    unit->stamina = unit_calculate_stat(unit, STAT_STAMINA);
 }
 
 // END TODO

@@ -17,14 +17,25 @@ bool_t unit_is_alive(const Unit *unit)
 
 stat_t unit_calculate_stat(const Unit *unit, Stat stat)
 {
-    // TODO
+    stat_t base = unit->species->base_stats[stat];
+    const attribute_t *attributes = unit->attributes;
     switch (stat)
     {
+    case STAT_HEALTH:
+        // Calculates the maximum HP
+        return base + 10 * 1 + attributes[ATTR_STRENGTH] + attributes[ATTR_RESILENCE]; // TODO: Unit's level
+    case STAT_STAMINA:
+        // Calculates the maximum STA
+        return base + 5 * 1 + attributes[ATTR_DEXTERITY] + attributes[ATTR_AGILITY]; // TODO: Unit's level
+    case STAT_DAMAGE:
+        return base + 2 * attributes[ATTR_STRENGTH] + attributes[ATTR_DEXTERITY];
+    case STAT_ENDURANCE:
+        return base + 2 * attributes[ATTR_RESILENCE];
     case STAT_SPEED:
-        return unit->attributes[ATTR_AGILITY];
+        return base + attributes[ATTR_DEXTERITY] + 2 * attributes[ATTR_AGILITY];
     default:
         break;
     }
 
-    return 1;
+    return 0;
 }

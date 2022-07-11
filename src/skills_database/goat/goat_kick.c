@@ -11,8 +11,8 @@ void goat_kick_execute(SkillCommand *command)
 
     const CombatUnit *caster = combat_identifier_get_combat_unit(&(command->caster));
     const CombatUnit *target = combat_identifier_get_combat_unit(&(command->target));
-    tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%ls kicks %ls\n",
-              caster->unit->name, target->unit->name);
+    tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%ls kicks %ls for %u damage\n",
+              caster->unit->name, target->unit->name, dmg_instance->damage_dealt);
 }
 
 SkillMetadata goat_kick_meta = {

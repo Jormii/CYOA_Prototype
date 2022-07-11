@@ -9,6 +9,7 @@ typedef struct DmgCalcInstance_st
 {
     size_t id;
     health_t damage;
+    health_t damage_dealt;
     SkillCommand *cause;
     CombatIdentifier attacker;
     CombatIdentifier defender;
