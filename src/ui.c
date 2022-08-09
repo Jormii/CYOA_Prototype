@@ -6,7 +6,7 @@
 #include "screen_buffer.h"
 
 // Screens .h
-#include "title_screen.h"
+#include "story_screen.h"
 
 // TODO: Remove
 Window print_window;
@@ -15,7 +15,7 @@ Window keyboard_window;
 
 typedef void (*ScreenInitialization_fp)();
 ScreenInitialization_fp screen_initialization_cbs[] = {
-    title_screen_initialize};
+    story_screen_initialize};
 
 void ui_initialize()
 {

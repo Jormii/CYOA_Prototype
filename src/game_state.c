@@ -6,11 +6,6 @@
 
 // TODO: Move to its specific file
 
-State game_state_story = {
-    .id = GAME_STATE_STORY,
-    .on_enter_cb = NULL,
-    .update_cb = cyoa_interface_update};
-
 void game_state_combat_on_enter(state_id_t previous_id);
 State game_state_combat = {
     .id = GAME_STATE_COMBAT,

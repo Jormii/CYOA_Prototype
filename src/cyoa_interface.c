@@ -3,9 +3,9 @@
 
 #include <pspiofilemgr.h>
 
-#include "ui.h"
 #include "input.h"
 #include "cyoa_interface.h"
+#include "special_characters.h"
 
 #define MOVE_UP -1
 #define MOVE_DOWN 1
@@ -21,7 +21,8 @@ void cyoa_interface_save(const char *path);
 void cyoa_interface_save_global_vars(const char *path);
 extern void cyoa_interface_call(uint32_t hash);
 
-void cyoa_interface_initialize(uint32_t starting_scene, uint16_t max_options, uint8_t max_stack_size)
+void cyoa_interface_initialize(uint32_t starting_scene, uint16_t max_options, uint8_t max_stack_size,
+                               TextBuffer *messages_buffer, TextBuffer *choices_buffer)
 {
     if (sizeof(size_t) > sizeof(uint32_t))
     {
@@ -36,6 +37,8 @@ void cyoa_interface_initialize(uint32_t starting_scene, uint16_t max_options, ui
     cyoa_interface.option_cursor = 0;
     cyoa_interface.execute_option = FALSE;
     cyoa_interface.scene_switched = TRUE;
+    cyoa_interface.messages_buffer = messages_buffer;
+    cyoa_interface.choices_buffer = choices_buffer;
 
     VMInitialization vm_manager_init_values = {
         .max_options = max_options,
@@ -78,20 +81,20 @@ State *cyoa_interface_update()
 
     if (cyoa_interface.scene_switched)
     {
-        tb_clear(&(print_window.buffer), NULL);
+        tb_clear(cyoa_interface.messages_buffer, NULL);
         cyoa_interface.scene_switched = vm_execute();
     }
 
-    tb_clear(&(commands_window.buffer), NULL);
+    tb_clear(cyoa_interface.choices_buffer, NULL);
     if (!cyoa_interface.scene_switched)
     {
         vm_display_options();
 
         if (cyoa_interface.execute_option)
         {
-            tb_clear(&(print_window.buffer), NULL);
+            tb_clear(cyoa_interface.messages_buffer, NULL);
             cyoa_interface.scene_switched = vm_execute_option(cyoa_interface.option_cursor);
-            tb_print(&(print_window.buffer), 0x00FFFFFF, L"--------------------\n\n");
+            tb_print(cyoa_interface.messages_buffer, 0x00FFFFFF, L"--------------------\n\n");
 
             if (!cyoa_interface.scene_switched)
             {
@@ -136,24 +139,24 @@ void cyoa_options_move(int direction, int32_t limit)
 
 void cyoa_interface_print(const wchar_t *string, uint8_t is_option)
 {
-    TextBuffer *dst = &(print_window.buffer);
-    if (is_option)
-    {
-        dst = &(commands_window.buffer);
-    }
-
+    TextBuffer *dst = (is_option) ? cyoa_interface.choices_buffer : cyoa_interface.messages_buffer;
     tb_print(dst, cyoa_interface.color, string);
+
+    if (is_option && cyoa_interface.cursor_is_over_option)
+    {
+        tb_printf(dst, 0x0000FFFF, L" (%lc)", SPECIAL_CHARACTER_CROSS);
+    }
 }
 
 void cyoa_interface_end_of_string(uint8_t is_option)
 {
     if (is_option)
     {
-        tb_print(&(commands_window.buffer), cyoa_interface.color, L"\n");
+        tb_print(cyoa_interface.choices_buffer, cyoa_interface.color, L"\n");
     }
     else
     {
-        tb_print(&(print_window.buffer), cyoa_interface.color, L"\n\n");
+        tb_print(cyoa_interface.messages_buffer, cyoa_interface.color, L"\n\n");
     }
 
     cyoa_interface.color = 0x00FFFFFF;
@@ -162,14 +165,8 @@ void cyoa_interface_end_of_string(uint8_t is_option)
 
 void cyoa_interface_option_start(uint16_t index)
 {
-    if (index == cyoa_interface.option_cursor)
-    {
-        cyoa_interface.color = 0x0000FFFF;
-    }
-    else
-    {
-        cyoa_interface.color = 0x00FFFFFF;
-    }
+    cyoa_interface.cursor_is_over_option = index == cyoa_interface.option_cursor;
+    cyoa_interface.color = (cyoa_interface.cursor_is_over_option) ? 0x0000FFFF : 0x00FFFFFF;
 }
 
 void *cyoa_interface_read(const char *path, size_t *out_size)
