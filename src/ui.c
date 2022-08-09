@@ -7,6 +7,7 @@
 
 // Screens .h
 #include "story_screen.h"
+#include "creature_summary.h"
 
 // TODO: Remove
 Window print_window;
@@ -15,7 +16,8 @@ Window keyboard_window;
 
 typedef void (*ScreenInitialization_fp)();
 ScreenInitialization_fp screen_initialization_cbs[] = {
-    story_screen_initialize};
+    story_screen_initialize,
+    creature_summary_initialize};
 
 void ui_initialize()
 {
@@ -39,7 +41,7 @@ void ui_draw_horizontal_divider(screen_t left, screen_t right, screen_t y, rgb_t
 {
 #define HORIZONTAL_DIV_MID_INCREMENT (BUFFER_WIDTH << 1)
 #define HORIZONTAL_DIV_BOTTOM_INCREMENT (BUFFER_WIDTH << 2)
-#define HORIZONTAL_DIV_MARGIN_WIDTH 3
+#define HORIZONTAL_DIV_MARGIN_WIDTH 2
 
     // Buffer index refers to the line drawn on the top. Middle and bottom line
     // indices are obtained through addition
@@ -64,7 +66,7 @@ void ui_draw_vertical_divider(screen_t x, screen_t top, screen_t bottom, rgb_t c
 {
 #define VERTICAL_DIV_MID_INCREMENT 2
 #define VERTICAL_DIV_BOTTOM_INCREMENT 4
-#define VERTICAL_DIV_MARGIN_WIDTH 3
+#define VERTICAL_DIV_MARGIN_WIDTH 2
 
     // Buffer index refers to the line drawn on the left. Middle and right line
     // indices are obtained through addition
