@@ -8,7 +8,7 @@
 #define BUFFER_WIDTH 512
 #define BUFFER_SIZE (BUFFER_WIDTH * SCREEN_HEIGHT)
 
-#define TEXT_BUFFER_INDEX(x, y) (x + y * BUFFER_WIDTH)
+#define TEXT_BUFFER_INDEX(x, y) ((x) + (y) * BUFFER_WIDTH)
 
 rgb_t *draw_buffer;
 

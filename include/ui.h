@@ -15,4 +15,7 @@ extern Window keyboard_window;
 void ui_initialize();
 void ui_update();
 
+void ui_draw_horizontal_divider(screen_t left, screen_t right, screen_t y, rgb_t color);
+void ui_draw_vertical_divider(screen_t x, screen_t top, screen_t bottom, rgb_t color);
+
 #endif
