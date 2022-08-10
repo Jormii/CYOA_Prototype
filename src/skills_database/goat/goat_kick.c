@@ -1,7 +1,4 @@
-#include "ui.h"
-#include "all_skills.h"
-#include "combat_damage.h"
-#include "combat_interface.h"
+#include "skill_includes.h"
 
 void goat_kick_execute(SkillCommand *command)
 {
@@ -12,7 +9,7 @@ void goat_kick_execute(SkillCommand *command)
 
     const CombatUnit *caster = combat_identifier_get_combat_unit(&(command->caster));
     const CombatUnit *target = combat_identifier_get_combat_unit(&(command->target));
-    tb_printf(combat_interface.state_buffer, 0x00FFFFFF, L"%ls kicks %ls for %u damage\n",
+    tb_printf(skills_buffer, 0x00FFFFFF, L"%ls kicks %ls for %u damage\n",
               caster->unit->name, target->unit->name, dmg_instance->damage_dealt);
 }
 

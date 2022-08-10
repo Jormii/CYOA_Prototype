@@ -5,6 +5,7 @@
 #include "input.h"
 #include "callbacks.h"
 #include "game_loop.h"
+#include "all_skills.h"
 #include "cyoa_interface.h"
 #include "combat_interface.h"
 
@@ -53,6 +54,9 @@ void initialize()
     // Initialize combat engine
     combat_interface_initialize(&(combat_state_window.buffer), &(combat_log_window.buffer),
                                 &(combat_commands_window.buffer));
+
+    // Other
+    skills_buffer = &(combat_log_window.buffer);
 }
 
 void deinitialize()

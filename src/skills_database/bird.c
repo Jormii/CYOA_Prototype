@@ -1,11 +1,7 @@
 #include <time.h>
 
-#include "ui.h"
 #include "all_species.h"
-#include "combat_damage.h"
-#include "combat_engine.h"
-#include "unsigned_math.h"
-#include "combat_interface.h"
+#include "skill_includes.h"
 
 #pragma region Actives
 
@@ -14,7 +10,7 @@ void say_hi(SkillCommand *command)
     CombatUnit *caster = combat_team_get_combat_unit(command->caster.combat_team, command->caster.unit_slot);
     CombatUnit *target = combat_team_get_combat_unit(command->target.combat_team, command->target.unit_slot);
 
-    tb_printf(combat_interface.state_buffer, 0x00FFFFFF, L"%ls (%u) says hi to %ls (%u)\n",
+    tb_printf(skills_buffer, 0x00FFFFFF, L"%ls (%u) says hi to %ls (%u)\n",
               caster->unit->name, caster->unit->id, target->unit->name, target->unit->id);
 }
 
@@ -45,7 +41,7 @@ void deal_damage(SkillCommand *command)
         combat_damage_perform(dmg_instance);
     }
 
-    tb_printf(combat_interface.state_buffer, 0x00FFFFFF, L"%ls (%u) attacks %ls (%u) for %u damage\n",
+    tb_printf(skills_buffer, 0x00FFFFFF, L"%ls (%u) attacks %ls (%u) for %u damage\n",
               caster->unit->name, caster->unit->id,
               target->unit->name, target->unit->id,
               buffer->random);

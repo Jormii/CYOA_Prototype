@@ -1,7 +1,4 @@
-#include "ui.h"
-#include "all_skills.h"
-#include "combat_damage.h"
-#include "combat_interface.h"
+#include "skill_includes.h"
 
 void goat_desperation_execute(SkillCommand *command)
 {
@@ -15,7 +12,7 @@ void goat_desperation_execute(SkillCommand *command)
     const CombatUnit *target = combat_identifier_get_combat_unit(&(command->target));
     caster->unit->hp = 0;
 
-    tb_printf(combat_interface.state_buffer, 0x00FFFFFF,
+    tb_printf(skills_buffer, 0x00FFFFFF,
               L"In a desperate action, %ls sacrifices itself to damage %ls\n",
               caster->unit->name, target->unit->name);
 }

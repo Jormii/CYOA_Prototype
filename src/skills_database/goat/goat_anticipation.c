@@ -1,8 +1,4 @@
-#include "ui.h"
-#include "all_skills.h"
-#include "fixed_list.h"
-#include "combat_damage.h"
-#include "combat_interface.h"
+#include "skill_includes.h"
 
 typedef struct GoatAnticipationBuffer_st
 {
@@ -42,7 +38,7 @@ void goat_anticipation_buffer_counter_attack(const GoatAnticipationBuffer *buffe
 
     const CombatUnit *caster = combat_identifier_get_combat_unit(&(command->caster));
     const CombatUnit *target = combat_identifier_get_combat_unit(&(buffer->target));
-    tb_printf(combat_interface.state_buffer, 0x00FFFFFF, L"%ls anticipates %ls's attack!\n",
+    tb_printf(skills_buffer, 0x00FFFFFF, L"%ls anticipates %ls's attack!\n",
               caster->unit->name, target->unit->name);
 }
 
@@ -121,7 +117,7 @@ void goat_anticipation_execute(SkillCommand *command)
         {
             const CombatUnit *caster = combat_identifier_get_combat_unit(&(command->caster));
 
-            tb_printf(combat_interface.state_buffer, 0x008888FF,
+            tb_printf(skills_buffer, 0x008888FF,
                       L"%ls isnt't as fast as its target and can't counter attack!\n",
                       caster->unit->name);
         }

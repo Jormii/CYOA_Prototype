@@ -1,6 +1,5 @@
 #include "ui.h"
 #include "all_skills.h"
-#include "combat_interface.h"
 
 void item_heal_execute(SkillCommand *command)
 {
@@ -9,7 +8,7 @@ void item_heal_execute(SkillCommand *command)
     {
         target->unit->hp += 10;
 
-        tb_printf(combat_interface.state_buffer, 0x0088FF88, L"%ls heals for %u HP\n",
+        tb_printf(skills_buffer, 0x0088FF88, L"%ls heals for %u HP\n",
                   target->unit->name, 10);
     }
 }

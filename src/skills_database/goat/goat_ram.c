@@ -1,7 +1,4 @@
-#include "ui.h"
-#include "all_skills.h"
-#include "combat_damage.h"
-#include "combat_interface.h"
+#include "skill_includes.h"
 
 typedef struct GoatRamBuffer_st
 {
@@ -13,7 +10,7 @@ void goat_ram_buffer_reset(GoatRamBuffer *buffer, SkillCommand *command)
     buffer->consecutive_uses = 0;
 
     CombatUnit *caster = combat_identifier_get_combat_unit(&(command->caster));
-    tb_printf(combat_interface.state_buffer, 0x00FFFFFF, L"%ls stops its assault\n",
+    tb_printf(skills_buffer, 0x00FFFFFF, L"%ls stops its assault\n",
               caster->unit->name);
 }
 
@@ -30,7 +27,7 @@ void goat_ram_buffer_attack(GoatRamBuffer *buffer, SkillCommand *command)
 
     CombatUnit *caster = combat_identifier_get_combat_unit(&(command->caster));
     CombatUnit *target = combat_identifier_get_combat_unit(&(command->target));
-    tb_printf(combat_interface.state_buffer, 0x00FFFFFF, L"%ls charges %ls for %u damage\n",
+    tb_printf(skills_buffer, 0x00FFFFFF, L"%ls charges %ls for %u damage\n",
               caster->unit->name, target->unit->name, buffer->consecutive_uses);
 }
 

@@ -1,7 +1,4 @@
-#include "ui.h"
-#include "all_skills.h"
-#include "combat_damage.h"
-#include "combat_interface.h"
+#include "skill_includes.h"
 
 typedef struct GoatPenetrationConditionBuffer_st
 {
@@ -64,7 +61,7 @@ void goat_penetration_condition_execute(SkillCommand *command)
             command->cause.dmg_instance_id);
         dmg_instance->damage += buffer->stacks;
 
-        tb_printf(combat_interface.state_buffer, 0x008888FF,
+        tb_printf(skills_buffer, 0x008888FF,
                   L"%ls's armor is shredded by %u!\n",
                   afflicted->unit->name, buffer->stacks);
         break;
