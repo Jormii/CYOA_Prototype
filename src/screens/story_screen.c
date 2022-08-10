@@ -13,7 +13,7 @@ Window story_messages_window = {
         .left = SCREEN_COMMON_VER_DIV_X + SCREEN_EXTRA_MARGIN,
         .right = SCREEN_WIDTH - SCREEN_COMMON_MARGIN,
         .top = SCREEN_COMMON_MARGIN,
-        .bottom = SCREEN_COMMON_VER_DIV_X - SCREEN_EXTRA_MARGIN},
+        .bottom = SCREEN_COMMON_HOR_DIV_Y - SCREEN_EXTRA_MARGIN},
     .font = &base_set_font};
 
 Window story_choices_window = {

@@ -11,9 +11,16 @@
 PSP_MODULE_INFO("Prototype", 0, 1, 0);
 PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER);
 
+// Extern declarations dedicated to initialize each component
 extern State game_state_story;
 extern Window story_messages_window;
 extern Window story_choices_window;
+
+extern Window combat_state_window;
+extern Window combat_log_window;
+extern Window combat_commands_window;
+
+extern State game_state_combat; // TODO: Remove this
 
 void initialize();
 void deinitialize();
@@ -21,7 +28,7 @@ void deinitialize();
 int main()
 {
     initialize();
-    game_loop_spawn(&game_state_story);
+    game_loop_spawn(&game_state_combat);
     deinitialize();
 
     return 0;
@@ -44,7 +51,8 @@ void initialize()
                               &(story_messages_window.buffer), &(story_choices_window.buffer));
 
     // Initialize combat engine
-    combat_interface_initialize();
+    combat_interface_initialize(&(combat_state_window.buffer), &(combat_log_window.buffer),
+                                &(combat_commands_window.buffer));
 }
 
 void deinitialize()

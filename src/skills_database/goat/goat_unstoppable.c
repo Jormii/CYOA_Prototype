@@ -1,5 +1,6 @@
 #include "ui.h"
 #include "all_skills.h"
+#include "combat_interface.h"
 #include "combat_identifier.h"
 
 bool_t goat_unstoppable_trigger(const SkillCommand *command)
@@ -37,7 +38,7 @@ void goat_unstoppable_execute(SkillCommand *command)
     combat_engine_add_command_to_queue(&active_command);
 
     const CombatUnit *caster = combat_identifier_get_combat_unit(&(command->caster));
-    tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%ls keeps going!\n", caster->unit->name);
+    tb_printf(combat_interface.state_buffer, 0x00FFFFFF, L"%ls keeps going!\n", caster->unit->name);
 }
 
 SkillMetadata goat_unstoppable_meta = {

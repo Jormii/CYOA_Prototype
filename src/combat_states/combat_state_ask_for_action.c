@@ -30,7 +30,7 @@ State *combat_state_ask_for_action_update()
     const SkillSetMetadata *template = cu->unit->species->skillset_template;
 
     // Update interface
-    tb_clear(&(commands_window.buffer), NULL);
+    tb_clear(combat_interface.commands_buffer, NULL);
     if (combat_interface.showing_items)
     {
         display_inventory();
@@ -88,16 +88,16 @@ void combat_state_ask_for_action_on_enter(state_id_t previous_id)
     combat_interface.showing_items = FALSE;
 
     // Update interface
-    tb_clear(&(print_window.buffer), NULL);
+    tb_clear(combat_interface.state_buffer, NULL);
     display_combat_state();
 }
 
 void display_combat_state()
 {
-    tb_print(&(print_window.buffer), 0x00FFFFFF, L"--- YOUR UNITS ---\n");
+    tb_print(combat_interface.state_buffer, 0x00FFFFFF, L"--- YOUR UNITS ---\n");
     display_combat_team(&(combat_engine.players_team));
 
-    tb_print(&(print_window.buffer), 0x00FFFFFF, L"\n--- ENEMY UNITS ---\n");
+    tb_print(combat_interface.state_buffer, 0x00FFFFFF, L"\n--- ENEMY UNITS ---\n");
     display_combat_team(&(combat_engine.enemy_team));
 }
 
@@ -115,7 +115,7 @@ void display_combat_team(CombatTeam *combat_team)
             }
 
             const Unit *unit = combat_unit->unit;
-            tb_printf(&(print_window.buffer), color, L"%u :: %ls (%ls / %u) :: HP: %u / %u || STA: %u / %u || (Dmg, Def, Spd): (%u, %u, %u)\n",
+            tb_printf(combat_interface.state_buffer, color, L"%u :: %ls (%ls / %u) :: HP: %u / %u || STA: %u / %u || (Dmg, Def, Spd): (%u, %u, %u)\n",
                       slot, unit->name, unit->species->name, unit->id,
                       unit->hp, combat_unit_calculate_stat(combat_unit, STAT_HEALTH),
                       unit->stamina, combat_unit_calculate_stat(combat_unit, STAT_STAMINA),
@@ -128,7 +128,7 @@ void display_combat_team(CombatTeam *combat_team)
 
 void display_inventory()
 {
-    tb_print(&(commands_window.buffer), 0x00FFFFFF, L"-- Items --\n");
+    tb_print(combat_interface.commands_buffer, 0x00FFFFFF, L"-- Items --\n");
 
     for (size_t i = 0; i < inventory.n_items; ++i)
     {
@@ -142,7 +142,7 @@ void display_unit_skills(const CombatUnit *combat_unit)
     const Unit *unit = combat_unit->unit;
     const SkillSetMetadata *skillset_template = unit->species->skillset_template;
 
-    tb_printf(&(commands_window.buffer), 0x00FFFFFF, L"-- %ls's skills --\n",
+    tb_printf(combat_interface.commands_buffer, 0x00FFFFFF, L"-- %ls's skills --\n",
               unit->name);
     for (size_t i = 0; i < skillset_template->n_skills; ++i)
     {
@@ -157,6 +157,6 @@ void display_skill(const SkillMetadata *metadata, size_t index)
     {
         color = 0x0000FFFF;
     }
-    tb_printf(&(commands_window.buffer), color, L"%ls :: STA: %u\n",
+    tb_printf(combat_interface.commands_buffer, color, L"%ls :: STA: %u\n",
               metadata->name, metadata->cost);
 }

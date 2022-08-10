@@ -8,6 +8,9 @@
         .display = L""    \
     }
 
+Window keyboard_window; // TODO: Won't have any use. Declared to avoid errors
+                        // During compilation
+
 const Key keys[] = {
     {.display = L"1", .character = L'1', .allows_uppercase = FALSE},
     {.display = L"2", .character = L'2', .allows_uppercase = FALSE},

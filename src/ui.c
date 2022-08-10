@@ -7,16 +7,13 @@
 
 // Screens .h
 #include "story_screen.h"
+#include "combat_screen.h"
 #include "creature_summary.h"
-
-// TODO: Remove
-Window print_window;
-Window commands_window;
-Window keyboard_window;
 
 typedef void (*ScreenInitialization_fp)();
 ScreenInitialization_fp screen_initialization_cbs[] = {
     story_screen_initialize,
+    combat_screen_initialize,
     creature_summary_initialize};
 
 void ui_initialize()

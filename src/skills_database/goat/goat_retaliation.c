@@ -2,6 +2,7 @@
 #include "all_skills.h"
 #include "combat_damage.h"
 #include "unsigned_math.h"
+#include "combat_interface.h"
 
 bool_t goat_retaliation_condition_trigger(const SkillCommand *command)
 {
@@ -104,7 +105,7 @@ void goat_retaliation_execute(SkillCommand *command)
     case COMBAT_EVENT_NONE:
         if (!(buffer->is_second_effect))
         {
-            tb_printf(&(print_window.buffer), 0x00FFFFFF,
+            tb_printf(combat_interface.state_buffer, 0x00FFFFFF,
                       L"%ls prepares itself for an incoming attack!\n",
                       caster->unit->name);
 
@@ -130,12 +131,12 @@ void goat_retaliation_execute(SkillCommand *command)
             {
                 dmg_instance->damage += 2;
 
-                tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%ls retaliates!\n",
+                tb_printf(combat_interface.state_buffer, 0x00FFFFFF, L"%ls retaliates!\n",
                           caster->unit->name);
             }
 
             CombatUnit *target = combat_identifier_get_combat_unit(&(command->target));
-            tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%ls attacks %ls\n",
+            tb_printf(combat_interface.state_buffer, 0x00FFFFFF, L"%ls attacks %ls\n",
                       caster->unit->name, target->unit->name);
 
             combat_damage_perform(dmg_instance);

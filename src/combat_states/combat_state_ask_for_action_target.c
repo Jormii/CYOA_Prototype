@@ -192,7 +192,7 @@ State combat_state_ask_for_action_target = {
 State *combat_state_ask_for_action_target_update()
 {
     // Update interface
-    tb_clear(&(commands_window.buffer), NULL);
+    tb_clear(combat_interface.commands_buffer, NULL);
 
     CombatUnit *cu = combat_team_get_combat_unit(
         &(combat_engine.players_team), combat_interface.slot);
@@ -275,12 +275,12 @@ TargetCbs *get_skill_target_cbs(const Skill *skill)
 void display_skill_targets(const Skill *skill, const TargetCbs *cbs)
 {
     const SkillMetadata *metadata = skill->metadata;
-    tb_printf(&(commands_window.buffer), 0x00FFFFFF, L"%ls: %ls\n",
+    tb_printf(combat_interface.commands_buffer, 0x00FFFFFF, L"%ls: %ls\n",
               metadata->name, metadata->description);
 
     if (cbs == NULL)
     {
-        tb_printf(&(commands_window.buffer), 0x008888FF,
+        tb_printf(combat_interface.commands_buffer, 0x008888FF,
                   L"Skill type %u isn't implemented yet", metadata->type);
         return;
     }
@@ -291,7 +291,7 @@ void display_skill_targets(const Skill *skill, const TargetCbs *cbs)
         display_skill_target(skill, cu, slot, cbs);
     }
 
-    tb_print(&(commands_window.buffer), 0x00FFFFFF, L"\n");
+    tb_print(combat_interface.commands_buffer, 0x00FFFFFF, L"\n");
 
     for (combat_slot_t slot = 0; slot < MAX_UNITS_IN_COMBAT; ++slot)
     {
@@ -304,7 +304,7 @@ void display_skill_target(const Skill *skill, const CombatUnit *combat_unit, siz
 {
     if (combat_unit == NULL)
     {
-        tb_print(&(commands_window.buffer), 0x00888888, L"- ----------\n");
+        tb_print(combat_interface.commands_buffer, 0x00888888, L"- ----------\n");
     }
     else
     {
@@ -325,7 +325,7 @@ void display_skill_target(const Skill *skill, const CombatUnit *combat_unit, siz
         }
 
         const Unit *unit = combat_unit->unit;
-        tb_printf(&(commands_window.buffer), color, L"- %ls (%ls / %u)\n",
+        tb_printf(combat_interface.commands_buffer, color, L"- %ls (%ls / %u)\n",
                   unit->name, unit->species->name, unit->id);
     }
 }

@@ -25,9 +25,9 @@ State *combat_state_execute_update()
 
 void combat_state_execute_on_enter(state_id_t previous_id)
 {
-    tb_clear(&(print_window.buffer), NULL);
-    tb_clear(&(commands_window.buffer), NULL);
+    tb_clear(combat_interface.state_buffer, NULL);
+    tb_clear(combat_interface.commands_buffer, NULL);
 
     combat_engine_execute_queue();
-    tb_print(&(commands_window.buffer), 0x00FFFFFF, L"Executing skills... Press X to return to main state\n");
+    tb_print(combat_interface.commands_buffer, 0x00FFFFFF, L"Executing skills... Press X to return to main state\n");
 }

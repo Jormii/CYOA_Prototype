@@ -26,11 +26,18 @@ void init_unit(Unit *unit, wchar_t *name, const Species *species)
 
 // END TODO
 
-void combat_interface_initialize()
+void combat_interface_initialize(TextBuffer *state_buffer, TextBuffer *log_buffer,
+                                 TextBuffer *commands_buffer)
 {
     // Initialize combat engine and species
     combat_engine_initialize();
     combat_engine.on_event_cb = on_event;
+
+    // Hook buffers
+    combat_interface.state_buffer = state_buffer;
+    combat_interface.log_buffer = log_buffer;
+    combat_interface.commands_buffer = commands_buffer;
+    combat_interface.displaying_state = TRUE;
 
     // TODO: Remove this
     init_unit(combat_engine.players_team.team.units, L"First", &bird_species);
@@ -68,7 +75,7 @@ void on_event(const SkillCommand *event_command)
         const CombatUnit *caster = combat_identifier_get_combat_unit(&(event_command->caster));
         const CombatUnit *target = combat_identifier_get_combat_unit(&(event_command->target));
 
-        tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%ls kills %ls\n", caster->unit->name, target->unit->name);
+        tb_printf(combat_interface.state_buffer, 0x00FFFFFF, L"%ls kills %ls\n", caster->unit->name, target->unit->name);
         break;
     }
     default:

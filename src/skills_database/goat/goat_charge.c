@@ -1,6 +1,7 @@
 #include "ui.h"
 #include "all_skills.h"
 #include "combat_damage.h"
+#include "combat_interface.h"
 
 void goat_charge_execute(SkillCommand *command)
 {
@@ -33,7 +34,7 @@ void goat_charge_execute(SkillCommand *command)
         combat_damage_perform(dmg_instance);
 
         const CombatUnit *caster = combat_identifier_get_combat_unit(&(command->caster));
-        tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%ls charges, hitting %ls\n",
+        tb_printf(combat_interface.state_buffer, 0x00FFFFFF, L"%ls charges, hitting %ls\n",
                   caster->unit->name, target_unit->unit->name);
     }
 }
