@@ -110,6 +110,7 @@ void goat_penetration_execute(SkillCommand *command)
 SkillMetadata goat_penetration_meta = {
     .id = SKILL_ID_GOAT_PENETRATION_ID,
     .type = SKILL_TYPE_PASSIVE,
+    .attribute = ATTR_STRENGTH,
     .cost = 0,
     .name = L"Penetration (P)",
     .description = L"On hit, decreases target defense",

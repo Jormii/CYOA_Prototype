@@ -8,12 +8,14 @@
 // Screens .h
 #include "story_screen.h"
 #include "combat_screen.h"
+#include "creature_screen.h"
 #include "creature_summary.h"
 
 typedef void (*ScreenInitialization_fp)();
 ScreenInitialization_fp screen_initialization_cbs[] = {
     story_screen_initialize,
     combat_screen_initialize,
+    creature_screen_initialize,
     creature_summary_initialize};
 
 void ui_initialize()

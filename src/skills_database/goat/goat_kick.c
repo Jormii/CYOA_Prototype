@@ -16,6 +16,7 @@ void goat_kick_execute(SkillCommand *command)
 SkillMetadata goat_kick_meta = {
     .id = SKILL_ID_GOAT_KICK_ID,
     .type = SKILL_TYPE_ACTIVE_SINGLE_NOT_SELF,
+    .attribute = ATTR_STRENGTH,
     .cost = 0,
     .name = L"Kick",
     .description = L"Kicks a single unit, dealing damage to it",

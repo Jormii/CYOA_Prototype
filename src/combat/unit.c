@@ -39,3 +39,9 @@ stat_t unit_calculate_stat(const Unit *unit, Stat stat)
 
     return 0;
 }
+
+bool_t unit_knows_skill(const Unit *unit, const SkillMetadata *skill_meta)
+{
+    // TODO
+    return TRUE;
+}

@@ -22,5 +22,6 @@ void unit_initialize(Unit *unit);
 bool_t unit_is_valid(const Unit *unit);
 bool_t unit_is_alive(const Unit *unit);
 stat_t unit_calculate_stat(const Unit *unit, Stat stat);
+bool_t unit_knows_skill(const Unit *unit, const SkillMetadata *skill_meta);
 
 #endif

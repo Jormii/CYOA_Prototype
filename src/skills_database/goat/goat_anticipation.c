@@ -141,6 +141,7 @@ void goat_anticipation_execute(SkillCommand *command)
 SkillMetadata goat_anticipation_meta = {
     .id = SKILL_ID_GOAT_ANTICIPATION_ID,
     .type = SKILL_TYPE_PASSIVE,
+    .attribute = ATTR_STRENGTH,
     .cost = 0,
     .name = L"Anticipation (P)",
     .description = L"If this unit is attacked, it strikes the attacker before it happens",

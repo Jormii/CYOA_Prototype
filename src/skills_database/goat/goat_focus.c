@@ -88,6 +88,7 @@ void goat_focus_execute(SkillCommand *command)
 SkillMetadata goat_focus_meta = {
     .id = SKILL_ID_GOAT_FOCUS_ID,
     .type = SKILL_TYPE_ACTIVE_SELF,
+    .attribute = ATTR_RESILENCE,
     .cost = 0,
     .name = L"Focus",
     .description = L"Increases attack and speed for two rounds",

@@ -155,6 +155,7 @@ void goat_retaliation_execute(SkillCommand *command)
 SkillMetadata goat_retaliation_meta = {
     .id = SKILL_ID_GOAT_RETALIATION_ID,
     .type = SKILL_TYPE_ACTIVE_SINGLE_NOT_SELF,
+    .attribute = ATTR_RESILENCE,
     .cost = 0,
     .name = L"Retaliation",
     .description = L"Attacks a unit. If this unit was attacked before that, the damage increases. Raises defense and lowers speed until the end of the round.",

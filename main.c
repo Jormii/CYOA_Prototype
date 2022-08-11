@@ -21,7 +21,7 @@ extern Window combat_state_window;
 extern Window combat_log_window;
 extern Window combat_commands_window;
 
-extern State game_state_combat; // TODO: Remove this
+extern State game_state_combat; // TODO: Remove these
 
 void initialize();
 void deinitialize();

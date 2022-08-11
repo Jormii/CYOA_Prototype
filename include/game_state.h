@@ -5,7 +5,7 @@ typedef enum GameStateIdentifier_en
 {
     GAME_STATE_STORY,
     GAME_STATE_COMBAT,
-    GAME_STATE_KEYBOARD
+    GAME_STATE_CREATURE
 } GameStateIdentifier;
 
 #endif

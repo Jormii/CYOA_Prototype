@@ -39,6 +39,7 @@ void goat_charge_execute(SkillCommand *command)
 SkillMetadata goat_charge_meta = {
     .id = SKILL_ID_GOAT_CHARGE_ID,
     .type = SKILL_TYPE_ACTIVE_ENEMY_TEAM,
+    .attribute = ATTR_STRENGTH,
     .cost = 0,
     .name = L"Charge!",
     .description = L"Deals a lot of damage to a random enemy unit",

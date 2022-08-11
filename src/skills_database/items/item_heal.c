@@ -16,6 +16,7 @@ void item_heal_execute(SkillCommand *command)
 SkillMetadata item_heal_metadata = {
     .id = SKILL_ID_ITEM_HEAL_ID,
     .type = SKILL_TYPE_ACTIVE_SINGLE_ALLY,
+    .attribute = ATTR_STRENGTH,
     .cost = 0,
     .name = L"Heal",
     .description = L"Heals an ally for 10 HP",

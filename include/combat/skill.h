@@ -2,6 +2,7 @@
 #define SKILL_H
 
 #include "types.h"
+#include "attribute.h"
 #include "combat_event.h"
 #include "combat_identifier.h"
 
@@ -23,7 +24,9 @@ typedef enum SkillType_en
     SKILL_TYPE_ACTIVE_SINGLE_ALLY,
 
     // Team-targeted
-    SKILL_TYPE_ACTIVE_ENEMY_TEAM
+    SKILL_TYPE_ACTIVE_ENEMY_TEAM,
+
+    SKILL_TYPE_COUNT
 } SkillType;
 
 typedef enum SkillPriority_en
@@ -33,7 +36,8 @@ typedef enum SkillPriority_en
     SKILL_PRIORITY_AVERAGE,
     SKILL_PRIORITY_HIGH,
     SKILL_PRIORITY_HIGHEST,
-    SKILL_PRIORITY_ITEM
+    SKILL_PRIORITY_ITEM,
+    SKILL_PRIORITY_COUNT
 } SkillPriority;
 
 typedef struct SkillInitialization_st
@@ -46,6 +50,7 @@ typedef struct SkillMetadata_st
 {
     size_t id;
     SkillType type;
+    Attribute attribute;
     stamina_t cost;
     const wchar_t *name;
     const wchar_t *description;

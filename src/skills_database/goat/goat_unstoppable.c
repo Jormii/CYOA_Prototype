@@ -41,6 +41,7 @@ void goat_unstoppable_execute(SkillCommand *command)
 SkillMetadata goat_unstoppable_meta = {
     .id = SKILL_ID_GOAT_UNSTOPPABLE_ID,
     .type = SKILL_TYPE_PASSIVE,
+    .attribute = ATTR_AGILITY,
     .cost = 0,
     .name = L"Unstoppable (P)",
     .description = L"If this unit's attack kills its target...",

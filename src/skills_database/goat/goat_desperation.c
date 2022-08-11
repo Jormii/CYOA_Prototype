@@ -20,6 +20,7 @@ void goat_desperation_execute(SkillCommand *command)
 SkillMetadata goat_desperation_meta = {
     .id = SKILL_ID_GOAT_DESPERATION_ID,
     .type = SKILL_TYPE_ACTIVE_SINGLE_NOT_SELF,
+    .attribute = ATTR_DEXTERITY,
     .cost = 0,
     .name = L"Desperation",
     .description = L"Deals a huge amount of damage, but kills self",
