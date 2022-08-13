@@ -16,6 +16,8 @@ void creature_summary_initialize()
     w->margin.top = SCREEN_COMMON_MARGIN;
     w->margin.bottom = SCREEN_HEIGHT - SCREEN_COMMON_MARGIN;
     create_text_buffer(CREATURE_SUMMARY_BUFFER_LENGTH, &(w->buffer));
+
+    creature_summary.attr_points_available = 5; // TODO: Read according to current creature
 }
 
 void creature_summary_update()
@@ -37,6 +39,8 @@ void creature_summary_update()
     tb_printf(buffer, 0x00FFFFFF, L"DAÑO:      %u\n", unit_calculate_stat(unit, STAT_DAMAGE));
     tb_printf(buffer, 0x00FFFFFF, L"DEFENSA:   %u\n", unit_calculate_stat(unit, STAT_ENDURANCE));
     tb_printf(buffer, 0x00FFFFFF, L"VELOCIDAD: %u\n", unit_calculate_stat(unit, STAT_SPEED));
+
+    tb_printf(buffer, 0x00FFFFFF, L"\nPUNTOS ATRIB.: %u\n", creature_summary.attr_points_available);
 
     display_window(&(creature_summary.display_window));
 }

@@ -8,6 +8,7 @@ struct
 {
     size_t creature_index;
     Window display_window;
+    size_t attr_points_available;
 } creature_summary;
 
 void creature_summary_initialize();

@@ -5,9 +5,11 @@
 #include "screen_common.h"
 #include "window_display.h"
 #include "creature_summary.h"
+#include "special_characters.h"
 
 // TODO: HANDLING MEMORY. I RUN OUT OF IT!!!
 
+#define CONFIRMATION_PRESSES 3
 #define ATTRIBUTE_WINDOW_WIDTH 85
 #define ATTRIBUTE_WINDOW_BUFFER_LENGTH 512
 #define SKILL_WINDOW_BUFFER_LENGTH 512
@@ -43,6 +45,7 @@ const wchar_t **skill_type_names[SKILL_TYPE_COUNT] = {
 // TODO: Reset when entering this state
 struct
 {
+    size_t x_presses;
     size_t skill_cursor;
     size_t skill_cursor_local;
     Attribute attribute_cursor;
@@ -59,12 +62,26 @@ Window skill_window = {
         .bottom = SCREEN_HEIGHT - SCREEN_COMMON_MARGIN},
     .font = &base_set_font};
 
+Window confirm_window = {
+    .margin = {
+        .left = SCREEN_COMMON_VER_DIV_X + SCREEN_EXTRA_MARGIN,
+        .right = SCREEN_WIDTH - SCREEN_COMMON_MARGIN,
+        .top = SCREEN_COMMON_HOR_DIV_Y - SCREEN_EXTRA_MARGIN,
+        .bottom = SCREEN_HEIGHT - SCREEN_COMMON_MARGIN},
+    .font = &base_set_font};
+
 void creature_screen_handle_input();
+void creature_screen_increase_attribute();
+void creature_screen_decrease_attribute();
+void creature_screen_interface_commit_attributes();
+
 void creature_screen_adjust_skill_cursor();
 void creature_screen_print_skills(const Unit *unit);
 
 void creature_screen_initialize()
 {
+    // Interface
+    creature_screen_interface.x_presses = 0;
     creature_screen_interface.skill_cursor = 0;
     creature_screen_interface.skill_cursor_local = 0;
     creature_screen_interface.attribute_cursor = ATTR_STRENGTH;
@@ -74,6 +91,14 @@ void creature_screen_initialize()
     }
     creature_screen_adjust_skill_cursor();
 
+    // Skill window
+    create_text_buffer(SKILL_WINDOW_BUFFER_LENGTH, &(skill_window.buffer));
+
+    // Confirm window
+    create_text_buffer(18, &(confirm_window.buffer)); // String: "* Confirmar x x x\0"
+    confirm_window.margin.top -= base_set_font.height;
+
+    // Attribute windows
     screen_t left = SCREEN_COMMON_VER_DIV_X + SCREEN_EXTRA_MARGIN;
     for (Attribute attr = 0; attr < ATTR_COUNT; ++attr)
     {
@@ -85,12 +110,10 @@ void creature_screen_initialize()
         w->margin.left = left;
         w->margin.right = left + ATTRIBUTE_WINDOW_WIDTH;
         w->margin.top = SCREEN_COMMON_MARGIN;
-        w->margin.bottom = SCREEN_COMMON_HOR_DIV_Y - SCREEN_EXTRA_MARGIN;
+        w->margin.bottom = confirm_window.margin.top - SCREEN_COMMON_MARGIN;
 
         left = w->margin.right + SCREEN_COMMON_MARGIN;
     }
-
-    create_text_buffer(SKILL_WINDOW_BUFFER_LENGTH, &(skill_window.buffer));
 }
 
 void creature_screen_update()
@@ -106,6 +129,7 @@ void creature_screen_update()
             display_window(attribute_windows + attr);
         }
         display_window(&skill_window);
+        display_window(&confirm_window);
         creature_summary_update();
         screen_common_update();
     }
@@ -115,9 +139,25 @@ void creature_screen_update()
 
 void creature_screen_handle_input()
 {
-    if (input_button_pressed(BUTTON_UP))
+    bool_t other_pressed = FALSE; // TODO: Ugly
+    bool_t square_bttn = input_button_held(BUTTON_SQUARE);
+    if (input_button_pressed(BUTTON_CROSS))
     {
-        if (creature_screen_interface.skill_cursor_local != 0)
+        creature_screen_interface.x_presses += 1;
+        if (creature_screen_interface.x_presses == CONFIRMATION_PRESSES)
+        {
+            creature_screen_interface.x_presses = 0;
+            creature_screen_interface_commit_attributes();
+        }
+    }
+    else if (input_button_pressed(BUTTON_UP))
+    {
+        other_pressed = TRUE;
+        if (square_bttn)
+        {
+            creature_screen_increase_attribute();
+        }
+        else if (creature_screen_interface.skill_cursor_local != 0)
         {
             creature_screen_interface.skill_cursor_local -= 1;
             creature_screen_adjust_skill_cursor();
@@ -125,11 +165,20 @@ void creature_screen_handle_input()
     }
     else if (input_button_pressed(BUTTON_DOWN))
     {
-        creature_screen_interface.skill_cursor_local += 1;
-        creature_screen_adjust_skill_cursor();
+        other_pressed = TRUE;
+        if (square_bttn)
+        {
+            creature_screen_decrease_attribute();
+        }
+        else
+        {
+            creature_screen_interface.skill_cursor_local += 1;
+            creature_screen_adjust_skill_cursor();
+        }
     }
     else if (input_button_pressed(BUTTON_LEFT))
     {
+        other_pressed = TRUE;
         if (creature_screen_interface.attribute_cursor != ATTR_STRENGTH)
         {
             creature_screen_interface.attribute_cursor -= 1;
@@ -138,11 +187,61 @@ void creature_screen_handle_input()
     }
     else if (input_button_pressed(BUTTON_RIGHT))
     {
+        other_pressed = TRUE;
         if (creature_screen_interface.attribute_cursor != ATTR_AGILITY)
         {
             creature_screen_interface.attribute_cursor += 1;
             creature_screen_adjust_skill_cursor();
         }
+    }
+
+    if (other_pressed)
+    {
+        creature_screen_interface.x_presses = 0;
+    }
+}
+
+void creature_screen_increase_attribute()
+{
+    Team *team = &(combat_engine.players_team.team);
+    const Unit *unit = team_get_unit(team, creature_summary.creature_index);
+    if (unit == NULL)
+    {
+        return;
+    }
+
+    if (creature_summary.attr_points_available != 0)
+    {
+        attribute_t *attr = creature_screen_interface.attribute_change + creature_screen_interface.attribute_cursor;
+        *attr += 1;
+        creature_summary.attr_points_available -= 1;
+    }
+}
+
+void creature_screen_decrease_attribute()
+{
+    attribute_t *attr = creature_screen_interface.attribute_change + creature_screen_interface.attribute_cursor;
+    if ((*attr) != 0)
+    {
+        *attr -= 1;
+        creature_summary.attr_points_available += 1;
+    }
+}
+
+void creature_screen_interface_commit_attributes()
+{
+    // TODO: Lots of repetition
+    Team *team = &(combat_engine.players_team.team);
+    Unit *unit = team_get_unit(team, creature_summary.creature_index);
+    if (unit == NULL)
+    {
+        return;
+    }
+
+    for (Attribute attr = 0; attr < ATTR_COUNT; ++attr)
+    {
+        unit->attributes[attr] += creature_screen_interface.attribute_change[attr];
+        creature_screen_interface.attribute_change[attr] = 0;
     }
 }
 
@@ -267,5 +366,15 @@ void creature_screen_print_skills(const Unit *unit)
                       skill_meta->cost, *skill_type_names[skill_meta->type], priority_names[skill_meta->priority]);
             tb_print(buffer, 0x00FFFFFF, skill_meta->description);
         }
+    }
+
+    // Print confirmation
+    tb_clear(&(confirm_window.buffer), NULL);
+    tb_print(&(confirm_window.buffer), 0x00FFFFFF, L"* Confirmar");
+    size_t count = creature_screen_interface.x_presses;
+    for (size_t i = 0; i < CONFIRMATION_PRESSES; ++i)
+    {
+        rgb_t color = (i >= count) ? 0x00FFFFFF : 0x0000FFFF;
+        tb_printf(&(confirm_window.buffer), color, L" %lc", SPECIAL_CHARACTER_CROSS);
     }
 }
