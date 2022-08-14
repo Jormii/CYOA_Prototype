@@ -8,6 +8,9 @@
         .display = L""    \
     }
 
+Window keyboard_window; // TODO: Won't have any use. Declared to avoid errors
+                        // During compilation
+
 const Key keys[] = {
     {.display = L"1", .character = L'1', .allows_uppercase = FALSE},
     {.display = L"2", .character = L'2', .allows_uppercase = FALSE},
@@ -91,10 +94,6 @@ State *keyboard_update()
     bool_t quit = keyboard_handle_input();
     if (quit)
     {
-        ui_hide_all();
-        print_window_visible = TRUE;
-        commands_window_visible = TRUE;
-        
         return STATE_EXIT_STATE;
     }
     else

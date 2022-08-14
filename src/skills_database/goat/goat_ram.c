@@ -1,6 +1,4 @@
-#include "ui.h"
-#include "all_skills.h"
-#include "combat_damage.h"
+#include "skill_includes.h"
 
 typedef struct GoatRamBuffer_st
 {
@@ -12,7 +10,7 @@ void goat_ram_buffer_reset(GoatRamBuffer *buffer, SkillCommand *command)
     buffer->consecutive_uses = 0;
 
     CombatUnit *caster = combat_identifier_get_combat_unit(&(command->caster));
-    tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%ls stops its assault\n",
+    tb_printf(skills_buffer, 0x00FFFFFF, L"%ls stops its assault\n",
               caster->unit->name);
 }
 
@@ -29,7 +27,7 @@ void goat_ram_buffer_attack(GoatRamBuffer *buffer, SkillCommand *command)
 
     CombatUnit *caster = combat_identifier_get_combat_unit(&(command->caster));
     CombatUnit *target = combat_identifier_get_combat_unit(&(command->target));
-    tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%ls charges %ls for %u damage\n",
+    tb_printf(skills_buffer, 0x00FFFFFF, L"%ls charges %ls for %u damage\n",
               caster->unit->name, target->unit->name, buffer->consecutive_uses);
 }
 
@@ -72,6 +70,7 @@ void goat_ram_execute(SkillCommand *command)
 SkillMetadata goat_ram_meta = {
     .id = SKILL_ID_GOAT_RAM_ID,
     .type = SKILL_TYPE_ACTIVE_SINGLE_NOT_SELF,
+    .attribute = ATTR_DEXTERITY,
     .cost = 0,
     .name = L"Ram",
     .description = L"Attacks a unit. Consecutive uses increase the damage of this attack",

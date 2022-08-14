@@ -3,7 +3,10 @@
 
 #include "item.h"
 #include "skill.h"
+#include "text_buffer.h"
 #include "combat_engine.h"
+
+extern TextBuffer *skills_buffer;
 
 typedef enum SkillIdentifier_en
 {

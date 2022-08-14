@@ -2,7 +2,6 @@
 
 #include "ui.h"
 #include "input.h"
-#include "keyboard.h"
 #include "game_loop.h"
 #include "game_state.h"
 #include "cyoa_interface.h"
@@ -22,8 +21,5 @@ uint16_t *previous_color()
 
 uint16_t *open_keyboard(int32_t buffer_length)
 {
-    keyboard_reset(buffer_length);
-    game_loop_spawn(&game_state_keyboard);
-
-    return (uint16_t *)keyboard.buffer;
+    return NULL;
 }

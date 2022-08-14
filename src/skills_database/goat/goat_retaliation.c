@@ -1,7 +1,4 @@
-#include "ui.h"
-#include "all_skills.h"
-#include "combat_damage.h"
-#include "unsigned_math.h"
+#include "skill_includes.h"
 
 bool_t goat_retaliation_condition_trigger(const SkillCommand *command)
 {
@@ -104,7 +101,7 @@ void goat_retaliation_execute(SkillCommand *command)
     case COMBAT_EVENT_NONE:
         if (!(buffer->is_second_effect))
         {
-            tb_printf(&(print_window.buffer), 0x00FFFFFF,
+            tb_printf(skills_buffer, 0x00FFFFFF,
                       L"%ls prepares itself for an incoming attack!\n",
                       caster->unit->name);
 
@@ -130,12 +127,12 @@ void goat_retaliation_execute(SkillCommand *command)
             {
                 dmg_instance->damage += 2;
 
-                tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%ls retaliates!\n",
+                tb_printf(skills_buffer, 0x00FFFFFF, L"%ls retaliates!\n",
                           caster->unit->name);
             }
 
             CombatUnit *target = combat_identifier_get_combat_unit(&(command->target));
-            tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%ls attacks %ls\n",
+            tb_printf(skills_buffer, 0x00FFFFFF, L"%ls attacks %ls\n",
                       caster->unit->name, target->unit->name);
 
             combat_damage_perform(dmg_instance);
@@ -158,6 +155,7 @@ void goat_retaliation_execute(SkillCommand *command)
 SkillMetadata goat_retaliation_meta = {
     .id = SKILL_ID_GOAT_RETALIATION_ID,
     .type = SKILL_TYPE_ACTIVE_SINGLE_NOT_SELF,
+    .attribute = ATTR_RESILENCE,
     .cost = 0,
     .name = L"Retaliation",
     .description = L"Attacks a unit. If this unit was attacked before that, the damage increases. Raises defense and lowers speed until the end of the round.",

@@ -26,5 +26,6 @@ typedef enum InputButton_en
 void input_init();
 void input_update();
 bool_t input_button_pressed(InputButton button);
+bool_t input_button_held(InputButton button);
 
 #endif

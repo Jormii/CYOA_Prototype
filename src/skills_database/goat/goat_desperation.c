@@ -1,6 +1,4 @@
-#include "ui.h"
-#include "all_skills.h"
-#include "combat_damage.h"
+#include "skill_includes.h"
 
 void goat_desperation_execute(SkillCommand *command)
 {
@@ -14,7 +12,7 @@ void goat_desperation_execute(SkillCommand *command)
     const CombatUnit *target = combat_identifier_get_combat_unit(&(command->target));
     caster->unit->hp = 0;
 
-    tb_printf(&(print_window.buffer), 0x00FFFFFF,
+    tb_printf(skills_buffer, 0x00FFFFFF,
               L"In a desperate action, %ls sacrifices itself to damage %ls\n",
               caster->unit->name, target->unit->name);
 }
@@ -22,6 +20,7 @@ void goat_desperation_execute(SkillCommand *command)
 SkillMetadata goat_desperation_meta = {
     .id = SKILL_ID_GOAT_DESPERATION_ID,
     .type = SKILL_TYPE_ACTIVE_SINGLE_NOT_SELF,
+    .attribute = ATTR_DEXTERITY,
     .cost = 0,
     .name = L"Desperation",
     .description = L"Deals a huge amount of damage, but kills self",

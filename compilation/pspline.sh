@@ -1,0 +1,1 @@
+psp-addr2line -e $1 -f -C $2

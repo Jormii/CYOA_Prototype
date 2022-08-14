@@ -1,6 +1,4 @@
-#include "ui.h"
-#include "all_skills.h"
-#include "combat_damage.h"
+#include "skill_includes.h"
 
 typedef struct GoatFocusConditionBuffer_st
 {
@@ -51,7 +49,7 @@ void goat_focus_condition_execute(SkillCommand *command)
     {
         DmgCalcInstance *dmg_inst = combat_damage_get_instance(command->cause.dmg_instance_id);
         dmg_inst->damage += 1;
-        tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%d\n", buffer->rounds_left);
+        tb_printf(skills_buffer, 0x00FFFFFF, L"%d\n", buffer->rounds_left);
         break;
     }
     case COMBAT_EVENT_CONDITION_REAPPLY:
@@ -83,13 +81,14 @@ void goat_focus_execute(SkillCommand *command)
     CombatUnit *caster = combat_identifier_get_combat_unit(identifier);
     combat_unit_apply_condition(caster, &goat_focus_condition_meta, identifier);
 
-    tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%ls increases its strength and speed\n",
+    tb_printf(skills_buffer, 0x00FFFFFF, L"%ls increases its strength and speed\n",
               caster->unit->name);
 }
 
 SkillMetadata goat_focus_meta = {
     .id = SKILL_ID_GOAT_FOCUS_ID,
     .type = SKILL_TYPE_ACTIVE_SELF,
+    .attribute = ATTR_RESILENCE,
     .cost = 0,
     .name = L"Focus",
     .description = L"Increases attack and speed for two rounds",

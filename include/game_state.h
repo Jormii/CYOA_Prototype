@@ -1,12 +1,11 @@
 #ifndef GAME_STATE_H
 #define GAME_STATE_H
 
-#include "state.h"
-
-extern State game_state_story;
-extern State game_state_combat;
-extern State game_state_keyboard;
-
-void game_state_initialize();
+typedef enum GameStateIdentifier_en
+{
+    GAME_STATE_STORY,
+    GAME_STATE_COMBAT,
+    GAME_STATE_CREATURE
+} GameStateIdentifier;
 
 #endif

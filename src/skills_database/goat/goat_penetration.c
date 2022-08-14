@@ -1,6 +1,4 @@
-#include "ui.h"
-#include "all_skills.h"
-#include "combat_damage.h"
+#include "skill_includes.h"
 
 typedef struct GoatPenetrationConditionBuffer_st
 {
@@ -63,7 +61,7 @@ void goat_penetration_condition_execute(SkillCommand *command)
             command->cause.dmg_instance_id);
         dmg_instance->damage += buffer->stacks;
 
-        tb_printf(&(print_window.buffer), 0x008888FF,
+        tb_printf(skills_buffer, 0x008888FF,
                   L"%ls's armor is shredded by %u!\n",
                   afflicted->unit->name, buffer->stacks);
         break;
@@ -112,6 +110,7 @@ void goat_penetration_execute(SkillCommand *command)
 SkillMetadata goat_penetration_meta = {
     .id = SKILL_ID_GOAT_PENETRATION_ID,
     .type = SKILL_TYPE_PASSIVE,
+    .attribute = ATTR_STRENGTH,
     .cost = 0,
     .name = L"Penetration (P)",
     .description = L"On hit, decreases target defense",

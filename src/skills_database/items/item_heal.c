@@ -8,7 +8,7 @@ void item_heal_execute(SkillCommand *command)
     {
         target->unit->hp += 10;
 
-        tb_printf(&(print_window.buffer), 0x0088FF88, L"%ls heals for %u HP\n",
+        tb_printf(skills_buffer, 0x0088FF88, L"%ls heals for %u HP\n",
                   target->unit->name, 10);
     }
 }
@@ -16,6 +16,7 @@ void item_heal_execute(SkillCommand *command)
 SkillMetadata item_heal_metadata = {
     .id = SKILL_ID_ITEM_HEAL_ID,
     .type = SKILL_TYPE_ACTIVE_SINGLE_ALLY,
+    .attribute = ATTR_STRENGTH,
     .cost = 0,
     .name = L"Heal",
     .description = L"Heals an ally for 10 HP",

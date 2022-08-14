@@ -2,6 +2,7 @@
 #define COMBAT_INTERFACE_H
 
 #include "state.h"
+#include "text_buffer.h"
 #include "combat_engine.h"
 
 extern State combat_state_start_of_combat;
@@ -33,9 +34,15 @@ struct
     combat_slot_t slot;
     size_t chosen_skill;
     bool_t showing_items;
+
+    TextBuffer *state_buffer;
+    TextBuffer *log_buffer;
+    TextBuffer *commands_buffer;
+    bool_t displaying_state;
 } combat_interface;
 
-void combat_interface_initialize();
+void combat_interface_initialize(TextBuffer *state_buffer, TextBuffer *log_buffer,
+                                 TextBuffer *commands_buffer);
 State *combat_interface_update();
 
 void combat_interface_start_combat();

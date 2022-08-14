@@ -1,66 +1,87 @@
-#include "ui.h"
-#include "base_set_font.h"
-#include "screen_buffer.h"
-#include "margin_display.h" // TODO: Remove
-#include "window_display.h"
-#include "scrollbar_display.h"
+#include <pspdisplay.h>
 
-void init_window(Window *w, size_t buffer_length);
+#include "ui.h"
+#include "colors.h"
+#include "macros.h"
+#include "screen_buffer.h"
+
+// Screens .h
+#include "story_screen.h"
+#include "combat_screen.h"
+#include "creature_screen.h"
+#include "creature_summary.h"
+
+typedef void (*ScreenInitialization_fp)();
+ScreenInitialization_fp screen_initialization_cbs[] = {
+    story_screen_initialize,
+    combat_screen_initialize,
+    creature_screen_initialize,
+    creature_summary_initialize};
 
 void ui_initialize()
 {
-    ui_hide_all();
+    sb_initialize();
 
-    init_window(&print_window, 2048);
-    init_window(&commands_window, 1024);
-    init_window(&keyboard_window, 256);
-
-    screen_t divider = 0.66f * SCREEN_HEIGHT;
-
-    print_window.margin.left = 1;
-    print_window.margin.right = SCREEN_WIDTH - 10;
-    print_window.margin.top = 1;
-    print_window.margin.bottom = divider - 1;
-
-    commands_window.margin.left = 1;
-    commands_window.margin.right = SCREEN_WIDTH - 2;
-    commands_window.margin.top = divider + 1;
-    commands_window.margin.bottom = SCREEN_HEIGHT - 2;
-
-    keyboard_window.margin = print_window.margin;
+    size_t n_screens = sizeof(screen_initialization_cbs) / sizeof(ScreenInitialization_fp *);
+    for (size_t i = 0; i < n_screens; ++i)
+    {
+        screen_initialization_cbs[i]();
+    }
 }
 
 void ui_update()
 {
-    if (print_window_visible)
-    {
-        display_window(&print_window);
-    }
+    sb_swap_buffers();
+    sb_clear_buffer(COLOR_BLACK);
+    sceDisplayWaitVblankStart();
+}
 
-    if (commands_window_visible)
-    {
-        display_window(&commands_window);
-    }
+void ui_draw_horizontal_divider(screen_t left, screen_t right, screen_t y, rgb_t color)
+{
+#define HORIZONTAL_DIV_MID_INCREMENT (BUFFER_WIDTH << 1)
+#define HORIZONTAL_DIV_BOTTOM_INCREMENT (BUFFER_WIDTH << 2)
+#define HORIZONTAL_DIV_MARGIN_WIDTH 2
 
-    if (keyboard_window_visible)
+    // Buffer index refers to the line drawn on the top. Middle and bottom line
+    // indices are obtained through addition
+    size_t buffer_index = TEXT_BUFFER_INDEX(left, y - 2);
+    for (screen_t x = left; x < right; ++x)
     {
-        display_window(&keyboard_window);
+        screen_t min_distance = MIN(x - left, (right - 1) - x);
+        boolean_t draw_top_and_bottom = min_distance >= HORIZONTAL_DIV_MARGIN_WIDTH;
+
+        draw_buffer[buffer_index + HORIZONTAL_DIV_MID_INCREMENT] = color;
+        if (draw_top_and_bottom)
+        {
+            draw_buffer[buffer_index] = color;
+            draw_buffer[buffer_index + HORIZONTAL_DIV_BOTTOM_INCREMENT] = color;
+        }
+
+        buffer_index += 1;
     }
 }
 
-void ui_hide_all()
+void ui_draw_vertical_divider(screen_t x, screen_t top, screen_t bottom, rgb_t color)
 {
-    print_window_visible = FALSE;
-    commands_window_visible = FALSE;
-    keyboard_window_visible = FALSE;
-}
+#define VERTICAL_DIV_MID_INCREMENT 2
+#define VERTICAL_DIV_BOTTOM_INCREMENT 4
+#define VERTICAL_DIV_MARGIN_WIDTH 2
 
-void init_window(Window *w, size_t buffer_length)
-{
-    // Margin is initialized outside
-    create_text_buffer(buffer_length, &(w->buffer));
-    w->buffer.overflow_cb = w_buffer_overflow_cb;
-    w->buffer.ptr_cb = w;
-    w->font = &base_set_font;
-    w->scroll_amount = 0;
+    // Buffer index refers to the line drawn on the left. Middle and right line
+    // indices are obtained through addition
+    size_t buffer_index = TEXT_BUFFER_INDEX(x - 2, top);
+    for (screen_t y = top; y < bottom; ++y)
+    {
+        screen_t min_distance = MIN(y - top, (bottom - 1) - y);
+        boolean_t draw_left_and_right = min_distance >= VERTICAL_DIV_MARGIN_WIDTH;
+
+        draw_buffer[buffer_index + VERTICAL_DIV_MID_INCREMENT] = color;
+        if (draw_left_and_right)
+        {
+            draw_buffer[buffer_index] = color;
+            draw_buffer[buffer_index + VERTICAL_DIV_BOTTOM_INCREMENT] = color;
+        }
+
+        buffer_index += BUFFER_WIDTH;
+    }
 }

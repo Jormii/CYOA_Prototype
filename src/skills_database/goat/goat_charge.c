@@ -1,6 +1,4 @@
-#include "ui.h"
-#include "all_skills.h"
-#include "combat_damage.h"
+#include "skill_includes.h"
 
 void goat_charge_execute(SkillCommand *command)
 {
@@ -33,7 +31,7 @@ void goat_charge_execute(SkillCommand *command)
         combat_damage_perform(dmg_instance);
 
         const CombatUnit *caster = combat_identifier_get_combat_unit(&(command->caster));
-        tb_printf(&(print_window.buffer), 0x00FFFFFF, L"%ls charges, hitting %ls\n",
+        tb_printf(skills_buffer, 0x00FFFFFF, L"%ls charges, hitting %ls\n",
                   caster->unit->name, target_unit->unit->name);
     }
 }
@@ -41,6 +39,7 @@ void goat_charge_execute(SkillCommand *command)
 SkillMetadata goat_charge_meta = {
     .id = SKILL_ID_GOAT_CHARGE_ID,
     .type = SKILL_TYPE_ACTIVE_ENEMY_TEAM,
+    .attribute = ATTR_STRENGTH,
     .cost = 0,
     .name = L"Charge!",
     .description = L"Deals a lot of damage to a random enemy unit",
