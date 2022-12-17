@@ -1,6 +1,5 @@
 **/.vscode/
 **/__pycache__/
-/compilation/assets/
 
 *.o
 *.PBP

@@ -1,0 +1,222 @@
+[
+	{
+		"title": "Coz",
+		"tags": "FUE:",
+		"body": "Coste: 1\nDescripción: Cocea a otra unidad, haciendo DADO(1 + DAÑO)",
+		"position": {
+			"x": -360,
+			"y": -520
+		},
+		"colorID": 1
+	},
+	{
+		"title": "Concentracion",
+		"tags": "FUE:, AGI:",
+		"body": "Coste: 2\nDescripción: Aumenta el DAÑO en 2 y la VELOCIDAD en 1 durante 3 rondas",
+		"position": {
+			"x": -80,
+			"y": -520
+		},
+		"colorID": 1
+	},
+	{
+		"title": "Ariete",
+		"tags": "FUE:, DES:",
+		"body": "Coste: 2\nDescripción: Embiste a una unidad que no sea ella con sus cuernos, haciendo DADO(1 + DAÑO). Aumenta en 1 el dado por cada uso consecutivo de \"Ariete\"",
+		"position": {
+			"x": 200,
+			"y": -520
+		},
+		"colorID": 1
+	},
+	{
+		"title": "Consistente",
+		"tags": "FUE:, AGU:",
+		"body": "Coste: 0\nDescripción: Todos los ataques de esta unidad hacen mínimo DAÑO puntos de daño",
+		"position": {
+			"x": 480,
+			"y": -520
+		},
+		"colorID": 1
+	},
+	{
+		"title": "Diana",
+		"tags": "FUE:",
+		"body": "Coste: 0\nDescripción: Los ataques de esta unidad no pueden ser esquivados",
+		"position": {
+			"x": 760,
+			"y": -520
+		},
+		"colorID": 1
+	},
+	{
+		"title": "Imparable",
+		"tags": "FUE:",
+		"body": "Coste: 0\nDescripción: Cuando esta unidad acaba con una unidad enemiga, repite la acción que acabó con esa unidad sobre su aliado",
+		"position": {
+			"x": 1040,
+			"y": -520
+		},
+		"colorID": 1
+	},
+	{
+		"title": "OjoCritico",
+		"tags": "DES:1",
+		"body": "Coste: 0\nDescripción: Aumenta la probabilidad de crítico en 1",
+		"position": {
+			"x": -360,
+			"y": -240
+		},
+		"colorID": 2
+	},
+	{
+		"title": "Carga",
+		"tags": "DES:, FUE:",
+		"body": "Coste: 2\nDescripción: Carga desenfrenadamente contra el equipo enemigo, haciendo DADO(3 + DAÑO) puntos de daño a una unidad enemiga al azar",
+		"position": {
+			"x": -80,
+			"y": -240
+		},
+		"colorID": 2
+	},
+	{
+		"title": "PuntoDebil",
+		"tags": "DES:",
+		"body": "Coste: 0\nDescripción: Cuando se produce un golpe crítico, aumenta el daño del ataque un 20%.",
+		"position": {
+			"x": 200,
+			"y": -240
+		},
+		"colorID": 2
+	},
+	{
+		"title": "Esteroides",
+		"tags": "DES:, FUE:",
+		"body": "Coste: 0\nDescripción: Aumenta de forma permanente el DAÑO en 2 puntos y reduce de forma permanente la DEFENSA en 1 punto",
+		"position": {
+			"x": 760,
+			"y": -240
+		},
+		"colorID": 2
+	},
+	{
+		"title": "Tantear",
+		"tags": "DES:, FUE:",
+		"body": "Coste: 5\nDescripción: Aumenta durante 2 turnos el DAÑO, CRÍTICO y probabilidad de CRÍTICO en 1 punto. Ataca a una unidad que no sea ella por DADO(1 + DAÑO)",
+		"position": {
+			"x": 1320,
+			"y": -240
+		},
+		"colorID": 2
+	},
+	{
+		"title": "Crecerse",
+		"tags": "AGU:1",
+		"body": "Coste: 0\nDescripción: Cuando una unidad muere, gana de forma permanente 1 punto de DAÑO y AGILIDAD",
+		"position": {
+			"x": -360,
+			"y": 40
+		},
+		"colorID": 0
+	},
+	{
+		"title": "Venganza",
+		"tags": "AGU:, FUE:",
+		"body": "Coste: 2\nDescripción: Aumenta la DEFENSA en 1 punto hasta el final del turno. Al final del turno, ataca a una unidad por DADO(DAÑO). Si ha sido atacado antes de ejecutar el ataque, hace DADO(3 + DAÑO)",
+		"position": {
+			"x": -80,
+			"y": 40
+		},
+		"colorID": 0
+	},
+	{
+		"title": "Penetracion",
+		"tags": "AGU:",
+		"body": "Coste: 0\nDescripción: Cuando hace daño a una unidad, reduce su defensa en 1 punto durante 2 rondas",
+		"position": {
+			"x": 480,
+			"y": 40
+		},
+		"colorID": 0
+	},
+	{
+		"title": "Desesperacion",
+		"tags": "AGU:, FUE:",
+		"body": "Coste: 3\nDescripción: Ataca a una unidad por DADO(5 + DAÑO) puntos de daño. Recibe la mitad del daño hecho",
+		"position": {
+			"x": 760,
+			"y": 40
+		},
+		"colorID": 0
+	},
+	{
+		"title": "Integridad",
+		"tags": "AGU:",
+		"body": "Coste: 0\nDescripción: Si su salud es mayor que 1, la vida no puede bajar de 1",
+		"position": {
+			"x": 1040,
+			"y": 40
+		},
+		"colorID": 0
+	},
+	{
+		"title": "Acometer",
+		"tags": "AGI:1",
+		"body": "Coste: 0\nDescripción: Cuando se ataca, se aumenta la velocidad en 1 durante dos rondas",
+		"position": {
+			"x": -360,
+			"y": 320
+		},
+		"colorID": 5
+	},
+	{
+		"title": "Anticipacion",
+		"tags": "AGI:, FUE:",
+		"body": "Coste: 0\nDescripción: Si esta es unidad es atacada por la unidad a la que ha seleccionado como el objetivo de su ataque, la ataca por DADO(2 + DAÑO)",
+		"position": {
+			"x": -80,
+			"y": 320
+		},
+		"colorID": 5
+	},
+	{
+		"title": "Contraataque",
+		"tags": "AGI:",
+		"body": "Coste: 0\nDescripción: Cuando esquiva un ataque enemigo, golpea a su atacante por DADO(DAÑO)",
+		"position": {
+			"x": 200,
+			"y": 320
+		},
+		"colorID": 5
+	},
+	{
+		"title": "Fantasma",
+		"tags": "AGI:",
+		"body": "Coste: 0\nDescripción: Aumenta de forma permanente la VELOCIDAD en 2 puntos",
+		"position": {
+			"x": 760,
+			"y": 320
+		},
+		"colorID": 5
+	},
+	{
+		"title": "Inercia",
+		"tags": "AGI:, FUE:",
+		"body": "Coste: 0\nDescripción: Todas las tiradas de daño aumentan en el 25% de la VELOCIDAD",
+		"position": {
+			"x": 1320,
+			"y": 320
+		},
+		"colorID": 5
+	},
+	{
+		"title": "Referencia",
+		"tags": "REQ:0",
+		"body": "Coste:\nDescripción:",
+		"position": {
+			"x": -360,
+			"y": -800
+		},
+		"colorID": 6
+	}
+]

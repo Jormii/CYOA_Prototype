@@ -1,0 +1,12 @@
+
+-- VARIABLES --
+8 (0x8): _TEMPORAL_ +Este es el fin = ('STRING' Este es el fin)
+
+-- OPTIONS --
+
+-- INSTRUCTIONS --
+Stack size: 0
+0 (0x26): PRINT 2
+1 (0x2a): EOX
+2 (0x2e): PRINTSL 8
+3 (0x32): ENDL

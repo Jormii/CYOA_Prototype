@@ -1,0 +1,22 @@
+[
+	{
+		"title": "Escena",
+		"tags": "",
+		"body": "\"Hola muy buenas\";\n\n\"Continuar\" = {\n    [[Final]];\n}\n\"Decir 'Hola'\" = {\n    \"Hola\";\n}",
+		"position": {
+			"x": -609,
+			"y": 7
+		},
+		"colorID": 0
+	},
+	{
+		"title": "Final",
+		"tags": "",
+		"body": "\"Este es el fin\";",
+		"position": {
+			"x": -229,
+			"y": 4
+		},
+		"colorID": 0
+	}
+]

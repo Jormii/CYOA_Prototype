@@ -1,0 +1,222 @@
+[
+	{
+		"title": "Picotazo",
+		"tags": "FUE:1",
+		"body": "Coste: 1\nDescripción: Golpea con su pico para hacer DADO(DAÑO) a una unidad",
+		"position": {
+			"x": -360,
+			"y": -520
+		},
+		"colorID": 1
+	},
+	{
+		"title": "FlechaPluma",
+		"tags": "DES:1",
+		"body": "Coste: 2\nDescripción: Dispara una flecha a un objetivo, haciendo DADO(DAÑO) a un objetivo y aumentando su esquiva hasta el final del turno",
+		"position": {
+			"x": -360,
+			"y": -240
+		},
+		"colorID": 2
+	},
+	{
+		"title": "Bocado",
+		"tags": "AGU:, FUE:",
+		"body": "Coste: 0\nDescripción: Se cura 1 punto de vida cada vez que hace daño",
+		"position": {
+			"x": 1040,
+			"y": 40
+		},
+		"colorID": 0
+	},
+	{
+		"title": "CalentarPlumas",
+		"tags": "AGI:1",
+		"body": "Coste: 2\nDescripción: Aumenta DAÑO y VELOCIDAD en 1 durante 2 turnos",
+		"position": {
+			"x": -360,
+			"y": 320
+		},
+		"colorID": 5
+	},
+	{
+		"title": "Referencia",
+		"tags": "REQ:0",
+		"body": "Coste:\nDescripción:",
+		"position": {
+			"x": -360,
+			"y": -800
+		},
+		"colorID": 6
+	},
+	{
+		"title": "Desgarrar",
+		"tags": "FUE:, AGU:",
+		"body": "Coste: 2\nDescripción: Utiliza sus garras para hacer DADO(DAÑO) a una unidad y aplicarle 1 punto de sangrado",
+		"position": {
+			"x": 200,
+			"y": -520
+		},
+		"colorID": 1
+	},
+	{
+		"title": "Depredador",
+		"tags": "FUE:, AGU:",
+		"body": "Coste: 0\nDescripción: Hace DADO+1 cuando ataca a una unidad con menos vida",
+		"position": {
+			"x": -80,
+			"y": -520
+		},
+		"colorID": 1
+	},
+	{
+		"title": "Persecucion",
+		"tags": "FUE:, DES:",
+		"body": "Coste: 0\nDescripción: Atacar de forma consecutiva a la misma unidad aumenta el daño realizado en DADO + 1 e impide que pueda esquivar",
+		"position": {
+			"x": 480,
+			"y": -520
+		},
+		"colorID": 1
+	},
+	{
+		"title": "Tension",
+		"tags": "FUE:, DES:",
+		"body": "Coste: 0\nDescripción: Los ataques basados en flechas hacen DADO + FUE / 4 daño adicional",
+		"position": {
+			"x": 1040,
+			"y": -520
+		},
+		"colorID": 1
+	},
+	{
+		"title": "FuegoDeCobertura",
+		"tags": "DES:, FUE:",
+		"body": "Coste: 0\nDescripción: Cuando el aliado ataca a un enemigo, dispara una flecha que hace DADO(DAÑO - 2) al objetivo del aliado",
+		"position": {
+			"x": 480,
+			"y": -240
+		},
+		"colorID": 2
+	},
+	{
+		"title": "Proteger",
+		"tags": "DES:, AGU:",
+		"body": "Coste: 0\nDescripción: Cuando el aliado es atacado por un enemigo, dispara una flecha a su atacante que hace DADO(DAÑO - 3)",
+		"position": {
+			"x": 200,
+			"y": -240
+		},
+		"colorID": 2
+	},
+	{
+		"title": "ManosRapidas",
+		"tags": "DES:, AGI:",
+		"body": "Coste: 0\nDescripción: Cuando dispara una flecha, dispara una segunda flecha al mismo objetivo que hace DADO(DAÑO - 5)",
+		"position": {
+			"x": 760,
+			"y": -240
+		},
+		"colorID": 2
+	},
+	{
+		"title": "FlechaSanadora",
+		"tags": "DES:, AGU:",
+		"body": "Coste: 1\nDescripción: Dispara una flecha a una unidad que lo cura DADO(DAÑO - 2)",
+		"position": {
+			"x": -80,
+			"y": -240
+		},
+		"colorID": 2
+	},
+	{
+		"title": "Recoleccion",
+		"tags": "DES:",
+		"body": "Coste: 4\nDescripción: Las flechas disparadas quedan adheridas a sus objetivos. Cuando se usa esta habilidad, las unidades afectadas por plumas reciben o se curan DADO(x), en función de si es enemigo o aliado y siendo x el número de plumas adheridas",
+		"position": {
+			"x": 1040,
+			"y": -240
+		},
+		"colorID": 2
+	},
+	{
+		"title": "Carniceria",
+		"tags": "AGU:, FUE:",
+		"body": "Coste: 3\nDescripción: Hace DADO(DAÑO) a una unidad y aplica 1 punto de sangrado. Si el objetivo sufre sangrado hace DADO(DAÑO - 3) dos veces en su lugar",
+		"position": {
+			"x": -80,
+			"y": 40
+		},
+		"colorID": 0
+	},
+	{
+		"title": "HedorDeLaMuerte",
+		"tags": "AGU:1",
+		"body": "Coste: 0\nDescripción: Aumenta DAÑO y DEFENSA en 1 punto por cada criatura con menos vida que ella",
+		"position": {
+			"x": -360,
+			"y": 40
+		},
+		"colorID": 0
+	},
+	{
+		"title": "Paciencia",
+		"tags": "AGU:",
+		"body": "Coste: 0\nDescripción: Aumenta permanentemente el DAÑO en 1 punto, la DEFENSA, en 2 y reduce la VELOCIDAD en 1",
+		"position": {
+			"x": 480,
+			"y": 40
+		},
+		"colorID": 0
+	},
+	{
+		"title": "Retaguardia",
+		"tags": "AGI:, DES:",
+		"body": "Coste: 0\nDescripción: Cuando dispara una flecha, aumenta la capacidad de esquivar en 1 durante el resto de la ronda",
+		"position": {
+			"x": 200,
+			"y": 320
+		},
+		"colorID": 5
+	},
+	{
+		"title": "AtaqueDeOportunidad",
+		"tags": "AGI:, DES:",
+		"body": "Coste: 0\nDescripción: Cuando ataca, ataca con una flecha que hace DADO(DAÑO - 3) al siguiente enemigo que actúe esta ronda",
+		"position": {
+			"x": 480,
+			"y": 320
+		},
+		"colorID": 5
+	},
+	{
+		"title": "Inercia",
+		"tags": "AGI:, FUE:",
+		"body": "Coste: 3\nDescripción: Lleva a cabo un ataque que hace DADO(DAÑO / 4 + VEL) puntos de daño a una unidad",
+		"position": {
+			"x": 1040,
+			"y": 320
+		},
+		"colorID": 5
+	},
+	{
+		"title": "VueloDeRetirada",
+		"tags": "AGI:",
+		"body": "Coste: 5\nDescripción: Vuela alto, volviéndose inalcanzable a todas las acciones",
+		"position": {
+			"x": -80,
+			"y": 320
+		},
+		"colorID": 5
+	},
+	{
+		"title": "Corriente",
+		"tags": "AGI:",
+		"body": "Coste: 0\nDescripción: Aumenta la VELOCIDAD de todos los aliados en AGI / 4",
+		"position": {
+			"x": 760,
+			"y": 320
+		},
+		"colorID": 5
+	}
+]

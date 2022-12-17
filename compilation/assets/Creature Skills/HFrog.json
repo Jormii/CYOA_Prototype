@@ -1,0 +1,222 @@
+[
+	{
+		"title": "Sangre",
+		"tags": "FUE:, AGU:",
+		"body": "Coste: 0\nDescripción: Los ataques curan 1 punto de vida si la vida es inferior a la mitad, o hacen DADO + 1 extra de daño en caso contrario",
+		"position": {
+			"x": 760,
+			"y": -520
+		},
+		"colorID": 1
+	},
+	{
+		"title": "Regeneracion",
+		"tags": "AGU:",
+		"body": "Coste: 0\nDescripción: Al final de la ronda, aumenta la DEFENSA en 1 durante 1 ronda si la vida es superior a la mitad de la vida. En caso contrario, recupera DADO(DAÑO - 4) puntos de vida",
+		"position": {
+			"x": -80,
+			"y": 40
+		},
+		"colorID": 0
+	},
+	{
+		"title": "Referencia",
+		"tags": "REQ:0",
+		"body": "Coste:\nDescripción:",
+		"position": {
+			"x": -360,
+			"y": -800
+		},
+		"colorID": 6
+	},
+	{
+		"title": "BancoDeSangre",
+		"tags": "AGU:, FUE:",
+		"body": "Coste: 3\nDescripción: Acumula un contador de sangre con capacidad DEFENSA / 4. Cada vez que haga daño, aumenta el contador en 1. Si fuera a morir, se cura tanto como el contador del banco. Se puede utilizar esta habilidad para consumir el banco y hacer DADO(DAÑO + contador) puntos de daño a una unidad",
+		"position": {
+			"x": 1040,
+			"y": 40
+		},
+		"colorID": 0
+	},
+	{
+		"title": "Fluidez",
+		"tags": "AGI:",
+		"body": "Coste: 0\nDescripción: Cuando la vida es inferior al 50%, aumenta la probabilidad de esquivar ataques en 1",
+		"position": {
+			"x": -360,
+			"y": 320
+		},
+		"colorID": 5
+	},
+	{
+		"title": "Presion",
+		"tags": "FUE:1",
+		"body": "Coste: 2\nDescripción: Se abalanza sobre una unidad, haciéndole DADO(DAÑO - 2) puntos de daño e impidiendo que ambos actúen durante esta ronda y la siguiente",
+		"position": {
+			"x": -360,
+			"y": -520
+		},
+		"colorID": 1
+	},
+	{
+		"title": "Celo",
+		"tags": "",
+		"body": "Coste: 3\nDescripción: Emite un rugido que reduce el DAÑO del equipo enemigo en 1 y en 1 la del equipo aliado",
+		"position": {
+			"x": 200,
+			"y": -240
+		},
+		"colorID": 2
+	},
+	{
+		"title": "Asimilacion",
+		"tags": "",
+		"body": "Coste: 3\nDescripción: Hace DADO(DAÑO + 1) a una unidad y reduce en 1 la estadística más elevada del objetivo",
+		"position": {
+			"x": -80,
+			"y": -240
+		},
+		"colorID": 2
+	},
+	{
+		"title": "Terremoto",
+		"tags": "FUE:, DES:",
+		"body": "Coste: 5\nDescripción: Movimiento de prioridad. Sacude el suelo, interrumpiendo a todas las unidades, haciendo DADO(DAÑO - 4) e impidiendo que actúen durante el resto de la ronda",
+		"position": {
+			"x": -80,
+			"y": -520
+		},
+		"colorID": 1
+	},
+	{
+		"title": "Anteposicion",
+		"tags": "DES:",
+		"body": "Coste: 1\nDescripción: Se sitúa delante de su aliado, bloqueando el primer ataque que fuera a recibir esta ronda",
+		"position": {
+			"x": -360,
+			"y": -240
+		},
+		"colorID": 2
+	},
+	{
+		"title": "Lenguetazo",
+		"tags": "FUE:, AGU:",
+		"body": "Coste: 3\nDescripción: Hace DADO(DAÑO - 3) y reduce en 1 la VELOCIDAD del equipo enemigo",
+		"position": {
+			"x": 200,
+			"y": -520
+		},
+		"colorID": 1
+	},
+	{
+		"title": "Montura",
+		"tags": "",
+		"body": "Coste: X\nDescripción: Consume toda su ESTAMINA para aumentar el DAÑO, DEFENSA y VELOCIDAD de su aliado en x / 4 y en un 25% de las de esta unidad",
+		"position": {
+			"x": 760,
+			"y": -240
+		},
+		"colorID": 2
+	},
+	{
+		"title": "Secrecion",
+		"tags": "AGU:, DES:",
+		"body": "Coste: 3\nDescripción: Escupe a una unidad por DADO(DAÑO - 2) puntos de daño y reduciendo la prioridad de sus acciones esta ronda",
+		"position": {
+			"x": 480,
+			"y": -520
+		},
+		"colorID": 1
+	},
+	{
+		"title": "Ingerir",
+		"tags": "AGU:, FUE:",
+		"body": "Coste: 2\nDescripción: Hace DADO(DAÑO - 2) a una unidad, aumenta su DEFENSA en 1 durante 2 rondas y reduciendo la de su objetivo en 1",
+		"position": {
+			"x": 200,
+			"y": 40
+		},
+		"colorID": 0
+	},
+	{
+		"title": "PielRugosa",
+		"tags": "AGU:1",
+		"body": "Coste: 0\nDescripción: Cuando hace contacto con otra unidad, le hace 1 de daño",
+		"position": {
+			"x": -360,
+			"y": 40
+		},
+		"colorID": 0
+	},
+	{
+		"title": "GolpeAnca",
+		"tags": "AGI:, FUE:",
+		"body": "Coste: 1\nDescripción: Hace DADO(DAÑO - 2) a una unidad. Si su objetivo lo va a atacar, hace DADO(DAÑO - 3) tres veces en su lugar",
+		"position": {
+			"x": -80,
+			"y": 320
+		},
+		"colorID": 5
+	},
+	{
+		"title": "Agudizar",
+		"tags": "AGI:",
+		"body": "Coste: 0\nDescripción: Aumenta en 1 la probabilidad de esquiva después de haber atacado esta ronda",
+		"position": {
+			"x": 200,
+			"y": 320
+		},
+		"colorID": 5
+	},
+	{
+		"title": "Gracil",
+		"tags": "AGI:, FUE:",
+		"body": "Coste: 0\nDescripción: Aumenta de forma permanente el DAÑO y la VELOCIDAD en 1, y reduce la DEFENSA en 1",
+		"position": {
+			"x": 480,
+			"y": 320
+		},
+		"colorID": 5
+	},
+	{
+		"title": "TipTap",
+		"tags": "AGI:",
+		"body": "Coste: 0\nDescripción: Cuando golpea a una unidad, la golpea una segunda vez por DADO - 4",
+		"position": {
+			"x": 760,
+			"y": 320
+		},
+		"colorID": 5
+	},
+	{
+		"title": "AlterEgo",
+		"tags": "AGI:, FUE:",
+		"body": "Coste: 0\nDescripción: Cuando lleva a cabo una acción contra un enemigo, aplica los efectos secundarios de la acción contra su aliado también",
+		"position": {
+			"x": 1040,
+			"y": 320
+		},
+		"colorID": 5
+	},
+	{
+		"title": "AuraSaludable",
+		"tags": "AGU:, DES:",
+		"body": "Coste: 0\nDescripción: Mientras tenga más del 75% de la vida, aumenta el DAÑO, DEFENSA y VELOCIDAD suya y del aliado en 1",
+		"position": {
+			"x": 760,
+			"y": 40
+		},
+		"colorID": 0
+	},
+	{
+		"title": "Guardaespaldas",
+		"tags": "DES:",
+		"body": "Coste: 4\nDescripción: Aumenta la DEFENSA en 1 hasta el final de la ronda. Bloquea todos los ataques que el aliado fuera a recibir esta ronda",
+		"position": {
+			"x": 480,
+			"y": -240
+		},
+		"colorID": 2
+	}
+]

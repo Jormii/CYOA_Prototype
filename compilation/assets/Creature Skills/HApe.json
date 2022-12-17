@@ -1,0 +1,222 @@
+[
+	{
+		"title": "Bastonazo",
+		"tags": "FUE:1",
+		"body": "Coste: 1\nDescripción: Golpea a una unidad por DADO(DAÑO - 1) puntos de daño. Si este turno o el turno anterior se ejecutó un hechizo o canción, hace DADO(DAÑO + 3) en su lugar",
+		"position": {
+			"x": -360,
+			"y": -520
+		},
+		"colorID": 1
+	},
+	{
+		"title": "Rafaga",
+		"tags": "DES:1",
+		"body": "Coste: 1\nDescripción: Canaliza un hechizo. Al final de la ronda, hace DADO(DAÑO + 2) a su objetivo",
+		"position": {
+			"x": -360,
+			"y": -240
+		},
+		"colorID": 2
+	},
+	{
+		"title": "Referencia",
+		"tags": "REQ:0",
+		"body": "Coste:\nDescripción:",
+		"position": {
+			"x": -360,
+			"y": -800
+		},
+		"colorID": 6
+	},
+	{
+		"title": "Infusion",
+		"tags": "FUE:, AGI:",
+		"body": "Coste: 2\nDescripción: Canaliza en su bastón la última canción interpretada para hacer DADO(DAÑO - 1) puntos de daño a su objetivo y replicar el efecto de la canción. Si el objetivo es aliado, se cura DADO(DAÑO - 2) en su lugar e ignora efectos negativos",
+		"position": {
+			"x": -80,
+			"y": -520
+		},
+		"colorID": 1
+	},
+	{
+		"title": "Acumulacion",
+		"tags": "FUE:, DES:, AGI:",
+		"body": "Coste: 3\nDescripción: Un golpe que hace DADO(DAÑO + x) de daño a un objetivo, siendo x el número de turnos consecutivos canalizando o interpretando",
+		"position": {
+			"x": 200,
+			"y": -520
+		},
+		"colorID": 1
+	},
+	{
+		"title": "Represalia",
+		"tags": "FUE:",
+		"body": "Coste: 0\nDescripción: Si es interrumpido mientras interpreta una canción o hechizo, ejecuta Bastonazo o Infusión sobre aquel que lo interrumpió",
+		"position": {
+			"x": 760,
+			"y": -520
+		},
+		"colorID": 1
+	},
+	{
+		"title": "Aceleracion",
+		"tags": "DES:, AGI:",
+		"body": "Coste: 2\nDescripción: Canaliza un hechizo hasta el principio de la siguiente ronda, cuando hace DADO(DAÑO + 4). Aumenta la VELOCIDAD suya y del aliado durante dos rondas",
+		"position": {
+			"x": -80,
+			"y": -240
+		},
+		"colorID": 2
+	},
+	{
+		"title": "Concentracion",
+		"tags": "DES:, FUE:",
+		"body": "Coste: 2\nDescripción: Conjura un hechizo durante esta ronda y la siguiente que hace un ataque crítico de DADO(DAÑO + 2) puntos de daño.",
+		"position": {
+			"x": 200,
+			"y": -240
+		},
+		"colorID": 2
+	},
+	{
+		"title": "Abrumar",
+		"tags": "DES:, FUE:",
+		"body": "Coste: 4\nDescripción: Canaliza durante este turno. Al principio de la siguiente ronda, hace DADO(DAÑO - 1) al equipo enemigo",
+		"position": {
+			"x": 480,
+			"y": -240
+		},
+		"colorID": 2
+	},
+	{
+		"title": "Caos",
+		"tags": "DES:",
+		"body": "Coste: 0\nDescripción: Los hechizos pasan a afectar al equipo completo",
+		"position": {
+			"x": 1040,
+			"y": -240
+		},
+		"colorID": 2
+	},
+	{
+		"title": "Debilitacion",
+		"tags": "DES:, AGU:",
+		"body": "Coste: 2\nDescripción: Canaliza hasta el final de la ronda, cuando reduce DAÑO, DEFENSA y VELOCIDAD del objetivo en 1 punto",
+		"position": {
+			"x": 760,
+			"y": -240
+		},
+		"colorID": 2
+	},
+	{
+		"title": "Profesional",
+		"tags": "AGU:, DES:, AGI:",
+		"body": "Coste: 0\nDescripción: La ejecución de hechizos y canciones consume 1 punto menos de ESTAMINA",
+		"position": {
+			"x": 760,
+			"y": 40
+		},
+		"colorID": 0
+	},
+	{
+		"title": "Refugio",
+		"tags": "AGU:",
+		"body": "Coste: 0\nDescripción: Reduce el daño recibido en 50% cuando es golpeado mientras canaliza un hechizo o canción",
+		"position": {
+			"x": 200,
+			"y": 40
+		},
+		"colorID": 0
+	},
+	{
+		"title": "Apertura",
+		"tags": "AGU:, AGI:",
+		"body": "Coste: 0\nDescripción: Las canciones gozan de prioridad",
+		"position": {
+			"x": 480,
+			"y": 40
+		},
+		"colorID": 0
+	},
+	{
+		"title": "CancionRecuperacion",
+		"tags": "AGI:, AGU:",
+		"body": "Coste: 2\nDescripción: Todas las unidades se curan DADO(DAÑO - 3)",
+		"position": {
+			"x": -80,
+			"y": 320
+		},
+		"colorID": 5
+	},
+	{
+		"title": "CancionVigor",
+		"tags": "AGI:",
+		"body": "Coste: 2\nDescripción: Todas las unidades aumentan su DAÑO en 1",
+		"position": {
+			"x": -360,
+			"y": 320
+		},
+		"colorID": 5
+	},
+	{
+		"title": "CancionFortaleza",
+		"tags": "AGI:, AGU:",
+		"body": "Coste: 3\nDescripción: Todas las unidades aumentan su DEFENSA en 1",
+		"position": {
+			"x": 480,
+			"y": 320
+		},
+		"colorID": 5
+	},
+	{
+		"title": "CancionAgilidad",
+		"tags": "AGI:",
+		"body": "Coste: 1\nDescripción: Todas las unidades aumentan su VELOCIDAD en 1",
+		"position": {
+			"x": 760,
+			"y": 320
+		},
+		"colorID": 5
+	},
+	{
+		"title": "CancionFatiga",
+		"tags": "AGI, DES:",
+		"body": "Coste: 0\nDescripción: Todas las unidades aumentan su ESTAMINA en 3 puntos",
+		"position": {
+			"x": 200,
+			"y": 320
+		},
+		"colorID": 5
+	},
+	{
+		"title": "InCrescendo",
+		"tags": "AGI:",
+		"body": "Coste: 0\nDescripción: Aumenta la potencia de las canciones con cada turno consecutivo de interpretación",
+		"position": {
+			"x": 1320,
+			"y": 320
+		},
+		"colorID": 5
+	},
+	{
+		"title": "GranFinale",
+		"tags": "AGU:, AGI:",
+		"body": "Coste: 4\nDescripción: Sacrifica su vida hasta quedarse con un único punto de vida para interpretar una canción sin fin. Mientras continúe interpretando su canción, el aliado aumenta su DAÑO, DEFENSA y VELOCIDAD en x / 4, siendo x la cantidad de vida sacrificada y hace DADO(x / 8) al equipo enemigo",
+		"position": {
+			"x": 1040,
+			"y": 40
+		},
+		"colorID": 0
+	},
+	{
+		"title": "Discriminacion",
+		"tags": "AGI:",
+		"body": "Coste: 0\nDescripción: Las canciones sólo afectan a los aliados",
+		"position": {
+			"x": 1040,
+			"y": 320
+		},
+		"colorID": 5
+	}
+]

@@ -1,0 +1,29 @@
+
+-- VARIABLES --
+16 (0x10): _TEMPORAL_ +Hola muy buenas = ('STRING' Hola muy buenas)
+48 (0x30): _TEMPORAL_ +Continuar = ('STRING' Continuar)
+68 (0x44): _TEMPORAL_ +Decir 'Hola' = ('STRING' Decir 'Hola')
+94 (0x5e): _TEMPORAL_ +Hola = ('STRING' Hola)
+
+-- OPTIONS --
+PC 4 - _TEMPORAL_ +Continuar = ('STRING' Continuar)
+PC 6 - _TEMPORAL_ +Decir 'Hola' = ('STRING' Decir 'Hola')
+
+-- INSTRUCTIONS --
+Stack size: 0
+0 (0x68): PRINT 8
+1 (0x6c): DISPLAY 0
+2 (0x70): DISPLAY 1
+3 (0x74): EOX
+4 (0x78): SWITCH 1
+5 (0x7c): EOX
+6 (0x80): PRINT 14
+7 (0x84): EOX
+8 (0x88): PRINTSL 16
+9 (0x8c): ENDL
+10 (0x90): PRINTSL 48
+11 (0x94): ENDL
+12 (0x98): PRINTSL 68
+13 (0x9c): ENDL
+14 (0xa0): PRINTSL 94
+15 (0xa4): ENDL
